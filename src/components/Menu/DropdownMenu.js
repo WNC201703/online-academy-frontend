@@ -1,12 +1,12 @@
 import React from 'react';
 import {withStyles} from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import WebIcon from '@material-ui/icons/Web';
 import PhoneIphoneIcon from '@material-ui/icons/PhoneIphone';
+import CustomPrimaryContainedButton from "../Button/CustomPrimaryContainedButton";
 
 const StyledMenu = withStyles({
   paper: {
@@ -52,14 +52,14 @@ export default function DropdownMenu() {
 
   return (
     <div>
-      <Button
+      <CustomPrimaryContainedButton
         aria-controls="customized-menu"
         aria-haspopup="true"
         variant="contained"
         color="primary"
         onClick={handleClick}>
         Categories
-      </Button>
+      </CustomPrimaryContainedButton>
       <StyledMenu
         id="customized-menu"
         anchorEl={anchorEl}

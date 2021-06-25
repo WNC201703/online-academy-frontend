@@ -12,7 +12,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import DropdownMenu from "../Menu/DropdownMenu";
-import Button from "@material-ui/core/Button";
+import blue from "@material-ui/core/colors/blue";
+import CustomPrimaryContainedButton from "../Button/CustomPrimaryContainedButton";
+import CustomSecondaryOutlinedButton from "../Button/CustomSecondaryOutlinedButton";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -75,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },
-  },
+  }
 }));
 
 export default function PrimarySearchAppBar() {
@@ -146,6 +148,7 @@ export default function PrimarySearchAppBar() {
   return (
     <div className={classes.grow}>
       <AppBar
+        style ={{backgroundColor: blue[500]}}
         position="static">
         <Toolbar>
           <IconButton
@@ -174,8 +177,8 @@ export default function PrimarySearchAppBar() {
           <DropdownMenu/>
           <div className={classes.grow}/>
           <div className={classes.sectionDesktop}>
-            <Button variant="contained" color="primary">Sign in</Button>
-            <Button variant="outlined" color="secondary">Sign up</Button>
+            <CustomPrimaryContainedButton style={{marginRight: 8}} variant="contained" color="primary">Sign in</CustomPrimaryContainedButton>
+            <CustomSecondaryOutlinedButton variant="outlined" color="secondary">Sign up</CustomSecondaryOutlinedButton>
             <IconButton
               edge="end"
               aria-label="account of current user"
