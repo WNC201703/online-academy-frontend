@@ -9,6 +9,7 @@ import RouteWithLayout from "./RouteWithLayout";
 import MainAppBarLayout from "./MainAppBarLayout";
 import {Homepage} from "../views/Homepage";
 import PrimarySearchAppBar from "./AppBar/AppBar";
+import PageNotFound from "./PageNotFound";
 const useStyles = makeStyles(theme => ({
   root: {
     height: "100%",
