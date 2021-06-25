@@ -8,6 +8,7 @@ import ButtonAppBar from "./AppBar/AppBar";
 import RouteWithLayout from "./RouteWithLayout";
 import MainAppBarLayout from "./MainAppBarLayout";
 import {Homepage} from "../views/Homepage";
+import PrimarySearchAppBar from "./AppBar/AppBar";
 const useStyles = makeStyles(theme => ({
   root: {
     height: "100%",
@@ -41,7 +42,7 @@ export default function SecureView(){
 
   return (
       <div className={classes.root}>
-        <ButtonAppBar />
+        <PrimarySearchAppBar />
         <Box mt="65px" width={1} height={1} className={classes.content}>
           <Switch>
             <RouteWithLayout
