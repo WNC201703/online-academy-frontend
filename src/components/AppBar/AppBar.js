@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import {useHistory} from "react-router-dom";
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -82,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PrimarySearchAppBar() {
   const classes = useStyles();
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -104,6 +106,14 @@ export default function PrimarySearchAppBar() {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
+
+  const handleSignInButtonClick = () => {
+    history.push('/sign-in');
+  }
+
+  const handleSignUpButtonClick = () => {
+    history.push('/sign-up');
+  }
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -148,7 +158,7 @@ export default function PrimarySearchAppBar() {
   return (
     <div className={classes.grow}>
       <AppBar
-        style ={{backgroundColor: blue[500]}}
+        style={{backgroundColor: blue[500]}}
         position="static">
         <Toolbar>
           <IconButton
@@ -177,8 +187,10 @@ export default function PrimarySearchAppBar() {
           <DropdownMenu/>
           <div className={classes.grow}/>
           <div className={classes.sectionDesktop}>
-            <CustomPrimaryContainedButton style={{marginRight: 8}} variant="contained" color="primary">Sign in</CustomPrimaryContainedButton>
-            <CustomSecondaryOutlinedButton variant="outlined" color="secondary">Sign up</CustomSecondaryOutlinedButton>
+            <CustomPrimaryContainedButton onClick={handleSignInButtonClick} style={{marginRight: 8}} variant="contained"
+                                          color="primary">Sign in</CustomPrimaryContainedButton>
+            <CustomSecondaryOutlinedButton onClick={handleSignUpButtonClick} variant="outlined">Sign
+              up</CustomSecondaryOutlinedButton>
             <IconButton
               edge="end"
               aria-label="account of current user"
