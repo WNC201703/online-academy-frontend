@@ -16,7 +16,7 @@ export default function Layout() {
     <div>
       <ButtonAppBar/>
       <Switch>
-        <Route exact path="/" component={SamplePage}/>
+        <Route exact path="/" component={Homepage}/>
         <Route exact path="/sample" component={SamplePage}/>
         <Route exact path="/home" component={Homepage}/>
         <Route exact path="/sign-in" component={SignInPage}/>
