@@ -1,6 +1,7 @@
 import {withStyles} from "@material-ui/core";
 import blue from "@material-ui/core/colors/blue";
 import Button from "@material-ui/core/Button";
+import grey from "@material-ui/core/colors/grey";
 
 const CustomPrimaryContainedButton = withStyles({
   root: {
@@ -37,6 +38,9 @@ const CustomPrimaryContainedButton = withStyles({
     '&:focus': {
       boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
     },
+    '&:disabled': {
+      backgroundColor: grey[500],
+      borderColor: grey[100],    },
   },
 })(Button);
 
