@@ -1,7 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core";
+import Box from "@material-ui/core/Box";
+import TextField from "@material-ui/core/TextField";
+import CustomPrimaryContainedButton from "../components/Button/CustomPrimaryContainedButton";
+import {isValidEmail} from "../utils/ValidationHelper";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,8 +17,40 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
   },
 }));
-export const SignUpPage = (props) => {
+
+export const SignUpPage = () => {
   const classes = useStyles();
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  }
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  }
+
+  const handleFullNameChange = (event) => {
+    setFullName(event.target.value);
+  }
+
+  const handleSignUpButtonClick = () => {
+    const userInfo = {
+      fullName: fullName,
+      email: email,
+      password: password
+    }
+
+    try {
+      console.log(userInfo);
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+
   return <div className={classes.root}>
     <Grid
       container
@@ -24,8 +60,26 @@ export const SignUpPage = (props) => {
       justify="center"
       style={{minHeight: '100vh'}}>
       <Grid item xs={3}>
-        <Paper style={{justifyContent: 'center', height: 200}} className={classes.paper}>
-          Sign up form
+        <Paper style={{justifyContent: 'center', padding: 64}} className={classes.paper}>
+          <Box fontSize={24}>Create your account</Box>
+          <Box fontSize={14} style={{marginTop: 24}}>Build skills for today, tomorrow, and beyond.
+            Education to future-proof your career.</Box>
+          <TextField onChange={handleFullNameChange} style={{marginTop: 24, marginBottom: 24}} value={fullName}
+                     label="Full Name" variant="outlined"/>
+          <TextField onChange={handleEmailChange} value={email} label="Email" variant="outlined"/>
+          <TextField value={password}
+                     onChange={handlePasswordChange} style={{marginTop: 24, marginBottom: 24}} type="password"
+                     label="Password"
+                     variant="outlined"/>
+          <Box>
+            <CustomPrimaryContainedButton
+              onClick={handleSignUpButtonClick}
+              disabled={!(isValidEmail(email) > 0 && password?.length > 0)}
+              variant="contained"
+              color="primary">
+              Sign Up
+            </CustomPrimaryContainedButton>
+          </Box>
         </Paper>
       </Grid>
     </Grid>
