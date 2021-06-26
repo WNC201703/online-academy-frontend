@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {fade, makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -16,6 +16,8 @@ import DropdownMenu from "../Menu/DropdownMenu";
 import blue from "@material-ui/core/colors/blue";
 import CustomPrimaryContainedButton from "../Button/CustomPrimaryContainedButton";
 import CustomSecondaryOutlinedButton from "../Button/CustomSecondaryOutlinedButton";
+import AuthUserContext from "../../contexts/user/AuthUserContext";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -84,9 +86,9 @@ const useStyles = makeStyles((theme) => ({
 export default function PrimarySearchAppBar() {
   const classes = useStyles();
   const history = useHistory();
+  const {user} = useContext(AuthUserContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -187,19 +189,23 @@ export default function PrimarySearchAppBar() {
           <DropdownMenu/>
           <div className={classes.grow}/>
           <div className={classes.sectionDesktop}>
-            <CustomPrimaryContainedButton onClick={handleSignInButtonClick} style={{marginRight: 8}} variant="contained"
-                                          color="primary">Sign in</CustomPrimaryContainedButton>
-            <CustomSecondaryOutlinedButton onClick={handleSignUpButtonClick} variant="outlined">Sign
-              up</CustomSecondaryOutlinedButton>
-            <IconButton
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit">
-              <AccountCircle/>
-            </IconButton>
+            {
+              user ? <Box>
+                  <CustomPrimaryContainedButton onClick={handleSignInButtonClick} style={{marginRight: 8}}
+                                                variant="contained"
+                                                color="primary">Sign in</CustomPrimaryContainedButton>
+                  <CustomSecondaryOutlinedButton onClick={handleSignUpButtonClick} variant="outlined">Sign
+                    up</CustomSecondaryOutlinedButton></Box>
+                : <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit">
+                  <AccountCircle/>
+                </IconButton>
+            }
           </div>
           <div className={classes.sectionMobile}>
             <IconButton
