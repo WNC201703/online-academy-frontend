@@ -6,7 +6,7 @@ import {
 
 import ButtonAppBar from "./components/AppBar/AppBar";
 import {SamplePage} from "./views/SamplePage";
-import {Homepage} from "./views/Homepage";
+import {Homepage} from "./views/Homepage/Homepage";
 import {SignUpPage} from "./views/SignUpPage";
 import {SignInPage} from "./views/SignInPage";
 import PageNotFound from "./components/PageNotFound";
