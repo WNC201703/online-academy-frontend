@@ -31,11 +31,11 @@ export const Homepage = () => {
     <Container>
       <Row>
         <Col/>
-        <Col xs={6}>
+        <Col xs={9}>
           <Carousel activeIndex={index} onSelect={handleSelect}>
             {
               sampleArray.map((item, i) => {
-                return (<Carousel.Item key={i} >
+                return (<Carousel.Item key={i}>
                   <img
                     className="w-100 h-100"
                     src='https://www.apple.com/v/education/home/f/images/overview/college_students__dvn47171w282_medium_2x.jpg'
@@ -52,8 +52,9 @@ export const Homepage = () => {
         </Col>
         <Col/>
       </Row>
-      <HorizontalCarousel deviceType={"desktop"} />
-
+      <HorizontalCarousel deviceType={"desktop"} title={"Best seller"}/>
+      <HorizontalCarousel deviceType={"desktop"} title={"Latest courses"}/>
+      <HorizontalCarousel deviceType={"desktop"} title={"Top of the week"}/>
     </Container>
   );
 }

@@ -3,6 +3,37 @@ import {Image} from "semantic-ui-react";
 import React from "react";
 import Box from "@material-ui/core/Box";
 import Rating from '@material-ui/lab/Rating';
+import Paper from "@material-ui/core/Paper";
+import {makeStyles} from "@material-ui/core";
+import {moneyFormat} from "../../utils/FormatHelper";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    textAlign: 'left',
+    color: theme.palette.text.secondary,
+    marginBottom: 12,
+    '&:hover': {
+      cursor: "pointer"
+    },
+  },
+  title: {
+    fontWeight: "bold"
+  },
+  blockTitle: {
+    fontWeight: "bold",
+    fontSize: 26
+  },
+  discountMoney: {
+    textDecoration: "line-through",
+    fontWeight: "normal"
+  },
+  originMoney: {
+    fontWeight: "bold",
+  }
+}));
 
 const responsive = {
   desktop: {
@@ -37,33 +68,44 @@ const images = [
   "https://images.unsplash.com/photo-1549985908-597a09ef0a7c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60",
 ];
 
-const HorizontalCarousel = ({title}) => {
+const HorizontalCarousel = ({title, type}) => {
+  const classes = useStyles();
   const handleItemClick = () => {
     console.log("Item Click");
   }
-
   return (
-    <Carousel
-      ssr
-      partialVisbile
-      deviceType={"desktop"}
-      itemClass="image-item"
-      responsive={responsive}>
-      {images.slice(0, 6).map((image,index) => {
-        return (
-          <div key={index} onClick={handleItemClick} style={{marginRight: 8}}>
-            <Image
-              draggable={false}
-              style={{width: "100%", height: "100%"}}
-              src={image}
-            />
-            <Box>Course title</Box>
-            <Box>Course Categories - Teacher name</Box>
-            <Rating name="read-only" value={5} readOnly />
-          </div>
-        );
-      })}
-    </Carousel>
+    <Box>
+      <Box className={classes.blockTitle}>{title}</Box>
+      <Carousel
+        ssr
+        partialVisbile
+        deviceType={"desktop"}
+        itemClass="image-item"
+        responsive={responsive}>
+        {images.slice(0, 6).map((image, index) => {
+          const isDiscount = true;
+          return (
+            <Paper className={classes.paper} key={index} onClick={handleItemClick} style={{marginRight: 8, padding: 5}}>
+              <Image
+                draggable={false}
+                style={{width: "100%", height: 250}}
+                src={image}
+              />
+              <Box className={classes.title}>Course title</Box>
+              <Box>Course Categories - Teacher name</Box>
+              <Box className={classes.originMoney}>{moneyFormat(125)} {isDiscount ?
+                <span className={classes.discountMoney}>{moneyFormat(120)}</span> : <></>} </Box>
+              <Box display="flex" alignItems="center"
+                   justify="center">
+                <Rating name="read-only" value={5} readOnly/>
+                <span>(123)</span>
+              </Box>
+            </Paper>
+          );
+        })}
+      </Carousel>
+    </Box>
+
   );
 };
 
