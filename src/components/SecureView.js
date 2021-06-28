@@ -7,7 +7,7 @@ import AuthUserContext from "../contexts/user/AuthUserContext";
 import ButtonAppBar from "./AppBar/AppBar";
 import RouteWithLayout from "./RouteWithLayout";
 import MainAppBarLayout from "./MainAppBarLayout";
-import {Homepage} from "../views/Homepage";
+import {Homepage} from "../views/Homepage/Homepage";
 import PrimarySearchAppBar from "./AppBar/AppBar";
 import PageNotFound from "./PageNotFound";
 const useStyles = makeStyles(theme => ({

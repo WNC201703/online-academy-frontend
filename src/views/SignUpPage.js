@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
+  formTitle: {
+    fontWeight: "bold",
+    fontSize: 26
+  },
 }));
 
 export const SignUpPage = () => {
@@ -60,14 +64,15 @@ export const SignUpPage = () => {
       justify="center"
       style={{minHeight: '100vh'}}>
       <Grid item xs={3}>
-        <Paper style={{justifyContent: 'center', padding: 64}} className={classes.paper}>
-          <Box fontSize={24}>Create your account</Box>
+        <Paper style={{justifyContent: 'center', padding: 48}} className={classes.paper}>
+          <Box className={classes.formTitle}>Create your account</Box>
           <Box fontSize={14} style={{marginTop: 24}}>Build skills for today, tomorrow, and beyond.
             Education to future-proof your career.</Box>
-          <TextField onChange={handleFullNameChange} style={{marginTop: 24, marginBottom: 24}} value={fullName}
+          <TextField fullWidth onChange={handleFullNameChange} style={{marginTop: 24, marginBottom: 24}}
+                     value={fullName}
                      label="Full Name" variant="outlined"/>
-          <TextField onChange={handleEmailChange} value={email} label="Email" variant="outlined"/>
-          <TextField value={password}
+          <TextField fullWidth onChange={handleEmailChange} value={email} label="Email" variant="outlined"/>
+          <TextField fullWidth value={password}
                      onChange={handlePasswordChange} style={{marginTop: 24, marginBottom: 24}} type="password"
                      label="Password"
                      variant="outlined"/>
