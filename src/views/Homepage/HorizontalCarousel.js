@@ -4,7 +4,6 @@ import React from "react";
 import Box from "@material-ui/core/Box";
 import Rating from '@material-ui/lab/Rating';
 
-
 const responsive = {
   desktop: {
     breakpoint: {max: 3000, min: 1024},
@@ -38,20 +37,21 @@ const images = [
   "https://images.unsplash.com/photo-1549985908-597a09ef0a7c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60",
 ];
 
-// Because this is an inframe, so the SSR mode doesn't not do well here.
-// It will work on real devices.
-const Simple = ({deviceType}) => {
+const HorizontalCarousel = ({title}) => {
+  const handleItemClick = () => {
+    console.log("Item Click");
+  }
+
   return (
     <Carousel
       ssr
       partialVisbile
-      deviceType={deviceType}
+      deviceType={"desktop"}
       itemClass="image-item"
-      responsive={responsive}
-    >
-      {images.slice(0, 6).map(image => {
+      responsive={responsive}>
+      {images.slice(0, 6).map((image,index) => {
         return (
-          <div style={{marginRight: 8}}>
+          <div key={index} onClick={handleItemClick} style={{marginRight: 8}}>
             <Image
               draggable={false}
               style={{width: "100%", height: "100%"}}
@@ -67,4 +67,4 @@ const Simple = ({deviceType}) => {
   );
 };
 
-export default Simple;
+export default HorizontalCarousel;
