@@ -47,13 +47,10 @@ export const Homepage = () => {
         getNewestCourses(),
         getTopViewedCourses()
       ]);
-      setNewestCourses(newestList);
-      setTopViewedCourses(topViewedList);
-      console.log("Newest: ", newestList);
-      console.log("Top viewed: ", topViewedList);
-
+      setNewestCourses(newestList.data);
+      setTopViewedCourses(topViewedList.data);
     } catch (e) {
-      enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Success});
+      enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Error});
       console.log(e);
     } finally {
       setIsPending(false);
