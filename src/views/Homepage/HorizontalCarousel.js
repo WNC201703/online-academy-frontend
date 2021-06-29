@@ -68,7 +68,7 @@ const images = [
   "https://images.unsplash.com/photo-1549985908-597a09ef0a7c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60",
 ];
 
-const HorizontalCarousel = ({title, type}) => {
+const HorizontalCarousel = ({title, data}) => {
   const classes = useStyles();
   const handleItemClick = () => {
     console.log("Item Click");
@@ -82,18 +82,18 @@ const HorizontalCarousel = ({title, type}) => {
         deviceType={"desktop"}
         itemClass="image-item"
         responsive={responsive}>
-        {images.slice(0, 6).map((image, index) => {
+        {data.map((item, index) => {
           const isDiscount = true;
           return (
             <Paper className={classes.paper} key={index} onClick={handleItemClick} style={{marginRight: 8, padding: 5}}>
               <Image
                 draggable={false}
                 style={{width: "100%", height: 250}}
-                src={image}
+                src={item?.imageUrl}
               />
-              <Box className={classes.title}>Course title</Box>
-              <Box>Course Categories - Teacher name</Box>
-              <Box className={classes.originMoney}>{moneyFormat(125)} {isDiscount ?
+              <Box className={classes.title}>{item.name}</Box>
+              <Box>{item?.category} - {item?.teacher}</Box>
+              <Box className={classes.originMoney}>{moneyFormat(item?.price)} {isDiscount ?
                 <span className={classes.discountMoney}>{moneyFormat(120)}</span> : <></>} </Box>
               <Box display="flex" alignItems="center"
                    justify="center">

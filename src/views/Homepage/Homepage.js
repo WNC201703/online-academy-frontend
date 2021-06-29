@@ -1,12 +1,66 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Carousel from "react-bootstrap/Carousel";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import HorizontalCarousel from "./HorizontalCarousel";
+import {getNewestCourses, getTopViewedCourses} from "../../config/api/Courses";
+import {useSnackbar} from "notistack";
+import {SnackBarVariant} from "../../utils/constant";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Box from "@material-ui/core/Box";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    '& > * + *': {
+      marginLeft: theme.spacing(2),
+    },
+    marginTop: 24,
+    marginBottom: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+}));
 
 export const Homepage = () => {
+  const classes = useStyles();
+  const {enqueueSnackbar} = useSnackbar();
   const [index, setIndex] = useState(0);
+  const [isPending, setIsPending] = useState(false);
+  const [newestCourses, setNewestCourses] = useState([]);
+  const [topViewedCourses, setTopViewedCourses] = useState([]);
+
+  useEffect(() => {
+    const eff = async () => {
+      await fetchCourseList();
+    }
+    eff();
+  }, []);
+
+
+  const fetchCourseList = async () => {
+    setIsPending(true);
+    try {
+      const [newestList, topViewedList] = await Promise.all([
+        getNewestCourses(),
+        getTopViewedCourses()
+      ]);
+      setNewestCourses(newestList);
+      setTopViewedCourses(topViewedList);
+      console.log("Newest: ", newestList);
+      console.log("Top viewed: ", topViewedList);
+
+    } catch (e) {
+      enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Success});
+      console.log(e);
+    } finally {
+      setIsPending(false);
+    }
+
+  }
+
   const sampleArray = [
     {
       title: " Course title 1",
@@ -52,9 +106,16 @@ export const Homepage = () => {
         </Col>
         <Col/>
       </Row>
-      <HorizontalCarousel deviceType={"desktop"} title={"Best seller"}/>
-      <HorizontalCarousel deviceType={"desktop"} title={"Latest courses"}/>
-      <HorizontalCarousel deviceType={"desktop"} title={"Top of the week"}/>
+      {
+        isPending ? <div className={classes.root}>
+            <CircularProgress/></div>
+          : <Box direction={"column"}>
+            <HorizontalCarousel data={newestCourses} deviceType={"desktop"} title={"Latest courses"}/>
+            <HorizontalCarousel data={newestCourses} deviceType={"desktop"} title={"Latest courses"}/>
+            <HorizontalCarousel data={topViewedCourses} deviceType={"desktop"} title={"Top of the week"}/>
+          </Box>
+      }
+
     </Container>
   );
 }
