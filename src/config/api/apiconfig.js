@@ -1,16 +1,14 @@
 import axios from "axios";
 import {getAccessToken} from "../../utils/LocalStorageUtils";
 
-const {CLIENT_ENV = "dev"} = process.env;
-
 const envInfo = {
   dev: {
-    BASE_URL: "http://localhost:3001",
+    BASE_URL: process.env.REACT_APP_API_URL,
   },
 };
 
 export const AXIOS_INSTANCE = axios.create({
-  baseURL: envInfo[CLIENT_ENV].BASE_URL,
+  baseURL: envInfo.dev.BASE_URL,
   mode: 'cors',
   cache: 'no-cache',
   credentials: 'same-origin',
@@ -28,16 +26,14 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 });
 
 AXIOS_INSTANCE.interceptors.response.use(function (response) {
-  return response;
+  return response.data;
 }, function (error) {
   return error.response.data;
 });
 
 export const FILEUPLOAD_AXIOS_INSTANCE = axios.create({
-  baseURL: envInfo[CLIENT_ENV].BASE_URL,
+  baseURL: envInfo.dev.BASE_URL,
   headers: {"Content-Type": "multipart/form-data"}
 })
 
-export const {BASE_URL} = envInfo[CLIENT_ENV];
-
-export const BASE_URL_LOGIN = envInfo.login;
+export const {BASE_URL} = envInfo.dev.BASE_URL;
