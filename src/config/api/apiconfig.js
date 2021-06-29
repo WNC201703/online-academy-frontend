@@ -26,7 +26,7 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 });
 
 AXIOS_INSTANCE.interceptors.response.use(function (response) {
-  return response.data;
+  return response;
 }, function (error) {
   return error.response.data;
 });
