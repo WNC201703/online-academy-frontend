@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {makeStyles} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -6,6 +6,12 @@ import TextField from "@material-ui/core/TextField";
 import CustomPrimaryContainedButton from "../components/Button/CustomPrimaryContainedButton";
 import Box from "@material-ui/core/Box";
 import {isValidEmail} from "../utils/ValidationHelper";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import {signIn} from "../config/api/User";
+import {SnackBarVariant} from "../utils/constant";
+import {useSnackbar} from "notistack";
+import {saveAccessToken} from "../utils/LocalStorageUtils";
+import AuthUserContext from "../contexts/user/AuthUserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,8 +30,11 @@ const useStyles = makeStyles((theme) => ({
 
 export const SignInPage = () => {
   const classes = useStyles();
+  const {saveUser} = useContext(AuthUserContext);
+  const {enqueueSnackbar} = useSnackbar();
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [isPending, setIsPending] = useState(false);
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -35,17 +44,26 @@ export const SignInPage = () => {
     setEmail(event.target.value);
   }
 
-  const handleSignInButtonClick = () => {
+  const handleSignInButtonClick = async () => {
+    setIsPending(true);
+
     const signInInfo = {
       email: email,
       password: password
     }
 
-    try {
-      console.log(signInInfo);
-    } catch (e) {
-      console.log(e)
+    const res = await signIn(signInInfo);
+    if (res.status === 200) {
+      const {accessToken, user} = res.data;
+      delete user['password'];
+      saveAccessToken(accessToken);
+      saveUser(user);
+      enqueueSnackbar("Sign in successfully", {variant: SnackBarVariant.Success});
+
+    } else {
+      enqueueSnackbar("Can not sign in to your account", {variant: SnackBarVariant.Error});
     }
+    setIsPending(false);
   }
 
   return <div className={classes.root}>
@@ -68,13 +86,15 @@ export const SignInPage = () => {
                      label="Password"
                      variant="outlined"/>
           <Box>
-            <CustomPrimaryContainedButton
-              onClick={handleSignInButtonClick}
-              disabled={!(isValidEmail(email) > 0 && password?.length > 0)}
-              variant="contained"
-              color="primary">
-              Sign In
-            </CustomPrimaryContainedButton>
+            {
+              isPending ? <CircularProgress/> : <CustomPrimaryContainedButton
+                onClick={handleSignInButtonClick}
+                disabled={!(isValidEmail(email) > 0 && password?.length > 0)}
+                variant="contained"
+                color="primary">
+                Sign In
+              </CustomPrimaryContainedButton>
+            }
           </Box>
         </Paper>
       </Grid>

@@ -5,7 +5,11 @@ import {makeStyles} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import TextField from "@material-ui/core/TextField";
 import CustomPrimaryContainedButton from "../components/Button/CustomPrimaryContainedButton";
-import {isValidEmail} from "../utils/ValidationHelper";
+import {isValidEmail, isValidName} from "../utils/ValidationHelper";
+import {signUp} from "../config/api/User";
+import {useSnackbar} from "notistack";
+import {SnackBarVariant} from "../utils/constant";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,10 +28,11 @@ const useStyles = makeStyles((theme) => ({
 
 export const SignUpPage = () => {
   const classes = useStyles();
+  const {enqueueSnackbar} = useSnackbar();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [isPending, setIsPending] = useState(false);
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   }
@@ -40,19 +45,21 @@ export const SignUpPage = () => {
     setFullName(event.target.value);
   }
 
-  const handleSignUpButtonClick = () => {
+  const handleSignUpButtonClick = async () => {
     const userInfo = {
       fullname: fullName,
       email: email,
       password: password
     }
 
-    try {
-      console.log(userInfo);
-
-    } catch (e) {
-      console.log(e)
+    setIsPending(true);
+    const res = await signUp(userInfo);
+    if (res.status === 201) {
+      enqueueSnackbar("You account is created successfully", {variant: SnackBarVariant.Success});
+    } else {
+      enqueueSnackbar("Can not create account", {variant: SnackBarVariant.Error});
     }
+    setIsPending(false);
   }
 
 
@@ -78,13 +85,18 @@ export const SignUpPage = () => {
                      label="Password"
                      variant="outlined"/>
           <Box>
-            <CustomPrimaryContainedButton
-              onClick={handleSignUpButtonClick}
-              disabled={!(isValidEmail(email) > 0 && password?.length > 0)}
-              variant="contained"
-              color="primary">
-              Sign Up
-            </CustomPrimaryContainedButton>
+            {
+              isPending ? <CircularProgress/> : <CustomPrimaryContainedButton
+                onClick={handleSignUpButtonClick}
+                disabled={
+                  !(isValidEmail(email) > 0
+                    && isValidName(fullName)
+                    && password?.length > 0)}
+                variant="contained"
+                color="primary">
+                Sign Up
+              </CustomPrimaryContainedButton>
+            }
           </Box>
         </Paper>
       </Grid>
