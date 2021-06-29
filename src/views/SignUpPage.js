@@ -42,13 +42,14 @@ export const SignUpPage = () => {
 
   const handleSignUpButtonClick = () => {
     const userInfo = {
-      fullName: fullName,
+      fullname: fullName,
       email: email,
       password: password
     }
 
     try {
       console.log(userInfo);
+
     } catch (e) {
       console.log(e)
     }
