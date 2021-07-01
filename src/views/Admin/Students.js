@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {useEffect, useState} from "react";
 // import ApiService from "../../service/ApiService";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,91 +9,95 @@ import Button from '@material-ui/core/Button';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Typography from '@material-ui/core/Typography';
+import { SnackBarVariant } from "../../utils/constant";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { getAllUser } from "../../config/api/User";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import {useSnackbar} from "notistack";
 
-class ListUserComponent extends Component {
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            users: [],
-            message: null
-        }
-        this.deleteUser = this.deleteUser.bind(this);
-        this.editUser = this.editUser.bind(this);
-        this.addUser = this.addUser.bind(this);
-        this.reloadUserList = this.reloadUserList.bind(this);
-    }
-
-    componentDidMount() {
-        this.reloadUserList();
-    }
-
-    reloadUserList() {
-        // ApiService.fetchUsers()
-        //     .then((res) => {
-        //         this.setState({users: res.data.result})
-        //     });
-    }
-
-    deleteUser(userId) {
-        // ApiService.deleteUser(userId)
-        //    .then(res => {
-        //        this.setState({message : 'User deleted successfully.'});
-        //        this.setState({users: this.state.users.filter(user => user.id !== userId)});
-        //    })
-    }
-
-    editUser(id) {
-        window.localStorage.setItem("userId", id);
-        this.props.history.push('/edit-user');
-    }
-
-    addUser() {
-        window.localStorage.removeItem("userId");
-        this.props.history.push('/add-user');
-    }
-
-    render() {
-        return (
-            <div>
-                <Button variant="contained" color="primary" onClick={() => this.addUser()}>
-                    Add User
-                </Button>
-
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Email</TableCell>
-                            <TableCell  align="right">Full name</TableCell>
-                            <TableCell align="right">Date Registered</TableCell>
-                            <TableCell align="right">Courses</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {this.state.users.map(row => (
-                            <TableRow key={row.id}>
-                                <TableCell component="th" scope="row">
-                                    {row.id}
-                                </TableCell>
-                                <TableCell align="right">{row.firstName}</TableCell>
-                                <TableCell align="right">{row.lastName}</TableCell>
-                                <TableCell align="right" onClick={() => this.editUser(row.id)}><CreateIcon /></TableCell>
-                                <TableCell align="right" onClick={() => this.deleteUser(row.id)}><DeleteIcon /></TableCell>
-
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-
-            </div>
-        );
-    }
-
-}
-
-const style ={
+const useStyles = makeStyles((theme) => ({
+  root: {
     display: 'flex',
-    justifyContent: 'center'
+    '& > * + *': {
+      marginLeft: theme.spacing(2),
+    },
+    marginTop: 24,
+    marginBottom: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+}));
+
+
+export default function ListStudentComponent() {
+  const classes = useStyles();
+  const {enqueueSnackbar} = useSnackbar();
+  const [isPending, setIsPending] = useState(false);
+  const [students, setStudents] = useState([]);
+
+  useEffect(() => {
+    const eff = async () => {
+      await getUsers();
+    }
+    eff();
+  }, []);
+
+
+  const getUsers = async () => {
+    setIsPending(true);
+    try {
+      const students = await getAllUser();
+      setStudents(students.data);
+    } catch (e) {
+      enqueueSnackbar("Error, can not get student list", { variant: SnackBarVariant.Error });
+      console.log(e);
+    } finally {
+      setIsPending(false);
+    }
+
+  }
+
+  return (
+    <div>
+      <Button variant="contained" color="primary" onClick={() => this.addUser()}>
+        Add User
+      </Button>
+
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Email</TableCell>
+            <TableCell align="right">Full name</TableCell>
+            <TableCell align="right">Date Registered</TableCell>
+            <TableCell align="right">Courses</TableCell>
+          </TableRow>
+        </TableHead>
+       { 
+       isPending ?
+        <div className={classes.root}><CircularProgress /></div> :
+        <TableBody>
+          {students.map(row => (
+            <TableRow key={row._id}>
+              <TableCell component="th" scope="row">
+                {row.email}
+              </TableCell>
+              <TableCell align="right">{row.fullname}</TableCell>
+              <TableCell align="right">{row.createdAt}</TableCell>
+              <TableCell align="right" onClick={() => this.editUser(row.id)}><CreateIcon /></TableCell>
+              <TableCell align="right" onClick={() => this.deleteUser(row.id)}><DeleteIcon /></TableCell>
+
+            </TableRow>
+          ))}
+        </TableBody>
+        }
+      </Table>
+
+    </div>
+  );
+
 }
 
-export default ListUserComponent;
+const style = {
+  display: 'flex',
+  justifyContent: 'center'
+}

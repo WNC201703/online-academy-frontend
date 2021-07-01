@@ -16,7 +16,7 @@ export async function updateUser(id, data) {
   return await AXIOS_INSTANCE.put(`/api/users/${id}`, data);
 }
 
-export async function getAllUser(id) {
+export async function getAllUser() {
   return await AXIOS_INSTANCE.get(`/api/users`);
 }
 

@@ -54,7 +54,7 @@ export default function PermanentDrawerLeft() {
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" noWrap>
-            Students
+            Admin Dashboard
           </Typography>
         </Toolbar>
       </AppBar>
