@@ -126,10 +126,11 @@ TablePaginationActions.propTypes = {
 export default function ListCourseComponent() {
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
-    const [isPending, setIsPending] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [courses, setCourses] = useState([]);
-    const [page, setPage] = React.useState(1);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [totalResults, setTotalResults] = useState(0);
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -142,23 +143,32 @@ export default function ListCourseComponent() {
 
     useEffect(() => {
         const eff = async () => {
-            await getCourseList();
+            getCourseList();
         }
         eff();
     }, []);
 
 
     const getCourseList = async () => {
-        setIsPending(true);
+        setLoading(true);
         try {
-            const courses = await getAllCourses(1, 1000);
-            setTotalResults(courses.data.totalResults);
-            setCourses(courses.data.results);
+            await getAllCourses(1, 1000).then(
+                (response) => {
+                    if (response.status == 200) {
+                        const data = response.data;
+                        setTotalResults(data.totalResults);
+                        setCourses(data.results);
+                        console.log(data.results);
+                    } else {
+                        console.log(response);
+                    }
+                }
+            );
         } catch (e) {
             enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
             console.log(e);
         } finally {
-            setIsPending(false);
+            setLoading(false);
         }
     }
 
@@ -170,9 +180,47 @@ export default function ListCourseComponent() {
             <div></div>
             <Table>
                 <TableHead>
+                    
                     <TableRow>
+                        <StyledTableCell>#</StyledTableCell>
+                        <StyledTableCell>Name</StyledTableCell>
+                        <StyledTableCell>Category</StyledTableCell>
+                        <StyledTableCell>Teacher</StyledTableCell>
+                        <StyledTableCell align="right"></StyledTableCell>
+                        <StyledTableCell align="right"></StyledTableCell>
+                    </TableRow>
+
+                </TableHead>
+                {
+                    loading ?
+                        <div className={classes.marginAutoContainer}>
+                            <div className={classes.marginAutoItem}>
+                                <CircularProgress />
+                            </div>
+                        </div> :
+                        <TableBody>
+                            {(rowsPerPage > 0
+                                ? courses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : courses
+                            ).map((row, index) => (
+                                <StyledTableRow key={row._id}>
+                                    <StyledTableCell>{page*rowsPerPage+index + 1}</StyledTableCell>
+                                    <StyledTableCell component="th" scope="row">
+                                        {row.name}
+                                    </StyledTableCell>
+                                    <StyledTableCell >{row.category}</StyledTableCell>
+                                    <StyledTableCell >{row.teacher}</StyledTableCell>
+                                    <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => this.editUser(row.id)}><CreateIcon /></StyledTableCell>
+                                    <StyledTableCell align="right" style={{ color: 'red' }} onClick={() => this.deleteUser(row.id)}><DeleteIcon /></StyledTableCell>
+
+                                </StyledTableRow>
+                            ))}
+                        </TableBody>
+                        
+                }
+                <TableFooter>
                         <TablePagination
-                            rowsPerPageOptions={[10, 25, { label: 'All', value: -1 }]}
+                            rowsPerPageOptions={[5,10, 25, { label: 'All', value: -1 }]}
                             colSpan={5}
                             count={totalResults}
                             rowsPerPage={rowsPerPage}
@@ -185,44 +233,7 @@ export default function ListCourseComponent() {
                             onChangeRowsPerPage={handleChangeRowsPerPage}
                             ActionsComponent={TablePaginationActions}
                         />
-                    </TableRow>
-                    <TableRow>
-                        <StyledTableCell>#</StyledTableCell>
-                        <StyledTableCell>Name</StyledTableCell>
-                        <StyledTableCell>Category</StyledTableCell>
-                        <StyledTableCell>Teacher</StyledTableCell>
-                        <StyledTableCell align="right"></StyledTableCell>
-                        <StyledTableCell align="right"></StyledTableCell>
-                    </TableRow>
-
-                </TableHead>
-                {
-                    isPending ?
-                        // <div className={classes.root}><CircularProgress /></div> :
-                        <div className={classes.marginAutoContainer}>
-                            <div className={classes.marginAutoItem}>
-                                <CircularProgress />
-                            </div>
-                        </div> :
-                        <TableBody>
-                            {(rowsPerPage > 0
-                                ? courses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : courses
-                            ).map((row, index) => (
-                                <StyledTableRow key={row._id}>
-                                    <StyledTableCell>{index}</StyledTableCell>
-                                    <StyledTableCell component="th" scope="row">
-                                        {row.name}
-                                    </StyledTableCell>
-                                    <StyledTableCell >{row.category}</StyledTableCell>
-                                    <StyledTableCell >{row.teacher}</StyledTableCell>
-                                    <StyledTableCell align="right"  style={{color:'blue'}} onClick={() => this.editUser(row.id)}><CreateIcon /></StyledTableCell>
-                                    <StyledTableCell align="right" style={{color:'red'}} onClick={() => this.deleteUser(row.id)}><DeleteIcon /></StyledTableCell>
-
-                                </StyledTableRow>
-                            ))}
-                        </TableBody>
-                }
+                    </TableFooter>
             </Table>
 
         </div>
