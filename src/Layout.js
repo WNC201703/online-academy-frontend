@@ -10,6 +10,7 @@ import {Homepage} from "./views/Homepage/Homepage";
 import {SignUpPage} from "./views/SignUpPage";
 import {SignInPage} from "./views/SignInPage";
 import PageNotFound from "./components/PageNotFound";
+import AdminDashboard from "./views/Admin/Dashboard";
 
 export default function Layout() {
   return (
@@ -22,6 +23,7 @@ export default function Layout() {
         <Route exact path="/sign-in" component={SignInPage}/>
         <Route exact path="/sign-up" component={SignUpPage}/>
         <Route component={PageNotFound} />
+        <Route exact path="/adminui" component={AdminDashboard}/>
       </Switch>
     </div>
   );

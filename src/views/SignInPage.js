@@ -57,6 +57,7 @@ export const SignInPage = () => {
       const {accessToken, user} = res.data;
       delete user['password'];
       saveAccessToken(accessToken);
+      localStorage.setItem('user_info', JSON.stringify(user));
       saveUser(user);
       enqueueSnackbar("Sign in successfully", {variant: SnackBarVariant.Success});
 
