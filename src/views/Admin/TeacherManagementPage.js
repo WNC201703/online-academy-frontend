@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Typography from '@material-ui/core/Typography';
-import { SnackBarVariant } from "../../utils/constant";
+import { SnackBarVariant, UserRoles } from "../../utils/constant";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { getAllUser } from "../../config/api/User";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -26,14 +26,18 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  addBtn:{
+      marginBottom:10,
+      padding:10,
+  }
 }));
 
 
-export default function ListStudentComponent() {
+export default function ListTeacherComponent() {
   const classes = useStyles();
   const {enqueueSnackbar} = useSnackbar();
   const [isPending, setIsPending] = useState(false);
-  const [students, setStudents] = useState([]);
+  const [teachers, setTeachers] = useState([]);
 
   useEffect(() => {
     const eff = async () => {
@@ -46,21 +50,20 @@ export default function ListStudentComponent() {
   const getUsers = async () => {
     setIsPending(true);
     try {
-      const students = await getAllUser();
-      setStudents(students.data);
+      const teachers = await getAllUser(UserRoles.Teacher);
+      setTeachers(teachers.data);
     } catch (e) {
-      enqueueSnackbar("Error, can not get student list", { variant: SnackBarVariant.Error });
+      enqueueSnackbar("Error, can not get teacher list", { variant: SnackBarVariant.Error });
       console.log(e);
     } finally {
       setIsPending(false);
     }
-
   }
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={() => this.addUser()}>
-        Add User
+      <Button m={200} className='addBtn' variant="contained" color="primary" onClick={() => this.addUser()}>
+        Add teacher
       </Button>
 
       <Table>
@@ -69,14 +72,15 @@ export default function ListStudentComponent() {
             <TableCell>Email</TableCell>
             <TableCell align="right">Full name</TableCell>
             <TableCell align="right">Date Registered</TableCell>
-            <TableCell align="right">Courses</TableCell>
+            <TableCell align="right"></TableCell>
+            <TableCell align="right"></TableCell>
           </TableRow>
         </TableHead>
        { 
        isPending ?
         <div className={classes.root}><CircularProgress /></div> :
         <TableBody>
-          {students.map(row => (
+          {teachers.map(row => (
             <TableRow key={row._id}>
               <TableCell component="th" scope="row">
                 {row.email}
@@ -93,6 +97,8 @@ export default function ListStudentComponent() {
       </Table>
 
     </div>
+
+    
   );
 
 }
