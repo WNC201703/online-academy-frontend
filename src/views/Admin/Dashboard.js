@@ -16,6 +16,7 @@ import EmojiPeople from '@material-ui/icons/EmojiPeople';
 import NaturePeople from '@material-ui/icons/NaturePeople';
 import StudentManagementPage from './StudentManagementPage'
 import TeacherManagementPage from './TeacherManagementPage'
+import CourseManagementPage from './CourseManagementPage'
 
 const drawerWidth = 240;
 
@@ -66,7 +67,7 @@ export default function PermanentDrawerLeft() {
       case Keys.Category:
         return <StudentManagementPage/>
       case Keys.Course:
-        return <StudentManagementPage/>
+        return <CourseManagementPage/>
     }
   }
   return (

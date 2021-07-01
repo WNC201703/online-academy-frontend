@@ -5,8 +5,8 @@ export async function createCourse(data) {
 }
 
 export async function getAllCourses(pageNumber = 1, pageSize = 10, sortBy = null,
-                                    keyword = null, categoryId = null) {
-  return await AXIOS_INSTANCE.get(`/api/courses/?page_number=${pageNumber}&page_size=${pageSize}&keyword=${keyword}&category=${categoryId}`);
+                                    key_word = null, categoryId = null) {
+  return await AXIOS_INSTANCE.get(`/api/courses/?page_number=${pageNumber}&page_size=${pageSize}&keyword=${key_word?key_word:''}&category=${categoryId?categoryId:''}`);
 }
 
 export async function getNewestCourses() {

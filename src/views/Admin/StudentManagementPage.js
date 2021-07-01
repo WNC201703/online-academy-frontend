@@ -15,7 +15,6 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 
 import { SnackBarVariant, UserRoles } from "../../utils/constant";
-
 import { getAllUser } from "../../config/api/User";
 
 const useStyles1 = makeStyles((theme) => ({
