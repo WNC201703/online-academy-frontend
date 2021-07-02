@@ -14,7 +14,7 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import { SnackBarVariant } from "../../utils/constant";
-import { getAllCourses,deleteCourse } from "../../config/api/Courses";
+import { getAllCourses, deleteCourse } from "../../config/api/Courses";
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -53,7 +53,6 @@ const StyledTableCell = withStyles((theme) => ({
     body: {
         fontSize: 14,
     },
-    overflowX: "initial"
 }))(TableCell);
 
 const StyledTableRow = withStyles((theme) => ({
@@ -135,7 +134,7 @@ export default function ListCourseComponent() {
 
     useEffect(() => {
         fetchData();
-    }, [page, rowsPerPage,reload])
+    }, [page, rowsPerPage, reload])
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -146,15 +145,15 @@ export default function ListCourseComponent() {
         setPage(0);
     };
 
-    const onDeleteCourse =  (id) => {
-         deleteCourse(id).then((response) => {
-             if (response.status ===204){
-                setReload(reload+1);
-                enqueueSnackbar("Course deleted successfully", {variant: SnackBarVariant.Success});
-             }else {
+    const onDeleteCourse = (id) => {
+        deleteCourse(id).then((response) => {
+            if (response.status === 204) {
+                setReload(reload + 1);
+                enqueueSnackbar("Course deleted successfully", { variant: SnackBarVariant.Success });
+            } else {
 
-             }
-         });
+            }
+        });
 
     }
     const editUser = (userId) => {
@@ -164,9 +163,10 @@ export default function ListCourseComponent() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await getAllCourses(page + 1, rowsPerPage);
+            const response = await getAllCourses(page + 1, rowsPerPage === -1 ? 0 : rowsPerPage);
             if (response.status === 200) {
                 const data = response.data;
+                console.log(data);
                 setTotalResults(data.totalResults);
                 setCourses(data.results);
             } else {
