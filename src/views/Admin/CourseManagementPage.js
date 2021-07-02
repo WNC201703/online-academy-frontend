@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { withStyles, useTheme, makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead, Box } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSnackbar } from "notistack";
@@ -13,8 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
-
-import { SnackBarVariant, UserRoles } from "../../utils/constant";
+import { SnackBarVariant } from "../../utils/constant";
 import { getAllCourses } from "../../config/api/Courses";
 
 const useStyles1 = makeStyles((theme) => ({
@@ -54,6 +53,7 @@ const StyledTableCell = withStyles((theme) => ({
     body: {
         fontSize: 14,
     },
+    overflowX: "initial"
 }))(TableCell);
 
 const StyledTableRow = withStyles((theme) => ({
@@ -128,10 +128,10 @@ export default function ListCourseComponent() {
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
     const [courses, setCourses] = useState([]);
-
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [totalResults, setTotalResults] = useState(0);
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -142,28 +142,21 @@ export default function ListCourseComponent() {
     };
 
     useEffect(() => {
-        const eff = async () => {
-            getCourseList();
-        }
-        eff();
-    }, []);
+        fetchData();
+    }, [page, rowsPerPage])
 
 
-    const getCourseList = async () => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            await getAllCourses(1, 1000).then(
-                (response) => {
-                    if (response.status == 200) {
-                        const data = response.data;
-                        setTotalResults(data.totalResults);
-                        setCourses(data.results);
-                        console.log(data.results);
-                    } else {
-                        console.log(response);
-                    }
-                }
-            );
+            const response = await getAllCourses(page + 1, rowsPerPage);
+            if (response.status === 200) {
+                const data = response.data;
+                setTotalResults(data.totalResults);
+                setCourses(data.results);
+            } else {
+                console.log(response);
+            }
         } catch (e) {
             enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
             console.log(e);
@@ -177,37 +170,33 @@ export default function ListCourseComponent() {
             <Button style={{ marginBottom: 20 }} variant="contained" color="primary" onClick={() => this.addUser()}>
                 Add course
             </Button>
-            <div></div>
             <Table>
                 <TableHead>
-                    
                     <TableRow>
-                        <StyledTableCell>#</StyledTableCell>
-                        <StyledTableCell>Name</StyledTableCell>
-                        <StyledTableCell>Category</StyledTableCell>
-                        <StyledTableCell>Teacher</StyledTableCell>
-                        <StyledTableCell align="right"></StyledTableCell>
-                        <StyledTableCell align="right"></StyledTableCell>
+                        <StyledTableCell style={{ width: '10%' }}>#</StyledTableCell>
+                        <StyledTableCell style={{ width: '30%' }}>Name</StyledTableCell>
+                        <StyledTableCell style={{ width: '30%' }}>Category</StyledTableCell>
+                        <StyledTableCell style={{ width: '20%' }}>Teacher</StyledTableCell>
+                        <StyledTableCell style={{ width: '3%' }} align="right">Edit</StyledTableCell>
+                        <StyledTableCell style={{ width: '3%' }} align="right">Delete</StyledTableCell>
                     </TableRow>
 
                 </TableHead>
-                {
-                    loading ?
+
+
+                <TableBody>
+                    {loading ?
                         <div className={classes.marginAutoContainer}>
                             <div className={classes.marginAutoItem}>
                                 <CircularProgress />
                             </div>
-                        </div> :
-                        <TableBody>
-                            {(rowsPerPage > 0
-                                ? courses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : courses
-                            ).map((row, index) => (
+                        </div>
+                        :
+                        courses
+                            .map((row, index) => (
                                 <StyledTableRow key={row._id}>
-                                    <StyledTableCell>{page*rowsPerPage+index + 1}</StyledTableCell>
-                                    <StyledTableCell component="th" scope="row">
-                                        {row.name}
-                                    </StyledTableCell>
+                                    <StyledTableCell>{page * rowsPerPage + index + 1}</StyledTableCell>
+                                    <StyledTableCell component="th">{row.name}</StyledTableCell>
                                     <StyledTableCell >{row.category}</StyledTableCell>
                                     <StyledTableCell >{row.teacher}</StyledTableCell>
                                     <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => this.editUser(row.id)}><CreateIcon /></StyledTableCell>
@@ -215,25 +204,24 @@ export default function ListCourseComponent() {
 
                                 </StyledTableRow>
                             ))}
-                        </TableBody>
-                        
-                }
+                </TableBody>
+
                 <TableFooter>
-                        <TablePagination
-                            rowsPerPageOptions={[5,10, 25, { label: 'All', value: -1 }]}
-                            colSpan={5}
-                            count={totalResults}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            SelectProps={{
-                                inputProps: { 'aria-label': 'rows per page' },
-                                native: true,
-                            }}
-                            onChangePage={handleChangePage}
-                            onChangeRowsPerPage={handleChangeRowsPerPage}
-                            ActionsComponent={TablePaginationActions}
-                        />
-                    </TableFooter>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                        colSpan={5}
+                        count={totalResults}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        SelectProps={{
+                            inputProps: { 'aria-label': 'rows per page' },
+                            native: true,
+                        }}
+                        onChangePage={handleChangePage}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                        ActionsComponent={TablePaginationActions}
+                    />
+                </TableFooter>
             </Table>
 
         </div>
