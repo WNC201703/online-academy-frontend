@@ -134,7 +134,10 @@ export default function ListCourseComponent() {
 
     useEffect(() => {
         fetchData();
-    }, [page, rowsPerPage, reload])
+    }, [page, rowsPerPage, reload]);
+
+    useEffect(() => {
+    }, [courses]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -148,7 +151,12 @@ export default function ListCourseComponent() {
     const onDeleteCourse = (id) => {
         deleteCourse(id).then((response) => {
             if (response.status === 204) {
-                setReload(reload + 1);
+                // setReload(reload + 1);
+                for (let i = 0; i < courses.length; i++) {
+                        if (courses[i]._id===id) courses.splice(i,1);                    
+                }
+                setTotalResults(totalResults-1);
+                setCourses(courses);
                 enqueueSnackbar("Course deleted successfully", { variant: SnackBarVariant.Success });
             } else {
 
