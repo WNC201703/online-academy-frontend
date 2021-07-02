@@ -14,7 +14,7 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import { SnackBarVariant } from "../../utils/constant";
-import { getAllCourses } from "../../config/api/Courses";
+import { getAllCourses,deleteCourse } from "../../config/api/Courses";
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -127,10 +127,15 @@ export default function ListCourseComponent() {
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
+    const [reload, setReload] = useState(0);
     const [courses, setCourses] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [totalResults, setTotalResults] = useState(0);
+
+    useEffect(() => {
+        fetchData();
+    }, [page, rowsPerPage,reload])
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -141,10 +146,20 @@ export default function ListCourseComponent() {
         setPage(0);
     };
 
-    useEffect(() => {
-        fetchData();
-    }, [page, rowsPerPage])
+    const onDeleteCourse =  (id) => {
+         deleteCourse(id).then((response) => {
+             if (response.status ===204){
+                setReload(reload+1);
+                enqueueSnackbar("Course deleted successfully", {variant: SnackBarVariant.Success});
+             }else {
 
+             }
+         });
+
+    }
+    const editUser = (userId) => {
+
+    }
 
     const fetchData = async () => {
         setLoading(true);
@@ -199,8 +214,8 @@ export default function ListCourseComponent() {
                                     <StyledTableCell component="th">{row.name}</StyledTableCell>
                                     <StyledTableCell >{row.category}</StyledTableCell>
                                     <StyledTableCell >{row.teacher}</StyledTableCell>
-                                    <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => this.editUser(row.id)}><CreateIcon /></StyledTableCell>
-                                    <StyledTableCell align="right" style={{ color: 'red' }} onClick={() => this.deleteUser(row.id)}><DeleteIcon /></StyledTableCell>
+                                    <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => editUser(row._id)}><CreateIcon /></StyledTableCell>
+                                    <StyledTableCell align="right" style={{ color: 'red' }} onClick={() => onDeleteCourse(row._id)}><DeleteIcon /></StyledTableCell>
 
                                 </StyledTableRow>
                             ))}
