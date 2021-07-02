@@ -48,9 +48,6 @@ export default function ListCourseComponent() {
     }, [page, rowsPerPage]);
 
     useEffect(() => {
-    }, [courses]);
-
-    useEffect(() => {
         const showCircularProgress=false;
         fetchData(showCircularProgress);
     }, [backgroundUpdate]);
@@ -140,8 +137,8 @@ export default function ListCourseComponent() {
                             <StyledTableCell style={{ width: '10%' }}>Rating</StyledTableCell>
                             <StyledTableCell style={{ width: '20%' }}>Category</StyledTableCell>
                             <StyledTableCell style={{ width: '20%' }}>Teacher</StyledTableCell>
-                            <StyledTableCell style={{ width: '3%' }} align="right">Edit</StyledTableCell>
-                            <StyledTableCell style={{ width: '3%' }} align="right">Delete</StyledTableCell>
+                            <StyledTableCell style={{ width: '5%' }} align="right">Edit</StyledTableCell>
+                            <StyledTableCell style={{ width: '5%' }} align="right">Delete</StyledTableCell>
                         </TableRow>
 
                     </TableHead>

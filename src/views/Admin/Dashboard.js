@@ -17,6 +17,7 @@ import NaturePeople from '@material-ui/icons/NaturePeople';
 import StudentManagementPage from './StudentManagementPage'
 import TeacherManagementPage from './TeacherManagementPage'
 import CourseManagementPage from './CourseManagementPage'
+import CategoryManagementPage from './CategoryManagementPage'
 
 const drawerWidth = 240;
 
@@ -65,7 +66,7 @@ export default function PermanentDrawerLeft() {
       case Keys.Teacher:
         return <TeacherManagementPage/>
       case Keys.Category:
-        return <StudentManagementPage/>
+        return <CategoryManagementPage/>
       case Keys.Course:
         return <CourseManagementPage/>
     }
