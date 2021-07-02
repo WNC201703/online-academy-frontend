@@ -4,8 +4,8 @@ export async function createCategory(data) {
   return await AXIOS_INSTANCE.post(`/api/categories`, data);
 }
 
-export async function getAllCategories() {
-  return await AXIOS_INSTANCE.get(`/api/categories`);
+export async function getAllCategories(level) {
+  return await AXIOS_INSTANCE.get(`/api/categories?${level}`);
 }
 
 export async function getCategoryById(id) {
