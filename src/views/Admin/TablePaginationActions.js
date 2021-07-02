@@ -12,7 +12,7 @@ const useStyles1 = makeStyles((theme) => ({
         marginLeft: theme.spacing(2.5),
     },
 }));
-function TablePaginationActions(props) {
+export default function TablePaginationActions(props) {
     const classes = useStyles1();
     const theme = useTheme();
     const { count, page, rowsPerPage, onChangePage } = props;

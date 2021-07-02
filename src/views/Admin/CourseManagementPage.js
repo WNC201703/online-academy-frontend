@@ -9,7 +9,7 @@ import { SnackBarVariant } from "../../utils/constant";
 import { getAllCourses, deleteCourse } from "../../config/api/Courses";
 import Rating from '@material-ui/lab/Rating';
 import ConfirmationDialog from "../../components/Dialog/ConfirmationDialog";
-import TablePaginationActions from "@material-ui/core/TablePagination/TablePaginationActions";
+import TablePaginationActions from './TablePaginationActions'
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -32,21 +32,28 @@ const StyledTableRow = withStyles((theme) => ({
 export default function ListCourseComponent() {
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
+    const [backgroundUpdate, setBackgroundUpdate] = useState();
     const [courses, setCourses] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [totalResults, setTotalResults] = useState(0);
     const [openDeleteDialog, setOpenDeleteDialog] = useState({
-        isOpen:false,
-        id:null
+        isOpen: false,
+        id: null
     });
 
     useEffect(() => {
-        fetchData();
+        const showCircularProgress=true;
+        fetchData(showCircularProgress);
     }, [page, rowsPerPage]);
 
     useEffect(() => {
     }, [courses]);
+
+    useEffect(() => {
+        const showCircularProgress=false;
+        fetchData(showCircularProgress);
+    }, [backgroundUpdate]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -59,22 +66,22 @@ export default function ListCourseComponent() {
 
     const onDeleteCourseClick = (id) => {
         setOpenDeleteDialog({
-            isOpen:true,
-            id:id
+            isOpen: true,
+            id: id
         });
     }
 
     const handleCloseDialog = () => {
         setOpenDeleteDialog({
-            isOpen:false,
-            id:null
+            isOpen: false,
+            id: null
         });
     }
 
     const handleDeleteCourse = () => {
-        const id=openDeleteDialog.id;
+        const id = openDeleteDialog.id;
         setOpenDeleteDialog({
-            isOpen:false,
+            isOpen: false,
         });
         deleteCourse(id).then((response) => {
             if (response.status === 204) {
@@ -83,11 +90,12 @@ export default function ListCourseComponent() {
                 }
                 setTotalResults(totalResults - 1);
                 setCourses(courses);
+                setBackgroundUpdate(id);
                 enqueueSnackbar("Course deleted successfully", { variant: SnackBarVariant.Success });
             } else {
                 enqueueSnackbar("Delete failed", { variant: SnackBarVariant.Error });
             }
-        }).catch((err)=>{
+        }).catch((err) => {
             enqueueSnackbar("Delete failed", { variant: SnackBarVariant.Error });
         });
 
@@ -98,17 +106,17 @@ export default function ListCourseComponent() {
 
     }
 
-    const fetchData = async () => {
-        setLoading(true);
+    const fetchData = async (loading) => {
+        setLoading(loading);
         try {
             const response = await getAllCourses(page + 1, rowsPerPage === -1 ? 0 : rowsPerPage);
             if (response.status === 200) {
                 const data = response.data;
-                console.log(data);
                 setTotalResults(data.totalResults);
                 setCourses(data.results);
             } else {
                 console.log(response);
+                enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
             }
         } catch (e) {
             enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
