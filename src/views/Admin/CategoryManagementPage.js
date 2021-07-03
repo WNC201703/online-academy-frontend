@@ -9,6 +9,7 @@ import { SnackBarVariant } from "../../utils/constant";
 import { getAllCategories, deleteCategory } from "../../config/api/Categories";
 import ConfirmationDialog from "../../components/Dialog/ConfirmationDialog";
 import AddCategoryDialog from "./AddCategoryDialog";
+import EditCategoryDialog from "./EditCategoryDialog";
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -38,6 +39,10 @@ export default function ListCategoryComponent() {
         id: null
     });
     const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openEditDialog, setOpenEditDialog] = useState({
+        isOpen:false,
+        category:null
+    });
 
     useEffect(() => {
         fetchData();
@@ -65,7 +70,7 @@ export default function ListCategoryComponent() {
                 console.log(categories);
                 setLoading(true);
                 setCategories(categories);
-                 setLoading(false);
+                setLoading(false);
                 enqueueSnackbar("Category deleted successfully", { variant: SnackBarVariant.Success });
             } else {
                 console.log(response.error_message);
@@ -77,8 +82,12 @@ export default function ListCategoryComponent() {
 
     }
 
-    const editUser = (userId) => {
-
+    const onEditCategoryClick = (category) => {
+        console.log(category);
+        setOpenEditDialog({
+            isOpen:true,
+            category:category
+        });
     }
 
     const fetchData = async () => {
@@ -103,7 +112,7 @@ export default function ListCategoryComponent() {
     return (
         <>
             <div>
-                <Button style={{ marginBottom: 20 }} variant="contained" color="primary" onClick={() => {setOpenAddDialog(true)}}>
+                <Button style={{ marginBottom: 20 }} variant="contained" color="primary" onClick={() => { setOpenAddDialog(true) }}>
                     Add category
                 </Button>
                 <Table>
@@ -131,11 +140,11 @@ export default function ListCategoryComponent() {
                                 .map((row, index) => (
                                     <StyledTableRow key={row._id}>
                                         <StyledTableCell>{index + 1}</StyledTableCell>
-                                        <StyledTableCell>{row.parent ? `___${row.name}`: row.name}</StyledTableCell>
+                                        <StyledTableCell>{row.parent ? `___${row.name}` : row.name}</StyledTableCell>
                                         <StyledTableCell >{row.parent ? 'Sub category' : 'Category'}</StyledTableCell>
                                         <StyledTableCell >{row.parentName}</StyledTableCell>
                                         <StyledTableCell >{row.createdAt}</StyledTableCell>
-                                        <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => editUser(row._id)}><CreateIcon /></StyledTableCell>
+                                        <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => onEditCategoryClick(row)}><CreateIcon /></StyledTableCell>
                                         <StyledTableCell align="right" style={{ color: 'red' }} onClick={() => onDeleteCategoryClick(row._id)}><DeleteIcon /></StyledTableCell>
 
                                     </StyledTableRow>
@@ -161,18 +170,38 @@ export default function ListCategoryComponent() {
                     () => { setOpenAddDialog(false) }
                 }
                 parents={categories.map(item => !item.parent ? item : {})}
-                
+
                 success={
-                    ()=>{ 
-                        enqueueSnackbar("Category was successfully added", { variant: SnackBarVariant.Success });
-                        setReload(reload+1);
+                    () => {
+                        enqueueSnackbar("Category was added successfully", { variant: SnackBarVariant.Success });
+                        setReload(reload + 1);
                     }
                 }
 
                 fail={
-                    ()=>{ enqueueSnackbar("Failed to create new category", { variant: SnackBarVariant.Error });}
+                    () => { enqueueSnackbar("Failed to create new category", { variant: SnackBarVariant.Error }); }
                 }
             ></AddCategoryDialog>
+
+            <EditCategoryDialog
+                show={openEditDialog.isOpen}
+                category={openEditDialog.category}
+                cancel={
+                    () => { setOpenEditDialog(false) }
+                }
+                parents={categories.map(item => !item.parent ? item : {})}
+
+                success={
+                    () => {
+                        enqueueSnackbar("Category was updated successfully", { variant: SnackBarVariant.Success });
+                        setReload(reload + 1);
+                    }
+                }
+
+                fail={
+                    () => { enqueueSnackbar("Failed to update category", { variant: SnackBarVariant.Error }); }
+                }
+            ></EditCategoryDialog>
         </>
 
     );
