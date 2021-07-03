@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PermanentDrawerLeft() {
   const classes = useStyles();
-  const [selectedItem, setSelectedItem] = useState(Keys.Student);
+  const [selectedItem, setSelectedItem] = useState(Keys.Category);
 
   const page = () => {
     switch(selectedItem){

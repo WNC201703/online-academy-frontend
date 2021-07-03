@@ -123,7 +123,7 @@ export default function ListCategoryComponent() {
 
                     <TableBody>
                         {loading ?
-                            <StyledTableRow>
+                            <StyledTableRow >
                                 {/* <CircularProgress /> */}
                             </StyledTableRow>
                             :
@@ -131,7 +131,7 @@ export default function ListCategoryComponent() {
                                 .map((row, index) => (
                                     <StyledTableRow key={row._id}>
                                         <StyledTableCell>{index + 1}</StyledTableCell>
-                                        <StyledTableCell >{row.name}</StyledTableCell>
+                                        <StyledTableCell>{row.parent ? `___${row.name}`: row.name}</StyledTableCell>
                                         <StyledTableCell >{row.parent ? 'Sub category' : 'Category'}</StyledTableCell>
                                         <StyledTableCell >{row.parentName}</StyledTableCell>
                                         <StyledTableCell >{row.createdAt}</StyledTableCell>

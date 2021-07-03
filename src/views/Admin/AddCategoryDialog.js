@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AddCategoryDialog({ show, parents, cancel, success, fail }) {
     const classes = useStyles();
-    const [parentCategory, setParentCategory] = useState();
+    const [parentCategory, setParentCategory] = useState('');
     const [categoryName, setCategoryName] = useState('');
     const [textFieldError, setTextFieldError] = useState(false);
 
@@ -38,6 +38,7 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
     };
 
     const handleCategoryChange = (event) => {
+        console.log(event.target.value);
         setParentCategory(event.target.value);
     };
 
@@ -49,7 +50,7 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
         try {
             const response = await createCategory({
                 name: categoryName,
-                parent: parentCategory
+                parent: parentCategory.length===0 ? null:parentCategory
             });
             if (response.status === 201) {
                 success();
@@ -105,12 +106,12 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
                                 label="Parent"
                                 fullWidth
                             >
-                                <MenuItem value="">
+                                <MenuItem key='none' value=''>
                                     <em>None</em>
                                 </MenuItem>
                                 {parents ?
                                     parents.map(item => (
-                                        <MenuItem value={item._id}>{item.name}</MenuItem>
+                                        <MenuItem key={item._id} value={item._id}>{item.name}</MenuItem>
                                     )) :
                                     (<></>)
                                 }
