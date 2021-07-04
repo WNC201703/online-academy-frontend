@@ -8,6 +8,10 @@ export async function signIn(data) {
   return await AXIOS_INSTANCE.post(`/api/users/login`, data);
 }
 
+export async function createTeacher(data) {
+  return await AXIOS_INSTANCE.post(`/api/users/teacher`, data);
+}
+
 export async function sendVerificationEmail(data) {
   return await AXIOS_INSTANCE.post(`/api/users/email/verify/send`, data);
 }

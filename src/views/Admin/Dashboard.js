@@ -15,7 +15,7 @@ import MenuBook from '@material-ui/icons/MenuBook';
 import EmojiPeople from '@material-ui/icons/EmojiPeople';
 import NaturePeople from '@material-ui/icons/NaturePeople';
 import StudentManagementPage from './StudentManagementPage'
-import TeacherManagementPage from './TeacherManagementPage'
+import TeacherManagementPage from './Teacher/TeacherManagementPage'
 import CourseManagementPage from './CourseManagementPage'
 import CategoryManagementPage from './Category/CategoryManagementPage'
 
@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PermanentDrawerLeft() {
   const classes = useStyles();
-  const [selectedItem, setSelectedItem] = useState(Keys.Category);
+  const [selectedItem, setSelectedItem] = useState(Keys.Teacher);
 
   const page = () => {
     switch(selectedItem){
