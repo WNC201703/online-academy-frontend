@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead } from '@material-ui/core';
 import { useSnackbar } from "notistack";
-import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { SnackBarVariant } from "../../utils/constant";
 import { getAllCourses, deleteCourse } from "../../config/api/Courses";

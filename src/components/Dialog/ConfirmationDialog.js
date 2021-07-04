@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-export default function ConfirmationDialog({show,title,detail,cancel,confirm}) {
+export default function ConfirmationDialog({show,title,detail,warning,cancel,confirm}) {
   return (
     <div>
       <Dialog
@@ -18,6 +18,9 @@ export default function ConfirmationDialog({show,title,detail,cancel,confirm}) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {detail}
+          </DialogContentText>
+          <DialogContentText style={{color:'red'}}>
+            {warning}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

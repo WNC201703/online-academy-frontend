@@ -25,7 +25,7 @@ export async function getAllUser(role) {
 }
 
 export async function getUserById(id) {
-  return await AXIOS_INSTANCE.get(`/api/users/id`);
+  return await AXIOS_INSTANCE.get(`/api/users/${id}`);
 }
 
 export async function getInfo() {
@@ -34,4 +34,8 @@ export async function getInfo() {
 
 export async function resetPassword() {
   return await AXIOS_INSTANCE.get(`/api/users/password/reset`);
+}
+
+export async function deleteUser(id){
+  return await AXIOS_INSTANCE.delete(`/api/users/${id}`);
 }

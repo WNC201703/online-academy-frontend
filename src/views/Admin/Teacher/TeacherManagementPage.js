@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableRow, TableHead } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import { useSnackbar } from "notistack";
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { SnackBarVariant,UserRoles } from "../../../utils/constant";
-import { getAllUser } from "../../../config/api/User";
+import { SnackBarVariant, UserRoles } from "../../../utils/constant";
+import { getAllUser, deleteUser } from "../../../config/api/User";
 import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
 import AddTeacherDialog from "./AddTeacherDialog";
 // import EditTeacherDialog from "./EditTeacherDialog";
@@ -35,14 +34,15 @@ export default function ListTeacherComponent() {
     const [loading, setLoading] = useState(false);
     const [reload, setReload] = useState(0);
     const [teachers, setTeachers] = useState([]);
+
     const [openDeleteDialog, setOpenDeleteDialog] = useState({
         isOpen: false,
-        id: null
     });
+
     const [openAddDialog, setOpenAddDialog] = useState(false);
+
     const [openEditDialog, setOpenEditDialog] = useState({
         isOpen: false,
-        teacher: null
     });
 
 
@@ -72,35 +72,31 @@ export default function ListTeacherComponent() {
     const onDeleteTeacherClick = (id) => {
         setOpenDeleteDialog({
             isOpen: true,
-            id: id
+            teacherId: id
         });
     }
 
     const handleDeleteTeacher = () => {
-        const id = openDeleteDialog.id;
+        const id = openDeleteDialog.teacherId;
         setOpenDeleteDialog({
             isOpen: false,
         });
-        // deleteTeacher(id).then((response) => {
-        //     console.log(response.status);
-        //     if (response.status === 204) {
-        //         console.log(teachers);
-        //         for (let i = 0; i < teachers.length; i++) {
-        //             if (teachers[i]._id === id) teachers.splice(i, 1);
-        //         }
-        //         console.log(teachers);
-        //         setLoading(true);
-        //         setTeachers(teachers);
-        //         setLoading(false);
-        //         enqueueSnackbar("Teacher deleted successfully", { variant: SnackBarVariant.Success });
-        //     } else {
-        //         console.log(response.error_message);
-        //         enqueueSnackbar(`Delete failed: ${response.error_message}`, { variant: SnackBarVariant.Error });
-        //     }
-        // }).catch((err) => {
-        //     enqueueSnackbar("Delete failed", { variant: SnackBarVariant.Error });
-        // });
-
+        deleteUser(id).then((response) => {
+            if (response.status === 204) {
+                for (let i = 0; i < teachers.length; i++) {
+                    if (teachers[i]._id === id) teachers.splice(i, 1);
+                }
+                setLoading(true);
+                setTeachers(teachers);
+                setLoading(false);
+                enqueueSnackbar("Teacher deleted successfully", { variant: SnackBarVariant.Success });
+            } else {
+                console.log(response.error_message);
+                enqueueSnackbar(`Delete failed ${response.error_message ? `:${response.error_message}` : ''}`, { variant: SnackBarVariant.Error });
+            }
+        }).catch((err) => {
+            enqueueSnackbar("Delete failed", { variant: SnackBarVariant.Error });
+        });
     }
 
     const onEditTeacherClick = (teacher) => {
@@ -163,6 +159,7 @@ export default function ListTeacherComponent() {
                 show={openDeleteDialog.isOpen}
                 title='Delete teacher'
                 detail='Are you sure you want to delete this teacher?'
+                warning='This action will delete all teacher courses!!!'
                 cancel={
                     () => { setOpenDeleteDialog({ isOpen: false, id: null }); }
                 }
@@ -182,7 +179,7 @@ export default function ListTeacherComponent() {
                 }
 
                 fail={
-                    (message) => { enqueueSnackbar(`Failed to create new teacher ${message? `: ${message}`:'' }`, { variant: SnackBarVariant.Error }); }
+                    (message) => { enqueueSnackbar(`Failed to create new teacher ${message ? `: ${message}` : ''}`, { variant: SnackBarVariant.Error }); }
                 }
             ></AddTeacherDialog>
 
