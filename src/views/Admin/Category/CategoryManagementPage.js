@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableRow, TableHead } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { useSnackbar } from "notistack";
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -40,8 +41,8 @@ export default function ListCategoryComponent() {
     });
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState({
-        isOpen:false,
-        category:null
+        isOpen: false,
+        category: null
     });
 
 
@@ -105,8 +106,8 @@ export default function ListCategoryComponent() {
     const onEditCategoryClick = (category) => {
         console.log(category);
         setOpenEditDialog({
-            isOpen:true,
-            category:category
+            isOpen: true,
+            category: category
         });
     }
 
@@ -140,9 +141,15 @@ export default function ListCategoryComponent() {
                             :
                             categories
                                 .map((row, index) => (
-                                    <StyledTableRow key={row._id}>
-                                        <StyledTableCell>{index + 1}</StyledTableCell>
-                                        <StyledTableCell>{row.parent ? `___${row.name}` : row.name}</StyledTableCell>
+                                    <StyledTableRow key={row._id} className='tableRow'>
+                                        <StyledTableCell >
+                                            {index + 1}
+                                        </StyledTableCell>
+                                        <StyledTableCell style={!row.parent ? { fontWeight: 'bold' } : {}}  >
+                                            <Typography variant={row.parent ? 'normal' : 'h6'} >
+                                                {row.parent ? `___${row.name}` : row.name}
+                                            </Typography>
+                                        </StyledTableCell>
                                         <StyledTableCell >{row.parent ? 'Sub category' : 'Category'}</StyledTableCell>
                                         <StyledTableCell >{row.parentName}</StyledTableCell>
                                         <StyledTableCell >{row.createdAt}</StyledTableCell>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import { useSnackbar } from "notistack";
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -120,16 +119,9 @@ export default function ListCourseComponent() {
     }
 
 
-    const editUser = (userId) => {
-
-    }
-
     return (
         <>
             <div>
-                <Button style={{ marginBottom: 20 }} variant="contained" color="primary" onClick={() => this.addUser()}>
-                    Add course
-                </Button>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -138,8 +130,7 @@ export default function ListCourseComponent() {
                             <StyledTableCell style={{ width: '10%' }}>Rating</StyledTableCell>
                             <StyledTableCell style={{ width: '20%' }}>Category</StyledTableCell>
                             <StyledTableCell style={{ width: '20%' }}>Teacher</StyledTableCell>
-                            <StyledTableCell style={{ width: '5%' }} align="right">Edit</StyledTableCell>
-                            <StyledTableCell style={{ width: '5%' }} align="right">Delete</StyledTableCell>
+                            <StyledTableCell style={{ width: '10%' }} align="right">Delete</StyledTableCell>
                         </TableRow>
 
                     </TableHead>
@@ -159,7 +150,6 @@ export default function ListCourseComponent() {
                                         <StyledTableCell ><Rating precision={0.5} name="read-only" value={row.averageRating / 2} readOnly /></StyledTableCell>
                                         <StyledTableCell >{row.category}</StyledTableCell>
                                         <StyledTableCell >{row.teacher}</StyledTableCell>
-                                        <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => editUser(row._id)}><CreateIcon /></StyledTableCell>
                                         <StyledTableCell align="right" style={{ color: 'red' }} onClick={() => onDeleteCourseClick(row._id)}><DeleteIcon /></StyledTableCell>
 
                                     </StyledTableRow>
