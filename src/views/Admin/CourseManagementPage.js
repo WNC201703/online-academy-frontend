@@ -125,11 +125,12 @@ export default function ListCourseComponent() {
                     <TableHead>
                         <TableRow>
                             <StyledTableCell style={{ width: '10%' }}>#</StyledTableCell>
-                            <StyledTableCell style={{ width: '30%' }}>Name</StyledTableCell>
+                            <StyledTableCell style={{ width: '25%' }}>Name</StyledTableCell>
                             <StyledTableCell style={{ width: '10%' }}>Rating</StyledTableCell>
                             <StyledTableCell style={{ width: '20%' }}>Category</StyledTableCell>
-                            <StyledTableCell style={{ width: '20%' }}>Teacher</StyledTableCell>
-                            <StyledTableCell style={{ width: '10%' }} align="right">Delete</StyledTableCell>
+                            <StyledTableCell style={{ width: '15%' }}>Teacher</StyledTableCell>
+                            <StyledTableCell style={{ width: '15%' }}>Created at</StyledTableCell>
+                            <StyledTableCell style={{ width: '5%' }} align="right">Delete</StyledTableCell>
                         </TableRow>
 
                     </TableHead>
@@ -149,6 +150,7 @@ export default function ListCourseComponent() {
                                         <StyledTableCell ><Rating precision={0.5} name="read-only" value={row.averageRating / 2} readOnly /></StyledTableCell>
                                         <StyledTableCell >{row.category}</StyledTableCell>
                                         <StyledTableCell >{row.teacher}</StyledTableCell>
+                                        <StyledTableCell >{row.createdAt}</StyledTableCell>
                                         <StyledTableCell align="right" style={{ color: 'red' }} onClick={() => onDeleteCourseClick(row._id)}><DeleteIcon /></StyledTableCell>
 
                                     </StyledTableRow>
