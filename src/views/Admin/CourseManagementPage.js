@@ -8,7 +8,7 @@ import { SnackBarVariant } from "../../utils/constant";
 import { getAllCourses, deleteCourse } from "../../config/api/Courses";
 import Rating from '@material-ui/lab/Rating';
 import ConfirmationDialog from "../../components/Dialog/ConfirmationDialog";
-import TablePaginationActions from './TablePaginationActions'
+import TablePaginationActions from '../../components/TablePaginationActions'
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
