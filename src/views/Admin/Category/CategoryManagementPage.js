@@ -5,9 +5,9 @@ import Button from '@material-ui/core/Button';
 import { useSnackbar } from "notistack";
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { SnackBarVariant } from "../../utils/constant";
-import { getAllCategories, deleteCategory } from "../../config/api/Categories";
-import ConfirmationDialog from "../../components/Dialog/ConfirmationDialog";
+import { SnackBarVariant } from "../../../utils/constant";
+import { getAllCategories, deleteCategory } from "../../../config/api/Categories";
+import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
 import AddCategoryDialog from "./AddCategoryDialog";
 import EditCategoryDialog from "./EditCategoryDialog";
 
@@ -44,9 +44,29 @@ export default function ListCategoryComponent() {
         category:null
     });
 
+
+    const fetchData = async () => {
+        setLoading(false);
+        try {
+            const response = await getAllCategories();
+            if (response.status === 200) {
+                let data = response.data;
+                setCategories(data);
+            } else {
+                console.log(response);
+                enqueueSnackbar("Error, can not get category list", { variant: SnackBarVariant.Error });
+            }
+        } catch (e) {
+            enqueueSnackbar("Error, can not get category list", { variant: SnackBarVariant.Error });
+            console.log(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         fetchData();
-    }, [reload]);
+    }, [reload]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const onDeleteCategoryClick = (id) => {
         setOpenDeleteDialog({
@@ -90,24 +110,6 @@ export default function ListCategoryComponent() {
         });
     }
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const response = await getAllCategories();
-            if (response.status === 200) {
-                let data = response.data;
-                setCategories(data);
-            } else {
-                console.log(response);
-                enqueueSnackbar("Error, can not get category list", { variant: SnackBarVariant.Error });
-            }
-        } catch (e) {
-            enqueueSnackbar("Error, can not get category list", { variant: SnackBarVariant.Error });
-            console.log(e);
-        } finally {
-            setLoading(false);
-        }
-    }
 
     return (
         <>
@@ -166,11 +168,10 @@ export default function ListCategoryComponent() {
 
             <AddCategoryDialog
                 show={openAddDialog}
+                parents={categories.map(item => !item.parent ? item : {})}
                 cancel={
                     () => { setOpenAddDialog(false) }
                 }
-                parents={categories.map(item => !item.parent ? item : {})}
-
                 success={
                     () => {
                         enqueueSnackbar("Category was added successfully", { variant: SnackBarVariant.Success });
@@ -197,7 +198,6 @@ export default function ListCategoryComponent() {
                         setReload(reload + 1);
                     }
                 }
-
                 fail={
                     () => { enqueueSnackbar("Failed to update category", { variant: SnackBarVariant.Error }); }
                 }

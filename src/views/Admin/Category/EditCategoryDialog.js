@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import Typography from '@material-ui/core/Typography';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -9,7 +10,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import { createCategory } from "../../config/api/Categories";
+import { updateCategory } from "../../../config/api/Categories";
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -27,32 +28,45 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function AddCategoryDialog({ show, parents, cancel, success, fail }) {
+export default function EditCategoryDialog({ show, parents, category, cancel, success, fail }) {
     const classes = useStyles();
     const [parentCategory, setParentCategory] = useState('');
     const [categoryName, setCategoryName] = useState('');
     const [textFieldError, setTextFieldError] = useState(false);
+
+    let newArr = [];
+    parents.forEach(element => {
+        if (element._id) {
+            newArr.push(element);
+        }
+    });
+    parents = newArr;
+
+    useEffect(() => {
+        console.log(category);
+        setCategoryName(category ? category.name : '');
+        setParentCategory(category ? category.parent : '');
+    }, [category])
 
     const handleTextInputChange = event => {
         setCategoryName(event.target.value);
     };
 
     const handleCategoryChange = (event) => {
-        console.log(event.target.value);
         setParentCategory(event.target.value);
     };
 
-    const handleAddNewCategory = async () => {
+    const handleEditCategory = async () => {
         if (!categoryName) {
             setTextFieldError(true);
             return
         }
         try {
-            const response = await createCategory({
+            const response = await updateCategory(category._id, {
                 name: categoryName,
-                parent: parentCategory.length===0 ? null:parentCategory
+                parent: parentCategory
             });
-            if (response.status === 201) {
+            if (response.status === 200) {
                 success();
                 cancel();
             }
@@ -68,22 +82,15 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
 
     }
 
-    const newArr=[];
-    parents.forEach(element => {
-        if (element._id){
-            newArr.push(element);
-        }
-    });
-    parents=newArr;
     return (
         <React.Fragment>
             <Dialog
                 fullWidth={true}
                 maxWidth='md'
-                open={show}
+                open={show ? show : false}
                 aria-labelledby="max-width-dialog-title"
             >
-                <DialogTitle id="max-width-dialog-title">Add new category</DialogTitle>
+                <DialogTitle id="max-width-dialog-title">Edit category: {category ? category.name : ''}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         <TextField variant="outlined" autoComplete="off"
@@ -106,14 +113,15 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
                                 label="Parent"
                                 fullWidth
                             >
-                                <MenuItem key='none' value=''>
-                                    <em>None</em>
+                                <MenuItem key='none' value={null}>
+                                    <Typography variant="h6" component="h6">None</Typography>
                                 </MenuItem>
                                 {parents ?
                                     parents.map(item => (
-                                        <MenuItem key={item._id} value={item._id}>{item.name}</MenuItem>
+                                        <MenuItem key={item._id} value={item._id}> <Typography variant="h6" component="h6">{item.name}</Typography></MenuItem>
                                     )) :
-                                    (<></>)
+                                    (<Typography component={'span'} variant={'body2'}>
+                                    </Typography>)
                                 }
                             </TextField>
                         </FormControl>
@@ -123,8 +131,8 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
                     <Button onClick={cancel} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleAddNewCategory} color="primary">
-                        Add
+                    <Button onClick={handleEditCategory} color="primary">
+                        Save
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -42,15 +42,36 @@ export default function ListCourseComponent() {
         id: null
     });
 
+
+    const fetchData = async (loading) => {
+        setLoading(loading);
+        try {
+            const response = await getAllCourses(page + 1, rowsPerPage === -1 ? 0 : rowsPerPage);
+            if (response.status === 200) {
+                const data = response.data;
+                setTotalResults(data.totalResults);
+                setCourses(data.results);
+            } else {
+                console.log(response);
+                enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
+            }
+        } catch (e) {
+            enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
+            console.log(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         const showCircularProgress=true;
         fetchData(showCircularProgress);
-    }, [page, rowsPerPage]);
+    }, [page, rowsPerPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         const showCircularProgress=false;
         fetchData(showCircularProgress);
-    }, [backgroundUpdate]);
+    }, [backgroundUpdate]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -101,26 +122,6 @@ export default function ListCourseComponent() {
 
     const editUser = (userId) => {
 
-    }
-
-    const fetchData = async (loading) => {
-        setLoading(loading);
-        try {
-            const response = await getAllCourses(page + 1, rowsPerPage === -1 ? 0 : rowsPerPage);
-            if (response.status === 200) {
-                const data = response.data;
-                setTotalResults(data.totalResults);
-                setCourses(data.results);
-            } else {
-                console.log(response);
-                enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
-            }
-        } catch (e) {
-            enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
-            console.log(e);
-        } finally {
-            setLoading(false);
-        }
     }
 
     return (
