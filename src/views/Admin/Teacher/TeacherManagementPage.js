@@ -9,7 +9,7 @@ import { SnackBarVariant, UserRoles } from "../../../utils/constant";
 import { getAllUser, deleteUser } from "../../../config/api/User";
 import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
 import AddTeacherDialog from "./AddTeacherDialog";
-// import EditTeacherDialog from "./EditTeacherDialog";
+import EditTeacherDialog from "./EditTeacherDialog";
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -100,7 +100,6 @@ export default function ListTeacherComponent() {
     }
 
     const onEditTeacherClick = (teacher) => {
-        console.log(teacher);
         setOpenEditDialog({
             isOpen: true,
             teacher: teacher
@@ -183,13 +182,12 @@ export default function ListTeacherComponent() {
                 }
             ></AddTeacherDialog>
 
-            {/* <EditTeacherDialog
+            <EditTeacherDialog
                 show={openEditDialog.isOpen}
                 teacher={openEditDialog.teacher}
                 cancel={
                     () => { setOpenEditDialog(false) }
                 }
-                parents={teachers.map(item => !item.parent ? item : {})}
 
                 success={
                     () => {
@@ -198,9 +196,9 @@ export default function ListTeacherComponent() {
                     }
                 }
                 fail={
-                    () => { enqueueSnackbar("Failed to update teacher", { variant: SnackBarVariant.Error }); }
+                    () => { enqueueSnackbar("Failed to update category", { variant: SnackBarVariant.Error }); }
                 }
-            ></EditTeacherDialog> */}
+            ></EditTeacherDialog>
         </>
 
     );
