@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableRow, TableHead } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import { useSnackbar } from "notistack";
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -52,9 +51,9 @@ export default function ListCategoryComponent() {
             const response = await getAllCategories();
             if (response.status === 200) {
                 let data = response.data;
+                console.log('refetch',data);
                 setCategories(data);
             } else {
-                console.log(response);
                 enqueueSnackbar("Error, can not get category list", { variant: SnackBarVariant.Error });
             }
         } catch (e) {
@@ -82,16 +81,8 @@ export default function ListCategoryComponent() {
             isOpen: false,
         });
         deleteCategory(id).then((response) => {
-            console.log(response.status);
             if (response.status === 204) {
-                console.log(categories);
-                for (let i = 0; i < categories.length; i++) {
-                    if (categories[i]._id === id) categories.splice(i, 1);
-                }
-                console.log(categories);
-                setLoading(true);
-                setCategories(categories);
-                setLoading(false);
+                setReload(reload+1);
                 enqueueSnackbar("Category deleted successfully", { variant: SnackBarVariant.Success });
             } else {
                 console.log(response.error_message);
@@ -146,9 +137,7 @@ export default function ListCategoryComponent() {
                                             {index + 1}
                                         </StyledTableCell>
                                         <StyledTableCell style={!row.parent ? { fontWeight: 'bold' } : {}}  >
-                                            <Typography variant={row.parent ? 'normal' : 'h6'} >
                                                 {row.parent ? `___${row.name}` : row.name}
-                                            </Typography>
                                         </StyledTableCell>
                                         <StyledTableCell >{row.parent ? 'Sub category' : 'Category'}</StyledTableCell>
                                         <StyledTableCell >{row.parentName}</StyledTableCell>

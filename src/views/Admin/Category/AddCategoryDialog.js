@@ -32,7 +32,9 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
     const classes = useStyles();
     const [parentCategory, setParentCategory] = useState('');
     const [categoryName, setCategoryName] = useState('');
+    const [subCategory, setSubCategory] = useState(false);
     const [textFieldError, setTextFieldError] = useState(false);
+    const [parentCategoryFieldError, setParentCategoryFieldError] = useState(false);
 
     const handleTextInputChange = event => {
         setCategoryName(event.target.value);
@@ -42,17 +44,33 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
         setParentCategory(event.target.value);
     };
 
+    const handleCategoryTypeChange = (event) => {
+        setSubCategory(event.target.value);
+    };
+
+    const clearFieldsValue = () => {
+        setCategoryName('');
+        setParentCategory('');
+        setSubCategory(false);
+    }
+
     const handleAddNewCategory = async () => {
         if (!categoryName) {
             setTextFieldError(true);
-            return
+            return;
+        }
+        if (subCategory && !parentCategory) {
+            setParentCategoryFieldError(true);
+            return;
         }
         try {
-            const response = await createCategory({
+            const body = {
                 name: categoryName,
-                parent: parentCategory
-            });
+            }
+            if (subCategory) body['parent'] = parentCategory ? parentCategory : null;
+            const response = await createCategory(body);
             if (response.status === 201) {
+                clearFieldsValue();
                 success();
                 cancel();
             }
@@ -96,29 +114,47 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
                             type="text"
                             fullWidth
                         />
+
                     </DialogContentText>
-                    <form className={classes.form} noValidate>
+                    <FormControl style={{ minWidth: 910 }} variant="outlined" className={classes.formControl}>
+                        <TextField
+                            select
+                            value={subCategory}
+                            onChange={handleCategoryTypeChange}
+                            label="Type"
+                            fullWidth
+                        >
+                            <MenuItem key='category' value={false}>
+                                <Typography variant="h6" component="h6">Category</Typography>
+                            </MenuItem>
+                            <MenuItem key='subCategory' value={true}>
+                                <Typography variant="h6" component="h6">Sub category</Typography>
+                            </MenuItem>
+                        </TextField>
+                    </FormControl>
+                    {subCategory ? <div>
                         <FormControl style={{ minWidth: 910 }} variant="outlined" className={classes.formControl}>
                             <TextField
                                 select
                                 value={parentCategory}
+                                error={parentCategoryFieldError}
                                 onChange={handleCategoryChange}
                                 label="Parent"
                                 fullWidth
                             >
-                                <MenuItem key='none' value={null}>
+                                <MenuItem value=''>
                                     <Typography variant="h6" component="h6">None</Typography>
                                 </MenuItem>
                                 {parents ?
                                     parents.map(item => (
                                         <MenuItem key={item._id} value={item._id}> <Typography variant="h6" component="h6">{item.name}</Typography></MenuItem>
-                                    )) :
-                                    (<Typography component={'span'} variant={'body2'}>
-                                    </Typography>)
+                                        ))
+                                    :
+                                    <div></div>
                                 }
                             </TextField>
                         </FormControl>
-                    </form>
+                    </div> : <div></div>}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={cancel} color="primary">
