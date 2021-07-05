@@ -14,9 +14,9 @@ import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import MenuBook from '@material-ui/icons/MenuBook';
 import EmojiPeople from '@material-ui/icons/EmojiPeople';
 import NaturePeople from '@material-ui/icons/NaturePeople';
-import StudentManagementPage from './StudentManagementPage'
+import StudentManagementPage from './Student/StudentManagementPage'
 import TeacherManagementPage from './Teacher/TeacherManagementPage'
-import CourseManagementPage from './CourseManagementPage'
+import CourseManagementPage from './Course/CourseManagementPage'
 import CategoryManagementPage from './Category/CategoryManagementPage'
 
 const drawerWidth = 240;
@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PermanentDrawerLeft() {
   const classes = useStyles();
-  const [selectedItem, setSelectedItem] = useState(Keys.Teacher);
+  const [selectedItem, setSelectedItem] = useState(Keys.Student);
 
   const page = () => {
     switch(selectedItem){
@@ -97,7 +97,7 @@ export default function PermanentDrawerLeft() {
             <ListItem onClick={() => setSelectedItem(Keys.Student)} button key={Keys.Student}
               className={(selectedItem === Keys.Student ? classes.active : '')} >
               <ListItemIcon>{<EmojiPeople />}</ListItemIcon>
-              <ListItemText primary='Students' />
+              <ListItemText primary='Student' />
             </ListItem>
           },
           {

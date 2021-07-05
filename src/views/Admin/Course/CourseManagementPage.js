@@ -3,11 +3,11 @@ import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead } from '@material-ui/core';
 import { useSnackbar } from "notistack";
 import DeleteIcon from '@material-ui/icons/Delete';
-import { SnackBarVariant } from "../../utils/constant";
-import { getAllCourses, deleteCourse } from "../../config/api/Courses";
+import { SnackBarVariant } from "../../../utils/constant";
+import { getAllCourses, deleteCourse } from "../../../config/api/Courses";
 import Rating from '@material-ui/lab/Rating';
-import ConfirmationDialog from "../../components/Dialog/ConfirmationDialog";
-import TablePaginationActions from '../../components/TablePaginationActions'
+import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
+import TablePaginationActions from '../../../components/TablePaginationActions'
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
