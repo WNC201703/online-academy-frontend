@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableRow, TableHead } from '@material-ui/core';
-import { useSnackbar } from "notistack";
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { useSnackbar } from "notistack";
 import { SnackBarVariant, UserRoles } from "../../../utils/constant";
 import { getAllUser, deleteUser } from "../../../config/api/User";
 import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
@@ -151,7 +151,7 @@ export default function ListStudentComponent() {
                 show={openDeleteDialog.isOpen}
                 title='Delete student'
                 detail='Are you sure you want to delete this student?'
-                warning='This action will delete all student courses!!!'
+                warning='This action will delete all student enrollments and reviews!!!'
                 cancel={
                     () => { setOpenDeleteDialog({ isOpen: false, id: null }); }
                 }

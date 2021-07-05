@@ -1,23 +1,15 @@
 import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import MenuBook from '@material-ui/icons/MenuBook';
-import EmojiPeople from '@material-ui/icons/EmojiPeople';
-import NaturePeople from '@material-ui/icons/NaturePeople';
+import {
+  Drawer, CssBaseline, AppBar, Toolbar, List, ListItem,
+  Typography, Divider, ListItemIcon, ListItemText
+} from '@material-ui/core';
+import { LibraryBooks, MenuBook, EmojiPeople, NaturePeople } from '@material-ui/icons';
 import StudentManagementPage from './Student/StudentManagementPage'
 import TeacherManagementPage from './Teacher/TeacherManagementPage'
 import CourseManagementPage from './Course/CourseManagementPage'
 import CategoryManagementPage from './Category/CategoryManagementPage'
+import blue from "@material-ui/core/colors/blue";
 
 const drawerWidth = 240;
 
@@ -35,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
   appBar: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
+    backgroundColor: blue[500]
   },
   drawer: {
     width: drawerWidth,
@@ -44,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
   },
   active: {
-    backgroundColor: "#b2fab4"
+    backgroundColor: blue[100]
   },
   // necessary for content to be below app bar
   toolbar: theme.mixins.toolbar,
@@ -60,16 +53,16 @@ export default function PermanentDrawerLeft() {
   const [selectedItem, setSelectedItem] = useState(Keys.Student);
 
   const page = () => {
-    switch(selectedItem){
+    switch (selectedItem) {
       case Keys.Student:
-        return <StudentManagementPage/>
+        return <StudentManagementPage />
       case Keys.Teacher:
-        return <TeacherManagementPage/>
+        return <TeacherManagementPage />
       case Keys.Category:
-        return <CategoryManagementPage/>
+        return <CategoryManagementPage />
       case Keys.Course:
-        return <CourseManagementPage/>
-        default: 
+        return <CourseManagementPage />
+      default:
     }
   }
   return (
