@@ -6,12 +6,14 @@ const UserContext = (props) => {
   if (localUser === null) localUser = {};
   const [user, setUser] = useState(localUser);
   const saveUser = (user) => setUser(user);
+  const removeUser = () => setUser(null);
 
   return (
     <AuthUserContext.Provider
       value={{
         user,
         saveUser,
+        removeUser
       }}>
       {props.children}
     </AuthUserContext.Provider>

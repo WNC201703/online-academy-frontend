@@ -4,12 +4,10 @@ import Route, { Switch } from "react-router-dom";
 import './SideBar/styles.scss';
 import Box from "@material-ui/core/Box";
 import AuthUserContext from "../contexts/user/AuthUserContext";
-import ButtonAppBar from "./AppBar/AppBar";
 import RouteWithLayout from "./RouteWithLayout";
 import MainAppBarLayout from "./MainAppBarLayout";
 import {Homepage} from "../views/Homepage/Homepage";
 import PrimarySearchAppBar from "./AppBar/AppBar";
-import PageNotFound from "./PageNotFound";
 const useStyles = makeStyles(theme => ({
   root: {
     height: "100%",

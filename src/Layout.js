@@ -1,5 +1,6 @@
-import React from "react";
+import React, {useContext} from "react";
 import {
+  Redirect,
   Switch,
   Route,
 } from "react-router-dom";
@@ -11,8 +12,13 @@ import {SignUpPage} from "./views/SignUpPage";
 import {SignInPage} from "./views/SignInPage";
 import PageNotFound from "./components/PageNotFound";
 import AdminDashboard from "./views/Admin/Dashboard";
+import AuthUserContext from "./contexts/user/AuthUserContext";
+import {UserRoles} from "./utils/constant";
 
 export default function Layout() {
+  const {user} = useContext(AuthUserContext);
+  const isAdmin = user?.role === UserRoles.Admin;
+
   return (
     <div>
       <ButtonAppBar/>
@@ -22,8 +28,11 @@ export default function Layout() {
         <Route exact path="/home" component={Homepage}/>
         <Route exact path="/sign-in" component={SignInPage}/>
         <Route exact path="/sign-up" component={SignUpPage}/>
-        <Route exact path="/admin" component={AdminDashboard}/>
-        <Route component={PageNotFound} />
+        <Route exact path="/not-found" component={PageNotFound}/>
+        <Route path="/admin">
+          {isAdmin ? <AdminDashboard/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
+        </Route>
+        <Route component={PageNotFound}/>
       </Switch>
     </div>
   );

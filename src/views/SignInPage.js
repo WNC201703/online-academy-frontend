@@ -8,10 +8,11 @@ import Box from "@material-ui/core/Box";
 import {isValidEmail} from "../utils/ValidationHelper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {signIn} from "../config/api/User";
-import {SnackBarVariant} from "../utils/constant";
+import {SnackBarVariant, UserRoles} from "../utils/constant";
 import {useSnackbar} from "notistack";
 import {saveAccessToken} from "../utils/LocalStorageUtils";
 import AuthUserContext from "../contexts/user/AuthUserContext";
+import {useHistory} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const SignInPage = () => {
   const classes = useStyles();
+  const history = useHistory();
   const {saveUser} = useContext(AuthUserContext);
   const {enqueueSnackbar} = useSnackbar();
   const [email, setEmail] = useState(null);
@@ -46,7 +48,6 @@ export const SignInPage = () => {
 
   const handleSignInButtonClick = async () => {
     setIsPending(true);
-
     const signInInfo = {
       email: email,
       password: password
@@ -59,6 +60,9 @@ export const SignInPage = () => {
       saveAccessToken(accessToken);
       localStorage.setItem('user_info', JSON.stringify(user));
       saveUser(user);
+      if (user.role === UserRoles.Admin) {
+        history.push('/admin');
+      }
       enqueueSnackbar("Sign in successfully", {variant: SnackBarVariant.Success});
 
     } else {
