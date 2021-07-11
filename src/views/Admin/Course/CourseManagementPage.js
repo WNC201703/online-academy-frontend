@@ -64,12 +64,7 @@ export default function ListCourseComponent() {
     useEffect(() => {
         const showCircularProgress=true;
         fetchData(showCircularProgress);
-    }, [page, rowsPerPage]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        const showCircularProgress=false;
-        fetchData(showCircularProgress);
-    }, [backgroundUpdate]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [page, rowsPerPage,backgroundUpdate]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
