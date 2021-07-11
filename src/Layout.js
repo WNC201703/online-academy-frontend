@@ -17,11 +17,7 @@ import {UserRoles} from "./utils/constant";
 
 export default function Layout() {
   const {user} = useContext(AuthUserContext);
-
   const isAdmin = user?.role === UserRoles.Admin;
-  console.log(user);
-  console.log('isadmin: ', isAdmin);
-  const isTeacher = user?.role === UserRoles.Teacher;
 
   return (
     <div>
