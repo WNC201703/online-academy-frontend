@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
 export default function PrimarySearchAppBar() {
   const classes = useStyles();
   const history = useHistory();
-  const {user} = useContext(AuthUserContext);
+  const {user, removeUser} = useContext(AuthUserContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -104,6 +104,12 @@ export default function PrimarySearchAppBar() {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
+
+  const handleLogOut = () => {
+    removeUser(null);
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  }
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
@@ -129,7 +135,7 @@ export default function PrimarySearchAppBar() {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Log out</MenuItem>
+      <MenuItem onClick={handleLogOut}>Log out</MenuItem>
     </Menu>
   );
 
@@ -190,13 +196,7 @@ export default function PrimarySearchAppBar() {
           <div className={classes.grow}/>
           <div className={classes.sectionDesktop}>
             {
-              user ? <Box>
-                  <CustomPrimaryContainedButton onClick={handleSignInButtonClick} style={{marginRight: 8}}
-                                                variant="contained"
-                                                color="primary">Sign in</CustomPrimaryContainedButton>
-                  <CustomSecondaryOutlinedButton onClick={handleSignUpButtonClick} variant="outlined">Sign
-                    up</CustomSecondaryOutlinedButton></Box>
-                : <IconButton
+              user ? <IconButton
                   edge="end"
                   aria-label="account of current user"
                   aria-controls={menuId}
@@ -204,7 +204,15 @@ export default function PrimarySearchAppBar() {
                   onClick={handleProfileMenuOpen}
                   color="inherit">
                   <AccountCircle/>
-                </IconButton>
+                </IconButton> :
+                <Box>
+                  <CustomPrimaryContainedButton onClick={handleSignInButtonClick} style={{marginRight: 8}}
+                                                variant="contained"
+                                                color="primary">Sign in</CustomPrimaryContainedButton>
+                  <CustomSecondaryOutlinedButton onClick={handleSignUpButtonClick} variant="outlined">Sign
+                    up</CustomSecondaryOutlinedButton>
+                </Box>
+
             }
           </div>
           <div className={classes.sectionMobile}>
