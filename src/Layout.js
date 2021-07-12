@@ -10,6 +10,7 @@ import {SamplePage} from "./views/SamplePage";
 import {Homepage} from "./views/Homepage/Homepage";
 import {SignUpPage} from "./views/SignUpPage";
 import {SignInPage} from "./views/SignInPage";
+import LearningPage from "./views/LearningPage";
 import PageNotFound from "./components/PageNotFound";
 import AdminDashboard from "./views/Admin/Dashboard";
 import AuthUserContext from "./contexts/user/AuthUserContext";
@@ -28,6 +29,7 @@ export default function Layout() {
         <Route exact path="/home" component={Homepage}/>
         <Route exact path="/sign-in" component={SignInPage}/>
         <Route exact path="/sign-up" component={SignUpPage}/>
+        <Route exact path="/learn" component={LearningPage}/>
         <Route exact path="/not-found" component={PageNotFound}/>
         <Route path="/admin">
           {isAdmin ? <AdminDashboard/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
