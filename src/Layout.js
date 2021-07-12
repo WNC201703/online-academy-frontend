@@ -14,6 +14,7 @@ import PageNotFound from "./components/PageNotFound";
 import AdminDashboard from "./views/Admin/Dashboard";
 import AuthUserContext from "./contexts/user/AuthUserContext";
 import {UserRoles} from "./utils/constant";
+import {CourseDetail} from "./views/CourseDetail/CourseDetailPage";
 
 export default function Layout() {
   const {user} = useContext(AuthUserContext);
@@ -29,6 +30,8 @@ export default function Layout() {
         <Route exact path="/sign-in" component={SignInPage}/>
         <Route exact path="/sign-up" component={SignUpPage}/>
         <Route exact path="/not-found" component={PageNotFound}/>
+        <Route exact path="/courses/:id" component={CourseDetail}/>
+
         <Route path="/admin">
           {isAdmin ? <AdminDashboard/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
         </Route>
