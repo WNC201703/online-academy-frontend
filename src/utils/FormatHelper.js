@@ -5,3 +5,8 @@ export const moneyFormat = (money) => {
   });
   return formatter.format(money);
 }
+
+export const ratingNumberFormat = (rating) => {
+  let realRate = (rating * 5) / 10;
+  return Number((realRate).toFixed(1));
+}
