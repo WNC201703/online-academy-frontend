@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { PlayCircleFilled } from '@material-ui/icons';
+import { CheckBox, PlayCircleFilled, CropSquare } from '@material-ui/icons';
 import { useSnackbar } from "notistack";
 import { SnackBarVariant } from "../utils/constant";
 import PropTypes from 'prop-types';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { getAllLessons } from "../config/api/Lessons";
-// import ReactPlayer from 'react-player'
 import '../../node_modules/video-react/dist/video-react.css';
+
 import {
   Player,
   ControlBar,
@@ -20,7 +20,7 @@ import {
   PlaybackRateMenuButton,
   VolumeMenuButton
 } from 'video-react';
-import { Typography } from "@material-ui/core";
+import { Divider, Typography } from "@material-ui/core";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +42,8 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'none',
   },
   iconLabelWrapper: {
-    flexDirection: "row",
+    // flexDirection: "row",
+    alignItems: "flex-start",
   },
   icon: {
     marginRight: 10
@@ -68,13 +69,14 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box m={5} >
+        <Box m={3} >
           <div >
             <Typography variant="h4" component="h2">{lesson.name}</Typography>
             <Box m={2} />
             <Player
+              onEnded={() => { console.log('end ne bro') }}
               playsInline
-              fluid={false} width={960} height={540}
+              fluid={false} width={768} height={432}
               src={lesson.videoUrl}
 
             >
@@ -87,7 +89,12 @@ function TabPanel(props) {
                 <VolumeMenuButton disabled />
               </ControlBar>
             </Player>
-
+            <Box m={2} />
+            <Box mr={12} >
+              <Typography variant="h6" >{'Descriptio:'}</Typography>
+              <Typography component="h2">{lesson.description}</Typography>
+            </Box >
+            <Box my={12} />
           </div>
         </Box>
       )}
@@ -150,6 +157,7 @@ export default function LearningPage() {
         indicatorColor="primary"
         onChange={handleChange}
         textColor="primary"
+
         value={value}
         aria-label="Vertical tabs example"
         className={classes.tabs}
@@ -164,8 +172,14 @@ export default function LearningPage() {
                   wrapper: classes.iconLabelWrapper,
                 }}
                 value={item._id}
-                icon={<PlayCircleFilled color="primary" className={classes.icon} />}
-                label={`${item.lessonNumber}.${item.name}`}    {...a11yProps(item._id)} />
+                label={
+                  <div>
+                    <CropSquare color="primary" className={classes.icon} />
+                    {`${item.lessonNumber}. ${item.name}`}
+                  </div>
+                }
+
+                {...a11yProps(item._id)} />
             ))
             :
             <div></div>
