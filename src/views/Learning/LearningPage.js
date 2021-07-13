@@ -1,27 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { CheckBox, PlayCircleFilled, CropSquare } from '@material-ui/icons';
+import { CropSquare } from '@material-ui/icons';
 import { useSnackbar } from "notistack";
-import { SnackBarVariant } from "../utils/constant";
-import PropTypes from 'prop-types';
+import { SnackBarVariant } from "../../utils/constant";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { getAllLessons } from "../config/api/Lessons";
-import '../../node_modules/video-react/dist/video-react.css';
-
-import {
-  Player,
-  ControlBar,
-  ReplayControl,
-  ForwardControl,
-  CurrentTimeDisplay,
-  TimeDivider,
-  PlaybackRateMenuButton,
-  VolumeMenuButton
-} from 'video-react';
-import { Divider, Typography } from "@material-ui/core";
-
+import { getAllLessons } from "../../config/api/Lessons";
+import TabPanel from './TabPanel'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,57 +42,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function TabPanel(props) {
-
-  const { children, value, index, lesson, ...other } = props;
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box m={3} >
-          <div >
-            <Typography variant="h4" component="h2">{lesson.name}</Typography>
-            <Box m={2} />
-            <Player
-              onEnded={() => { console.log('end ne bro') }}
-              playsInline
-              fluid={false} width={768} height={432}
-              src={lesson.videoUrl}
-
-            >
-              <ControlBar>
-                <ReplayControl seconds={10} order={1.1} />
-                <ForwardControl seconds={30} order={1.2} />
-                <CurrentTimeDisplay order={4.1} />
-                <TimeDivider order={4.2} />
-                <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
-                <VolumeMenuButton disabled />
-              </ControlBar>
-            </Player>
-            <Box m={2} />
-            <Box mr={12} >
-              <Typography variant="h6" >{'Descriptio:'}</Typography>
-              <Typography component="h2">{lesson.description}</Typography>
-            </Box >
-            <Box my={12} />
-          </div>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-  lesson: PropTypes.any.isRequired
-};
 function a11yProps(index) {
   return {
     id: `vertical-tab-${index}`,

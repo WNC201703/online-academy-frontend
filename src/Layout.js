@@ -10,7 +10,7 @@ import {SamplePage} from "./views/SamplePage";
 import {Homepage} from "./views/Homepage/Homepage";
 import {SignUpPage} from "./views/SignUpPage";
 import {SignInPage} from "./views/SignInPage";
-import LearningPage from "./views/LearningPage";
+import LearningPage from "./views/Learning/LearningPage";
 import PageNotFound from "./components/PageNotFound";
 import AdminDashboard from "./views/Admin/Dashboard";
 import AuthUserContext from "./contexts/user/AuthUserContext";
