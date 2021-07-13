@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { CropSquare } from '@material-ui/icons';
 import { useSnackbar } from "notistack";
+import {useParams} from "react-router-dom";
 import { SnackBarVariant } from "../../utils/constant";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { getAllLessons } from "../../config/api/Lessons";
 import TabPanel from './TabPanel'
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,13 +53,14 @@ function a11yProps(index) {
 
 export default function LearningPage() {
   const { enqueueSnackbar } = useSnackbar();
+  const {courseId} = useParams();
   const classes = useStyles();
   const [videos, setVideos] = useState();
   const [value, setValue] = useState();
 
   const fetchVideos = async () => {
     try {
-      const response = await getAllLessons('60dc3069d034511c68addffa');
+      const response = await getAllLessons(courseId);
       if (response.status === 200) {
         const data = response.data;
         setVideos(data);

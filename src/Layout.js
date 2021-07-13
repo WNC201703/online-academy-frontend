@@ -29,7 +29,7 @@ export default function Layout() {
         <Route exact path="/home" component={Homepage}/>
         <Route exact path="/sign-in" component={SignInPage}/>
         <Route exact path="/sign-up" component={SignUpPage}/>
-        <Route exact path="/learn" component={LearningPage}/>
+        <Route exact path="/courses/:courseId/learn" component={LearningPage}/>
         <Route exact path="/not-found" component={PageNotFound}/>
         <Route path="/admin">
           {isAdmin ? <AdminDashboard/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
