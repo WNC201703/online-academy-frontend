@@ -8,7 +8,20 @@ import PropTypes from 'prop-types';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { getAllLessons } from "../config/api/Lessons";
-import ReactPlayer from 'react-player'
+// import ReactPlayer from 'react-player'
+import '../../node_modules/video-react/dist/video-react.css';
+import {
+  Player,
+  ControlBar,
+  ReplayControl,
+  ForwardControl,
+  CurrentTimeDisplay,
+  TimeDivider,
+  PlaybackRateMenuButton,
+  VolumeMenuButton
+} from 'video-react';
+import { Typography } from "@material-ui/core";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,15 +51,14 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     paddingTop: '56.25%' /* 720 / 1280 = 0.5625 */
   },
-  reactPlayer :{
+  reactPlayer: {
     position: 'absolute',
   }
 }));
 
 function TabPanel(props) {
 
-  const { children, value, index, url,...other } = props;
- const classes = useStyles();
+  const { children, value, index, lesson, ...other } = props;
   return (
     <div
       role="tabpanel"
@@ -58,13 +70,24 @@ function TabPanel(props) {
       {value === index && (
         <Box m={5} >
           <div >
-          <ReactPlayer
-            url={url}
-          className={classes.reactPlayer}
-          width="70%"
-          height="70%"
-            controls={false}
-          />
+            <Typography variant="h4" component="h2">{lesson.name}</Typography>
+            <Box m={2} />
+            <Player
+              playsInline
+              fluid={false} width={960} height={540}
+              src={lesson.videoUrl}
+
+            >
+              <ControlBar>
+                <ReplayControl seconds={10} order={1.1} />
+                <ForwardControl seconds={30} order={1.2} />
+                <CurrentTimeDisplay order={4.1} />
+                <TimeDivider order={4.2} />
+                <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
+                <VolumeMenuButton disabled />
+              </ControlBar>
+            </Player>
+
           </div>
         </Box>
       )}
@@ -76,7 +99,7 @@ TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
   value: PropTypes.any.isRequired,
-  url: PropTypes.any.isRequired
+  lesson: PropTypes.any.isRequired
 };
 function a11yProps(index) {
   return {
@@ -156,7 +179,7 @@ export default function LearningPage() {
               value={value}
               index={item._id}
               key={item._id}
-              url={item.videoUrl}
+              lesson={item}
             >
               {item.description}
             </TabPanel>
