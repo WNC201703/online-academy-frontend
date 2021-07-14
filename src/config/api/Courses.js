@@ -6,7 +6,7 @@ export async function createCourse(data) {
 
 export async function getAllCourses(pageNumber = 1, pageSize = 10, sortBy = null,
                                     key_word = null, categoryId = null) {
-  return await AXIOS_INSTANCE.get(`/api/courses/?page_number=${pageNumber}&page_size=${pageSize}&keyword=${key_word?key_word:''}&category=${categoryId?categoryId:''}`);
+  return await AXIOS_INSTANCE.get(`/api/courses/?page_number=${pageNumber}&page_size=${pageSize}&keyword=${key_word ? key_word : ''}&category=${categoryId ? categoryId : ''}`);
 }
 
 export async function getNewestCourses() {
@@ -31,4 +31,8 @@ export async function deleteCourse(id) {
 
 export async function updateCourseImage(id) {
   return await AXIOS_INSTANCE.post(`/api/courses/${id}/image`);
+}
+
+export async function reviewCourse(id, data) {
+  return await AXIOS_INSTANCE.post(`/api/courses/${id}/reviews`, data);
 }
