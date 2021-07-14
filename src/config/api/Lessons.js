@@ -4,6 +4,9 @@ export async function getAllLessons(courseId) {
   return await AXIOS_INSTANCE.get(`/api/courses/${courseId}/lessons`);
 }
 
+export async function getPreviewLessons(courseId) {
+  return await AXIOS_INSTANCE.get(`/api/courses/${courseId}/preview`);
+}
 export async function addLesson(courseId, data) {
   return await AXIOS_INSTANCE.post(`/api/courses/${courseId}/lessons`, data);
 }
