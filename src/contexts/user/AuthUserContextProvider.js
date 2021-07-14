@@ -7,7 +7,10 @@ const UserContext = (props) => {
   if (localUser === null) localUser = {};
   const [user, setUser] = useState(localUser);
   const saveUser = (user) => setUser(user);
-  const removeUser = () => setUser(null);
+  const removeUser = () => {
+    setUser(null);
+    localStorage.setItem(LocalKey.UserInfo, null);
+  }
 
   return (
     <AuthUserContext.Provider
