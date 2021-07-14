@@ -7,13 +7,13 @@ import grey from "@material-ui/core/colors/grey";
 import Box from "@material-ui/core/Box";
 import Rating from "@material-ui/lab/Rating";
 import {useHistory, useParams} from "react-router-dom";
-import {getCourseById} from "../../config/api/Courses";
+import {getCourseById, reviewCourse} from "../../config/api/Courses";
 import {SnackBarVariant} from "../../utils/constant";
 import {dateFormat, discountFormat, moneyFormat, ratingNumberFormat} from "../../utils/FormatHelper";
 import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
 import FavoriteOutlinedIcon from '@material-ui/icons/FavoriteOutlined';
 import {Image} from "semantic-ui-react";
-import {enrollCourse, getAllLessons, getRelatedCourse} from "../../config/api/Lessons";
+import {enrollCourse, getAllLessons, getPreviewLessons, getRelatedCourse} from "../../config/api/Lessons";
 import {CourseInfoLoading, DescriptionLoading, LessonsLoading, RelatedCourseLoading} from "../../components/Loading";
 import HorizontalCarousel from "../Homepage/HorizontalCarousel";
 import CustomFavouriteOutlinedButton from "../../components/Button/CustomFavouriteOutlinedButton";
@@ -24,6 +24,10 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import SubscriptionsOutlinedIcon from '@material-ui/icons/SubscriptionsOutlined';
 import CustomEnrollOutlinedButton from "../../components/Button/CustomEnrollOutlinedButton";
 import CustomViewContainedButton from "../../components/Button/CustomViewContainedButton";
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import CustomSecondaryOutlinedButton from "../../components/Button/CustomSecondaryOutlinedButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,6 +80,10 @@ const useStyles = makeStyles((theme) => ({
     borderColor: grey[500],
     borderStyle: "solid",
     fontWeight: "bold"
+  },
+  note: {
+    fontWeight: "bold"
+
   }
 }));
 export const CourseDetail = () => {
@@ -90,8 +98,10 @@ export const CourseDetail = () => {
   const [isPending, setIsPending] = useState(false);
   const [isFavourite, setIsFavourite] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isEndrolled, setIsEndrolled] = useState(false);
-
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [ratingPoint, setRatingPoint] = useState(1);
+  const [ratingContent, setRatingContent] = useState('');
+  const isSignedIn = user != null;
   useEffect(() => {
     const eff = async () => {
       await fetchCourseDetail();
@@ -126,7 +136,7 @@ export const CourseDetail = () => {
   const handleEnrollCourse = async () => {
     const res = enrollCourse(courseInfo._id)
     if (res.status === 201) {
-      setIsEndrolled(true);
+      setIsEnrolled(true);
       enqueueSnackbar("Enroll this course successfully", {variant: SnackBarVariant.Success});
     } else
       enqueueSnackbar("Failed to enroll this course", {variant: SnackBarVariant.Error});
@@ -136,20 +146,30 @@ export const CourseDetail = () => {
     history.push(`/courses/${courseInfo._id}/learning`)
   }
 
+  const handleRatingBarChange = (event) => {
+    console.log("star: ", event.target.value)
+    setRatingPoint(event.target.value);
+  }
+
+  const handleRatingContentChange = (event) => {
+    setRatingContent(event.target.value);
+  }
+
+  const handleLoadMoreReview = () => {
+
+  }
+
   const fetchCourseDetail = async () => {
     setIsPending(true);
     try {
       const [info, lessons, related, favourite, mine] = await Promise.all([
-        getCourseById(id), getAllLessons(id), getRelatedCourse(id), getFavouriteCourse(user._id), getMyCourses()
+        getCourseById(id), getPreviewLessons(id), getRelatedCourse(id), getFavouriteCourse(user._id), getMyCourses()
       ]);
       const favouriteIndex = favourite?.data?.findIndex(x => x.course === info?.data?._id);
       const enrolledIndex = mine?.data?.findIndex(x => x.course === info?.data?._id);
 
-      if (!(favouriteIndex < 0)) {
-        console.log("run here")
-        setIsFavourite(true);
-      }
-      if (!(enrolledIndex < 0)) setIsEndrolled(true);
+      if (!(favouriteIndex < 0)) setIsFavourite(true);
+      if (!(enrolledIndex < 0)) setIsEnrolled(true);
 
       console.log(enrolledIndex);
       setCourseInfo(info.data);
@@ -164,6 +184,24 @@ export const CourseDetail = () => {
     }
   }
 
+  const handleRatingCourse = async () => {
+    setIsProcessing(true)
+    const review = {
+      review: ratingContent,
+      rating: ratingPoint
+    }
+
+    const res = await reviewCourse(courseInfo._id, review)
+    if (res === 201) {
+      enqueueSnackbar("Review course successfully", {variant: SnackBarVariant.Success});
+
+    } else {
+      enqueueSnackbar("Failed to review course", {variant: SnackBarVariant.Error});
+    }
+    setIsProcessing(false)
+    setRatingContent('');
+    setRatingPoint(1);
+  }
   return <div className={classes.root}>
     <Grid container spacing={3}>
       <Grid className={classes.cover} container xs={12}>
@@ -213,7 +251,7 @@ export const CourseDetail = () => {
                   }
 
                   {
-                    isEndrolled ? <CustomViewContainedButton
+                    isEnrolled ? <CustomViewContainedButton
                         size="large"
                         onClick={handleViewLessons}
                         disabled={isProcessing}
@@ -263,6 +301,46 @@ export const CourseDetail = () => {
         </Paper>
         <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Ratings</Box>
+          {
+            isSignedIn ? <Box direction="column">
+              <Box>
+                <TextField value={ratingContent} onChange={handleRatingContentChange} fullWidth
+                           style={{marginTop: 12, marginBottom: 12}}
+                           label="Write your review"
+                           variant="outlined"/>
+                <Box className={classes.note}>Note: If you have not seen this course yet, you can not write review</Box>
+                <Rating value={ratingPoint} onChange={handleRatingBarChange} size="large" name="read-only"/>
+              </Box>
+              <Button size="medium"
+                      height={65}
+                      color="primary"
+                      disabled={isProcessing || ratingContent.length < 0}
+                      onClick={handleRatingCourse}
+                      variant='contained'>
+                Send
+              </Button>
+              {
+                [1, 2, 3].map(item => <Box>
+                  <Box style={{marginLeft: 12}}> Username</Box>
+                  <Box style={{marginLeft: 12}}> review</Box>
+                  <Rating style={{marginLeft: 10}} readOnly value={5} size="medium"/>
+                </Box>)
+              }
+              <Box>
+                <CustomEnrollOutlinedButton
+                  onClick={handleLoadMoreReview}
+                  size="small"
+                  style={{marginRight: 12}}
+                  startIcon={<AddCircleOutlineIcon/>}
+                >
+                  Load more
+                </CustomEnrollOutlinedButton> </Box>
+            </Box> : <Box>
+              You need to sign in to read this content
+            </Box>
+
+          }
+
         </Paper>
       </Grid>
       <Grid item xs={12} sm={2}/>
