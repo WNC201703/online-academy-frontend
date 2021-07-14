@@ -39,3 +39,16 @@ export async function resetPassword() {
 export async function deleteUser(id){
   return await AXIOS_INSTANCE.delete(`/api/users/${id}`);
 }
+
+export async function getFavouriteCourse(id) {
+  return await AXIOS_INSTANCE.get(`/api/users/${id}/favorites`);
+}
+
+export async function addFavouriteCourse(courseId) {
+  return await AXIOS_INSTANCE.put(`/api/users/me/favorites/${courseId}`);
+}
+
+export async function removeFavouriteCourse(courseId) {
+  return await AXIOS_INSTANCE.delete(`/api/users/me/favorites/${courseId}`);
+
+}
