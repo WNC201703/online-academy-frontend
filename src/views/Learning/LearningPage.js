@@ -5,65 +5,60 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { useSnackbar } from "notistack";
 import { useParams } from "react-router-dom";
 import { SnackBarVariant } from "../../utils/constant";
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import { getAllLessons, completedLessons, deleteCompletedLessons } from "../../config/api/Lessons";
-import TabPanel from './TabPanel'
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { getAllLessons, completedLesson, deleteCompletedLesson } from "../../config/api/Lessons";
+import VideoPanel from './VideoPanel'
 import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Typography } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
     display: 'flex',
+    height: 500,
+  },
+  courseName: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: 'white',
+    backgroundColor: '#77d2fc',
+    fontSize: 20,
+    fontWeight: 'bold'
+  },
+  leftPanel: {
+    backgroundColor: '#f7f7f7',
+    position: 'relative',
+    overflow: 'auto',
+    width: '100%',
     height: 700,
+    maxHeight: 700,
   },
-  tabs: {
-    borderRight: `2px solid ${theme.palette.divider}`,
-    minWidth: 280,
-    maxWidth: 280,
-    display: 'flex',
-    alignItems: 'left',
-  },
-  tab: {
-    width: 280,
-    textTransform: 'none',
-  },
-  iconLabelWrapper: {
-    // flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  icon: {
-    marginRight: 5
-  },
-  reactPlayer: {
-    position: 'absolute',
+  activeItem: {
+    backgroundColor: '#e8e8e8',
   }
 }));
 
-function a11yProps(index) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
-}
 
 export default function LearningPage() {
-  const { enqueueSnackbar } = useSnackbar();
-  const { courseId } = useParams();
   const classes = useStyles();
-  const [videos, setVideos] = useState([]);
+  const { courseId } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
   const [pending, setPending] = useState(true);
-  const [value, setValue] = useState(0);
+  const [videos, setVideos] = useState([]);
+  const [videoSelected, setVideoSelected] = useState();
 
-  const fetchVideos = async () => {
+  const fetchData = async () => {
     try {
       const response = await getAllLessons(courseId);
       if (response.status === 200) {
         const data = response.data;
         setVideos(data);
         if (data.length > 0) {
-          setValue(data[0]._id);
+          setVideoSelected(data[0]);
         }
       } else {
         enqueueSnackbar("Error", { variant: SnackBarVariant.Error });
@@ -77,95 +72,80 @@ export default function LearningPage() {
   }
 
   useEffect(() => {
-    fetchVideos();
+    fetchData();
   }, []);
 
-  const handleChange = (event, newValue) => {
-    if (newValue) setValue(newValue);
-  };
+  function handleCheckBoxChange(item) {
+    const current = item.completed;
+    item.completed = !current;
+    if (!current)
+      completedLesson(courseId, item._id);
+    else
+      deleteCompletedLesson(courseId, item._id);
+    setVideos(videos);
+  }
 
-  const handleCheckBoxChange = (event, item) => {
-    // videos.forEach(element => {
-    //   if (element._id===event.target.id){
-    //       element.completed=event.target.checked;
-    //       if (element._id===value){
-    //       }
-    //   }
-    // });
-    // setVideos(videos);
-  };
+  function handleItemClicked(item) {
+    setVideoSelected(item);
+  }
 
+  function handleVideoEnded(item) {
+    item.completed = true;
+    completedLesson(courseId, item._id);
+    setVideoSelected(item);
+  }
 
   if (pending) return (
     <Grid container justify="center">
       <CircularProgress />
     </Grid>
   )
+
   return (
-    <div className={classes.root}>
-      <Tabs
-        variant="scrollable"
-        orientation="vertical"
-        indicatorColor="primary"
-        onChange={handleChange}
-        textColor="primary"
-        value={value}
-        TabIndicatorProps={{
-          style: {
-            width: "5px",
-          }
-        }}
-        aria-label="Vertical tabs example"
-        className={classes.tabs}
-      >
-        {
-          videos ?
-            videos.map((item) => (
-              <Tab
-                key={item._id}
-                className={classes.tab}
-                classes={{
-                  wrapper: classes.iconLabelWrapper,
-                }}
-                value={item._id}
-                label={
-                  <div style={{ width: 280, display: 'flex', alignItems: 'center' }}>
-                    {
+    <Grid container >
+      <Grid item xs={12} sm={12}>
+        <Typography className={classes.courseName}>React </Typography>
+      </Grid>
+      <Grid item xs={12} sm={3} className={classes.leftPanel} >
+        <List component="nav" aria-label="video menu">
+          {
+            videos ?
+              videos.map(
+                (item) =>
+                (
+                  <ListItem button className={item === videoSelected ? classes.activeItem : ''}
+                    onClick={() => { handleItemClicked(item) }}
+                  >
+                    <ListItemIcon>
                       <Checkbox
+                        edge="start"
                         checked={item.completed}
-                        id={item._id}
-                        onChange={handleCheckBoxChange}
-                        color="primary"
-                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                        tabIndex={-1}
+                        onClick={() => { handleCheckBoxChange(item) }}
+                        color='primary'
+                        disableRipple
+                        inputProps={{ 'aria-labelledby': 'my check box' }}
                       />
-                    }
-                    {`${item.lessonNumber}. ${item.name}`}
-                  </div>
+                    </ListItemIcon>
+                    <ListItemText primary={`${item.lessonNumber}.  ${item.name}`} />
+                  </ListItem>
+                )
+              ) :
+              <div></div>
+          }
+        </List>
+      </Grid>
 
-                }
-
-                {...a11yProps(item._id)} />
-            ))
-            :
-            <div></div>
-        }
-
-      </Tabs>
-      {
-        videos ?
-          videos.map((item) => (
-            <TabPanel
-              value={value}
-              index={item._id}
-              key={item._id}
-              lesson={item}
-            >
-              {item.description}
-            </TabPanel>
-          ))
-          :
-          <div></div>
-      }
-    </div>
+      <Grid item xs={12} sm={9}>
+        <VideoPanel
+          onVideoEnded={handleVideoEnded}
+          lesson={videoSelected}
+        >
+          {videoSelected.name}
+        </VideoPanel>
+      </Grid>
+    </Grid>
   );
+
+
 }
