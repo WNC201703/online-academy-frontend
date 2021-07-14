@@ -6,6 +6,7 @@ import { useSnackbar } from "notistack";
 import { useParams } from "react-router-dom";
 import { SnackBarVariant } from "../../utils/constant";
 import { getAllLessons, completedLesson, deleteCompletedLesson } from "../../config/api/Lessons";
+import { getCourseById } from "../../config/api/Courses";
 import VideoPanel from './VideoPanel'
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
@@ -48,21 +49,34 @@ export default function LearningPage() {
   const { courseId } = useParams();
   const { enqueueSnackbar } = useSnackbar();
   const [pending, setPending] = useState(true);
-  const [videos, setVideos] = useState([]);
-  const [videoSelected, setVideoSelected] = useState();
+  const [courseName, setCourseName] = useState('');
+  const [lessons, setLessons] = useState([]);
+  const [selectedLesson, setSelectedLesson] = useState();
 
   const fetchData = async () => {
     try {
-      const response = await getAllLessons(courseId);
-      if (response.status === 200) {
-        const data = response.data;
-        setVideos(data);
+      const [lessonsResponse, courseResponse] = await Promise.all([
+        getAllLessons(courseId),
+        getCourseById(courseId)
+      ]);
+      // const response = await getAllLessons(courseId);
+      if (lessonsResponse.status === 200) {
+        const data = lessonsResponse.data;
+        setLessons(data);
         if (data.length > 0) {
-          setVideoSelected(data[0]);
+          setSelectedLesson(data[0]);
         }
       } else {
         enqueueSnackbar("Error", { variant: SnackBarVariant.Error });
       }
+
+      if (courseResponse.status === 200) {
+        const data = courseResponse.data;
+        setCourseName(data.name);
+      } else {
+        enqueueSnackbar("Error", { variant: SnackBarVariant.Error });
+      }
+
     } catch (e) {
       enqueueSnackbar("Error", { variant: SnackBarVariant.Error });
       console.log(e);
@@ -77,22 +91,23 @@ export default function LearningPage() {
 
   function handleCheckBoxChange(item) {
     const current = item.completed;
+    console.log(current)
     item.completed = !current;
     if (!current)
       completedLesson(courseId, item._id);
     else
       deleteCompletedLesson(courseId, item._id);
-    setVideos(videos);
+    setLessons([...lessons]);
   }
 
   function handleItemClicked(item) {
-    setVideoSelected(item);
+    setSelectedLesson(item);
   }
 
   function handleVideoEnded(item) {
     item.completed = true;
     completedLesson(courseId, item._id);
-    setVideoSelected(item);
+    setLessons([...lessons]);
   }
 
   if (pending) return (
@@ -104,16 +119,16 @@ export default function LearningPage() {
   return (
     <Grid container >
       <Grid item xs={12} sm={12}>
-        <Typography className={classes.courseName}>React </Typography>
+        <Typography className={classes.courseName}>{courseName} </Typography>
       </Grid>
       <Grid item xs={12} sm={3} className={classes.leftPanel} >
         <List component="nav" aria-label="video menu">
           {
-            videos ?
-              videos.map(
+            lessons ?
+              lessons.map(
                 (item) =>
                 (
-                  <ListItem button className={item === videoSelected ? classes.activeItem : ''}
+                  <ListItem button className={item === selectedLesson ? classes.activeItem : ''}
                     onClick={() => { handleItemClicked(item) }}
                   >
                     <ListItemIcon>
@@ -139,9 +154,9 @@ export default function LearningPage() {
       <Grid item xs={12} sm={9}>
         <VideoPanel
           onVideoEnded={handleVideoEnded}
-          lesson={videoSelected}
+          lesson={selectedLesson}
         >
-          {videoSelected.name}
+          {selectedLesson.name}
         </VideoPanel>
       </Grid>
     </Grid>
