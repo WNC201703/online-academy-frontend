@@ -19,3 +19,8 @@ export async function getLessonByNumber(courseId, data, lessonNumber) {
 export async function getRelatedCourse(courseId) {
   return await AXIOS_INSTANCE.get(`/api/courses/${courseId}/related`);
 }
+
+export async function enrollCourse(courseId) {
+  return await AXIOS_INSTANCE.post(`/api/courses/${courseId}/enrollments`);
+
+}
