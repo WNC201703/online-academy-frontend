@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
+import {
+  Redirect,
+  Link,
+  useParams,
+  useRouteMatch
+} from "react-router-dom";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-// import { CropSquare, CheckBox } from '@material-ui/icons';
 import Checkbox from '@material-ui/core/Checkbox';
 import { useSnackbar } from "notistack";
-import { useParams } from "react-router-dom";
 import { SnackBarVariant } from "../../utils/constant";
 import { getAllLessons, completedLesson, deleteCompletedLesson } from "../../config/api/Lessons";
 import { getCourseById } from "../../config/api/Courses";
@@ -15,6 +19,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Typography } from "@material-ui/core";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -40,9 +45,12 @@ const useStyles = makeStyles((theme) => ({
   },
   activeItem: {
     backgroundColor: '#e8e8e8',
+    color: '#000000  ',
+  },
+  inactiveItem: {
+    color: '#8f8f8f',
   }
 }));
-
 
 export default function LearningPage() {
   const classes = useStyles();
@@ -52,6 +60,8 @@ export default function LearningPage() {
   const [courseName, setCourseName] = useState('');
   const [lessons, setLessons] = useState([]);
   const [selectedLesson, setSelectedLesson] = useState();
+
+  let { path, url } = useRouteMatch();
 
   const fetchData = async () => {
     try {
@@ -110,57 +120,61 @@ export default function LearningPage() {
     setLessons([...lessons]);
   }
 
-  if (pending) return (
-    <Grid container justify="center">
-      <CircularProgress />
-    </Grid>
-  )
-
   return (
-    <Grid container >
-      <Grid item xs={12} sm={12}>
-        <Typography className={classes.courseName}>{courseName} </Typography>
-      </Grid>
-      <Grid item xs={12} sm={3} className={classes.leftPanel} >
-        <List component="nav" aria-label="video menu">
-          {
-            lessons ?
-              lessons.map(
-                (item) =>
-                (
-                  <ListItem button className={item === selectedLesson ? classes.activeItem : ''}
-                    onClick={() => { handleItemClicked(item) }}
-                  >
-                    <ListItemIcon>
-                      <Checkbox
-                        edge="start"
-                        checked={item.completed}
-                        tabIndex={-1}
-                        onClick={() => { handleCheckBoxChange(item) }}
-                        color='primary'
-                        disableRipple
-                        inputProps={{ 'aria-labelledby': 'my check box' }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText primary={`${item.lessonNumber}.  ${item.name}`} />
-                  </ListItem>
-                )
-              ) :
-              <div></div>
-          }
-        </List>
-      </Grid>
+    <div>
+      {
+        selectedLesson ? <Redirect to={{ pathname: `${url}/${selectedLesson._id}` }} /> : <></>
+      }
+      {
+        pending ? <Grid container justify="center">
+          <CircularProgress />
+        </Grid> : (
+          <Grid container >
+            <Grid item xs={12} sm={12}>
+              <Typography className={classes.courseName}>{courseName} </Typography>
+            </Grid>
+            <Grid item xs={12} sm={3} className={classes.leftPanel} >
+              <List component="nav" aria-label="video menu">
+                {
+                  lessons ?
+                    lessons.map(
+                      (item) =>
+                      (
+                        <ListItem component={Link} to={`${url}/${item._id}`} button className={item === selectedLesson ? classes.activeItem : classes.inactiveItem}
+                          onClick={() => { handleItemClicked(item) }}
+                        >
+                          <ListItemIcon>
+                            <Checkbox
+                              edge="start"
+                              checked={item.completed}
+                              tabIndex={-1}
+                              onClick={() => { handleCheckBoxChange(item) }}
+                              color='primary'
+                              disableRipple
+                              inputProps={{ 'aria-labelledby': 'my check box' }}
+                            />
+                          </ListItemIcon>
+                          <ListItemText primary={`${item.lessonNumber}.  ${item.name}`} />
+                        </ListItem>
+                      )
+                    ) :
+                    <div></div>
+                }
+              </List>
+            </Grid>
 
-      <Grid item xs={12} sm={9}>
-        <VideoPanel
-          onVideoEnded={handleVideoEnded}
-          lesson={selectedLesson}
-        >
-          {selectedLesson.name}
-        </VideoPanel>
-      </Grid>
-    </Grid>
+            <Grid item xs={12} sm={9}>
+              <VideoPanel
+                onVideoEnded={handleVideoEnded}
+                lesson={selectedLesson}
+              >
+                {selectedLesson.name}
+              </VideoPanel>
+            </Grid>
+          </Grid>
+
+        )
+      }
+    </div>
   );
-
-
 }
