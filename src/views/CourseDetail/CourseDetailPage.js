@@ -6,22 +6,24 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import grey from "@material-ui/core/colors/grey";
 import Box from "@material-ui/core/Box";
 import Rating from "@material-ui/lab/Rating";
-import {useParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import {getCourseById} from "../../config/api/Courses";
 import {SnackBarVariant} from "../../utils/constant";
-import {moneyFormat, ratingNumberFormat} from "../../utils/FormatHelper";
+import {dateFormat, discountFormat, moneyFormat, ratingNumberFormat} from "../../utils/FormatHelper";
 import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
 import FavoriteOutlinedIcon from '@material-ui/icons/FavoriteOutlined';
 import {Image} from "semantic-ui-react";
-import {getAllLessons, getRelatedCourse} from "../../config/api/Lessons";
+import {enrollCourse, getAllLessons, getRelatedCourse} from "../../config/api/Lessons";
 import {CourseInfoLoading, DescriptionLoading, LessonsLoading, RelatedCourseLoading} from "../../components/Loading";
 import HorizontalCarousel from "../Homepage/HorizontalCarousel";
 import CustomFavouriteOutlinedButton from "../../components/Button/CustomFavouriteOutlinedButton";
 import CustomFavouriteContainedButton from "../../components/Button/CustomFavouriteContainedButton";
-import {addFavouriteCourse, getFavouriteCourse, removeFavouriteCourse} from "../../config/api/User";
+import {addFavouriteCourse, getFavouriteCourse, getMyCourses, removeFavouriteCourse} from "../../config/api/User";
 import AuthUserContext from "../../contexts/user/AuthUserContext";
-import CustomPrimaryContainedButton from "../../components/Button/CustomPrimaryContainedButton";
-
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import SubscriptionsOutlinedIcon from '@material-ui/icons/SubscriptionsOutlined';
+import CustomEnrollOutlinedButton from "../../components/Button/CustomEnrollOutlinedButton";
+import CustomViewContainedButton from "../../components/Button/CustomViewContainedButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,17 +80,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 export const CourseDetail = () => {
   const classes = useStyles();
+  const history = useHistory();
   const {user} = useContext(AuthUserContext);
-  console.log(user);
   const {id} = useParams();
   const {enqueueSnackbar} = useSnackbar();
   const [courseInfo, setCourseInfo] = useState({});
   const [courseLessons, setCourseLessons] = useState([])
   const [relatedCourses, setRelatedCourses] = useState([])
-
   const [isPending, setIsPending] = useState(false);
   const [isFavourite, setIsFavourite] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isEndrolled, setIsEndrolled] = useState(false);
+
   useEffect(() => {
     const eff = async () => {
       await fetchCourseDetail();
@@ -120,16 +123,35 @@ export const CourseDetail = () => {
     setIsProcessing(false)
   }
 
+  const handleEnrollCourse = async () => {
+    const res = enrollCourse(courseInfo._id)
+    if (res.status === 201) {
+      setIsEndrolled(true);
+      enqueueSnackbar("Enroll this course successfully", {variant: SnackBarVariant.Success});
+    } else
+      enqueueSnackbar("Failed to enroll this course", {variant: SnackBarVariant.Error});
+  }
+
+  const handleViewLessons = async () => {
+    history.push(`/courses/${courseInfo._id}/learning`)
+  }
 
   const fetchCourseDetail = async () => {
     setIsPending(true);
     try {
-      const [info, lessons, related, favourite] = await Promise.all([
-        getCourseById(id), getAllLessons(id), getRelatedCourse(id), getFavouriteCourse(user._id)
+      const [info, lessons, related, favourite, mine] = await Promise.all([
+        getCourseById(id), getAllLessons(id), getRelatedCourse(id), getFavouriteCourse(user._id), getMyCourses()
       ]);
-      const favouriteIndex = favourite?.data?.findIndex(x => x._id === info?.data?._id);
-      if (!(favouriteIndex < 0)) setIsFavourite(true);
-      console.log(favourite.data);
+      const favouriteIndex = favourite?.data?.findIndex(x => x.course === info?.data?._id);
+      const enrolledIndex = mine?.data?.findIndex(x => x.course === info?.data?._id);
+
+      if (!(favouriteIndex < 0)) {
+        console.log("run here")
+        setIsFavourite(true);
+      }
+      if (!(enrolledIndex < 0)) setIsEndrolled(true);
+
+      console.log(enrolledIndex);
       setCourseInfo(info.data);
       setCourseLessons(lessons.data);
       setRelatedCourses(related.data);
@@ -163,12 +185,17 @@ export const CourseDetail = () => {
                   <span>({courseInfo.numberOfReviews}) Ratings</span>
                 </Box>
                 <Box className={classes.originMoney}>{moneyFormat(courseInfo?.price)}
-                  <span className={classes.discountMoney}>{moneyFormat(120)}</span></Box>
+                  <span
+                    className={classes.discountMoney}>{moneyFormat(discountFormat(courseInfo?.price, courseInfo?.percentDiscount))}</span></Box>
                 <Box className={classes.courseDescription}>{courseInfo.teacher}</Box>
+                <Box className={classes.courseDescription}>
+                  Last updated: {dateFormat(courseInfo.updatedAt)}
+                </Box>
                 <Box className={classes.courseDescription} direction='column'>
                   {
                     isFavourite ? <CustomFavouriteContainedButton
                         size="large"
+                        style={{marginRight: 12}}
                         onClick={handleRemoveFavouriteCourse}
                         disabled={isProcessing}
                         startIcon={<FavoriteOutlinedIcon/>}
@@ -178,10 +205,29 @@ export const CourseDetail = () => {
                       <CustomFavouriteOutlinedButton
                         onClick={handleFavouriteButtonClick}
                         size="large"
+                        style={{marginRight: 12}}
                         startIcon={<FavoriteBorderOutlinedIcon/>}
                       >
                         Add to favourite
                       </CustomFavouriteOutlinedButton>
+                  }
+
+                  {
+                    isEndrolled ? <CustomViewContainedButton
+                        size="large"
+                        onClick={handleViewLessons}
+                        disabled={isProcessing}
+                        startIcon={<VisibilityIcon/>}
+                      >
+                        View lessons
+                      </CustomViewContainedButton> :
+                      <CustomEnrollOutlinedButton
+                        onClick={handleEnrollCourse}
+                        size="large"
+                        startIcon={<SubscriptionsOutlinedIcon/>}
+                      >
+                        Enroll this course
+                      </CustomEnrollOutlinedButton>
                   }
 
                 </Box>
