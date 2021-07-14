@@ -15,3 +15,7 @@ export async function updateLesson(courseId, data, lessonNumber) {
 export async function getLessonByNumber(courseId, data, lessonNumber) {
   return await AXIOS_INSTANCE.get(`/api/courses/${courseId}/lessons/${lessonNumber}`);
 }
+
+export async function getRelatedCourse(courseId) {
+  return await AXIOS_INSTANCE.get(`/api/courses/${courseId}/related`);
+}
