@@ -24,6 +24,7 @@ export default function TabPanel(props) {
             hidden={value !== index}
             id={`vertical-tabpanel-${index}`}
             aria-labelledby={`vertical-tab-${index}`}
+            style={{backgroundColor:'#f5f5f5'}}
             {...other}
         >
             {value === index && (
@@ -49,7 +50,7 @@ export default function TabPanel(props) {
                         </Player>
                         <Box m={2} />
                         <Box mr={12} >
-                            <Typography variant="h6" >{'Descriptio:'}</Typography>
+                            <Typography variant="h6" >{'Description:'}</Typography>
                             <Typography component="h2">{lesson.description}</Typography>
                         </Box >
                         <Box my={12} />

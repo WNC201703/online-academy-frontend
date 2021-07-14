@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { CropSquare } from '@material-ui/icons';
 import { useSnackbar } from "notistack";
-import {useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { SnackBarVariant } from "../../utils/constant";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -18,12 +18,11 @@ const useStyles = makeStyles((theme) => ({
     height: 700,
   },
   tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-    minWidth: 300,
-    maxWidth: 300,
+    borderRight: `2px solid ${theme.palette.divider}`,
+    minWidth: 280,
+    maxWidth: 280,
     display: 'flex',
     alignItems: 'left',
-
   },
   tab: {
     textTransform: 'none',
@@ -33,11 +32,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "flex-start",
   },
   icon: {
-    marginRight: 10
-  },
-  playerWrapper: {
-    position: 'relative',
-    paddingTop: '56.25%' /* 720 / 1280 = 0.5625 */
+    marginRight: 5
   },
   reactPlayer: {
     position: 'absolute',
@@ -53,7 +48,7 @@ function a11yProps(index) {
 
 export default function LearningPage() {
   const { enqueueSnackbar } = useSnackbar();
-  const {courseId} = useParams();
+  const { courseId } = useParams();
   const classes = useStyles();
   const [videos, setVideos] = useState();
   const [value, setValue] = useState();
@@ -90,12 +85,17 @@ export default function LearningPage() {
   return (
     <div className={classes.root}>
       <Tabs
+        variant="scrollable"
         orientation="vertical"
         indicatorColor="primary"
         onChange={handleChange}
         textColor="primary"
-
         value={value}
+        TabIndicatorProps={{
+          style: {
+            width:"15px",
+          }
+        }}
         aria-label="Vertical tabs example"
         className={classes.tabs}
       >
@@ -138,8 +138,6 @@ export default function LearningPage() {
           :
           <div></div>
       }
-
-
     </div>
   );
 }
