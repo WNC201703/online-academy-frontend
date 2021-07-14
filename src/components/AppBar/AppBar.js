@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
+      '&:hover': {
+        cursor: "pointer"
+      },
     },
   },
   search: {
@@ -110,6 +113,11 @@ export default function PrimarySearchAppBar() {
     setAnchorEl(null);
     handleMobileMenuClose();
   }
+  const handleGotoProfile = () => {
+    history.push('/profile');
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  }
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
@@ -123,6 +131,10 @@ export default function PrimarySearchAppBar() {
     history.push('/sign-up');
   }
 
+  const handleTitleClick = () => {
+    history.push('/');
+  }
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -134,7 +146,7 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleGotoProfile}>Profile</MenuItem>
       <MenuItem onClick={handleLogOut}>Log out</MenuItem>
     </Menu>
   );
@@ -176,7 +188,7 @@ export default function PrimarySearchAppBar() {
             aria-label="open drawer">
             <MenuIcon/>
           </IconButton>
-          <Typography className={classes.title} variant="h6" noWrap>
+          <Typography onClick={handleTitleClick} className={classes.title} variant="h6" noWrap>
             Online Academy
           </Typography>
           <div className={classes.search}>
