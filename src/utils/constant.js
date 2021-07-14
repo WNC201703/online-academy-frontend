@@ -5,7 +5,8 @@ export const SnackBarVariant = {
 }
 
 export const LocalKey = {
-  AuthToken: 'auth_token'
+  AuthToken: 'auth_token',
+  UserInfo: 'user_info'
 }
 
 export const UserRoles = {
