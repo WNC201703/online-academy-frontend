@@ -1,4 +1,4 @@
-import {AXIOS_INSTANCE} from "./apiconfig";
+import { AXIOS_INSTANCE } from "./apiconfig";
 
 export async function getAllLessons(courseId) {
   return await AXIOS_INSTANCE.get(`/api/courses/${courseId}/lessons`);
@@ -14,4 +14,12 @@ export async function updateLesson(courseId, data, lessonNumber) {
 
 export async function getLessonByNumber(courseId, data, lessonNumber) {
   return await AXIOS_INSTANCE.get(`/api/courses/${courseId}/lessons/${lessonNumber}`);
+}
+
+export async function completedLessons(courseId, lessonId) {
+  return await AXIOS_INSTANCE.post(`/api/me/courses/${courseId}/completed-lesson`, { lessonId: lessonId });
+}
+
+export async function deleteCompletedLessons(courseId, lessonId) {
+  return await AXIOS_INSTANCE.delete(`/api/me/courses/${courseId}/completed-lesson`, { lessonId: lessonId });
 }

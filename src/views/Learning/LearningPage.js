@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { CropSquare } from '@material-ui/icons';
+// import { CropSquare, CheckBox } from '@material-ui/icons';
+import Checkbox from '@material-ui/core/Checkbox';
 import { useSnackbar } from "notistack";
 import { useParams } from "react-router-dom";
 import { SnackBarVariant } from "../../utils/constant";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { getAllLessons } from "../../config/api/Lessons";
+import { getAllLessons, completedLessons, deleteCompletedLessons } from "../../config/api/Lessons";
 import TabPanel from './TabPanel'
-
-
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -25,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'left',
   },
   tab: {
+    width: 280,
     textTransform: 'none',
   },
   iconLabelWrapper: {
@@ -50,8 +52,9 @@ export default function LearningPage() {
   const { enqueueSnackbar } = useSnackbar();
   const { courseId } = useParams();
   const classes = useStyles();
-  const [videos, setVideos] = useState();
-  const [value, setValue] = useState();
+  const [videos, setVideos] = useState([]);
+  const [pending, setPending] = useState(true);
+  const [value, setValue] = useState(0);
 
   const fetchVideos = async () => {
     try {
@@ -60,7 +63,6 @@ export default function LearningPage() {
         const data = response.data;
         setVideos(data);
         if (data.length > 0) {
-          console.log('data 0', data[0]._id);
           setValue(data[0]._id);
         }
       } else {
@@ -70,18 +72,35 @@ export default function LearningPage() {
       enqueueSnackbar("Error", { variant: SnackBarVariant.Error });
       console.log(e);
     } finally {
+      setPending(false);
     }
   }
 
   useEffect(() => {
-    console.log('fetch data');
     fetchVideos();
-  }, [])
+  }, []);
 
   const handleChange = (event, newValue) => {
     if (newValue) setValue(newValue);
   };
 
+  const handleCheckBoxChange = (event, item) => {
+    // videos.forEach(element => {
+    //   if (element._id===event.target.id){
+    //       element.completed=event.target.checked;
+    //       if (element._id===value){
+    //       }
+    //   }
+    // });
+    // setVideos(videos);
+  };
+
+
+  if (pending) return (
+    <Grid container justify="center">
+      <CircularProgress />
+    </Grid>
+  )
   return (
     <div className={classes.root}>
       <Tabs
@@ -93,7 +112,7 @@ export default function LearningPage() {
         value={value}
         TabIndicatorProps={{
           style: {
-            width:"15px",
+            width: "5px",
           }
         }}
         aria-label="Vertical tabs example"
@@ -110,10 +129,19 @@ export default function LearningPage() {
                 }}
                 value={item._id}
                 label={
-                  <div>
-                    <CropSquare color="primary" className={classes.icon} />
+                  <div style={{ width: 280, display: 'flex', alignItems: 'center' }}>
+                    {
+                      <Checkbox
+                        checked={item.completed}
+                        id={item._id}
+                        onChange={handleCheckBoxChange}
+                        color="primary"
+                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                      />
+                    }
                     {`${item.lessonNumber}. ${item.name}`}
                   </div>
+
                 }
 
                 {...a11yProps(item._id)} />
