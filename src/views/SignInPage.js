@@ -8,7 +8,7 @@ import Box from "@material-ui/core/Box";
 import {isValidEmail} from "../utils/ValidationHelper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {signIn} from "../config/api/User";
-import {SnackBarVariant, UserRoles} from "../utils/constant";
+import {LocalKey, SnackBarVariant, UserRoles} from "../utils/constant";
 import {useSnackbar} from "notistack";
 import {saveAccessToken} from "../utils/LocalStorageUtils";
 import AuthUserContext from "../contexts/user/AuthUserContext";
@@ -58,11 +58,12 @@ export const SignInPage = () => {
       const {accessToken, user} = res.data;
       delete user['password'];
       saveAccessToken(accessToken);
-      localStorage.setItem('user_info', JSON.stringify(user));
+      localStorage.setItem(LocalKey.UserInfo, JSON.stringify(user));
       saveUser(user);
       if (user.role === UserRoles.Admin) {
         history.push('/admin');
-      }
+      } else history.push('/');
+
       enqueueSnackbar("Sign in successfully", {variant: SnackBarVariant.Success});
 
     } else {
