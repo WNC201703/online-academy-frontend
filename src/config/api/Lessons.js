@@ -7,6 +7,7 @@ export async function getAllLessons(courseId) {
 export async function getPreviewLessons(courseId) {
   return await AXIOS_INSTANCE.get(`/api/courses/${courseId}/preview`);
 }
+
 export async function addLesson(courseId, data) {
   return await AXIOS_INSTANCE.post(`/api/courses/${courseId}/lessons`, data);
 }
@@ -25,5 +26,8 @@ export async function getRelatedCourse(courseId) {
 
 export async function enrollCourse(courseId) {
   return await AXIOS_INSTANCE.post(`/api/courses/${courseId}/enrollments`);
+}
 
+export async function getCourseReviews(courseId, pageSize, pageNumber) {
+  return await AXIOS_INSTANCE.get(`/api/courses/${courseId}/reviews?page_size=${pageSize}&page_number=${pageNumber}`);
 }
