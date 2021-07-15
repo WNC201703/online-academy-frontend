@@ -168,7 +168,8 @@ export const CourseDetail = () => {
     if (res === 200) {
       const nextReviewList = res.data.results;
       const newReviewList = [...reviewList, ...nextReviewList];
-      setReviewList(newReviewList)
+      setReviewList(newReviewList);
+      setReviewPage(nextPage);
     }
   }
 
