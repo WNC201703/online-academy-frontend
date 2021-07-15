@@ -1,12 +1,16 @@
 import React, {useState} from "react";
 import AuthUserContext from "./AuthUserContext";
+import {LocalKey} from "../../utils/constant";
 
 const UserContext = (props) => {
-  let localUser = JSON.parse(localStorage.getItem("user"));
+  let localUser = JSON.parse(localStorage.getItem(LocalKey.UserInfo));
   if (localUser === null) localUser = {};
   const [user, setUser] = useState(localUser);
   const saveUser = (user) => setUser(user);
-  const removeUser = () => setUser(null);
+  const removeUser = () => {
+    setUser(null);
+    localStorage.setItem(LocalKey.UserInfo, null);
+  }
 
   return (
     <AuthUserContext.Provider

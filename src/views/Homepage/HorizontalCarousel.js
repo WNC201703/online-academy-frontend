@@ -6,6 +6,7 @@ import Rating from '@material-ui/lab/Rating';
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core";
 import {moneyFormat} from "../../utils/FormatHelper";
+import {useHistory} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,9 +56,11 @@ const responsive = {
 
 const HorizontalCarousel = ({title, data}) => {
   const classes = useStyles();
-  const handleItemClick = () => {
-    console.log("Item Click");
+  const history = useHistory();
+  const handleItemClick = (event, id) => {
+    history.push(`/courses/${id}`);
   }
+
   return (
     <Box>
       <Box className={classes.blockTitle}>{title}</Box>
@@ -70,7 +73,9 @@ const HorizontalCarousel = ({title, data}) => {
         {data.map((item, index) => {
           const isDiscount = true;
           return (
-            <Paper className={classes.paper} key={index} onClick={handleItemClick} style={{marginRight: 8, padding: 5}}>
+            <Paper className={classes.paper} key={index}
+                   onClick={(event) => handleItemClick(event, item._id)}
+                   style={{marginRight: 8, padding: 5}}>
               <Image
                 draggable={false}
                 style={{width: "100%", height: 250}}

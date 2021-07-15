@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {makeStyles} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -7,12 +7,14 @@ import CustomPrimaryContainedButton from "../components/Button/CustomPrimaryCont
 import Box from "@material-ui/core/Box";
 import {isValidEmail} from "../utils/ValidationHelper";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {signIn} from "../config/api/User";
+import {getFavouriteCourse, getInfo, signIn, updateUser} from "../config/api/User";
 import {LocalKey, SnackBarVariant, UserRoles} from "../utils/constant";
 import {useSnackbar} from "notistack";
 import {saveAccessToken} from "../utils/LocalStorageUtils";
 import AuthUserContext from "../contexts/user/AuthUserContext";
 import {useHistory} from "react-router-dom";
+import {getCourseById} from "../config/api/Courses";
+import {getAllLessons, getRelatedCourse} from "../config/api/Lessons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,47 +31,56 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SignInPage = () => {
+export const ProfilePage = () => {
   const classes = useStyles();
   const history = useHistory();
+  const {user} = useContext(AuthUserContext);
   const {saveUser} = useContext(AuthUserContext);
   const {enqueueSnackbar} = useSnackbar();
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
   const [isPending, setIsPending] = useState(false);
+  const [profile, setProfile] = useState(null);
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  }
+  useEffect(() => {
+    const eff = async () => {
+      await fetchProfile();
+    }
+    eff();
+  }, []);
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-  }
-
-  const handleSignInButtonClick = async () => {
+  const fetchProfile = async () => {
     setIsPending(true);
-    const signInInfo = {
-      email: email,
-      password: password
+    try {
+      const res = await getInfo();
+      if (res.status === 200) {
+        setProfile(res.data);
+      }
+    } catch (e) {
+      enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Error});
+      console.log(e);
+    } finally {
+      setIsPending(false);
     }
+  }
 
-    const res = await signIn(signInInfo);
-    if (res.status === 200) {
-      const {accessToken, user} = res.data;
-      delete user['password'];
-      saveAccessToken(accessToken);
-      localStorage.setItem(LocalKey.UserInfo, JSON.stringify(user));
-      saveUser(user);
-      if (user.role === UserRoles.Admin) {
-        history.push('/admin');
-      } else history.push('/');
+  const handleNameChange = (event) => {
+    const newProfile = {...profile};
+    newProfile.fullname = event.target.value
+    setProfile(newProfile);
+  }
 
-      enqueueSnackbar("Sign in successfully", {variant: SnackBarVariant.Success});
+  const handleUpdateButtonClick = async () => {
+    setIsPending(true);
 
-    } else {
-      enqueueSnackbar("Can not sign in to your account", {variant: SnackBarVariant.Error});
+    try {
+      const res = await updateUser(user._id, profile);
+      enqueueSnackbar("Update successfully", {variant: SnackBarVariant.Success});
+
+
+    } catch (e) {
+
+    } finally {
+      setIsPending(false);
     }
-    setIsPending(false);
   }
 
   return <div className={classes.root}>
@@ -82,23 +93,21 @@ export const SignInPage = () => {
       style={{minHeight: '100vh'}}>
       <Grid item xs={3}>
         <Paper style={{justifyContent: 'center', padding: 48}} className={classes.paper}>
-          <Box className={classes.formTitle}>Sign in to your account</Box>
-          <Box fontSize={14} style={{marginTop: 24, marginBottom: 24}}>Build skills for
-            today, tomorrow, and beyond.
-            Education to future-proof your career.</Box>
-          <TextField fullWidth onChange={handleEmailChange} value={email} label="Email" variant="outlined"/>
-          <TextField fullWidth value={password}
-                     onChange={handlePasswordChange} style={{marginTop: 24, marginBottom: 24}} type="password"
-                     label="Password"
+          <Box className={classes.formTitle}>Your profile</Box>
+          <Box fontSize={14} style={{marginTop: 24, marginBottom: 24}}>Update your profile here.</Box>
+          <TextField fullWidth onChange={handleNameChange} value={profile?.fullname}
+                     variant="outlined"/>
+          <TextField fullWidth value={profile?.email}
+                     disabled
+                     style={{marginTop: 24, marginBottom: 24}}
                      variant="outlined"/>
           <Box>
             {
               isPending ? <CircularProgress/> : <CustomPrimaryContainedButton
-                onClick={handleSignInButtonClick}
-                disabled={!(isValidEmail(email) > 0 && password?.length > 0)}
+                onClick={handleUpdateButtonClick}
                 variant="contained"
                 color="primary">
-                Sign In
+                Update
               </CustomPrimaryContainedButton>
             }
           </Box>
