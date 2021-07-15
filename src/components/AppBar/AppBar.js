@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {fade, makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -18,6 +18,8 @@ import CustomPrimaryContainedButton from "../Button/CustomPrimaryContainedButton
 import CustomSecondaryOutlinedButton from "../Button/CustomSecondaryOutlinedButton";
 import AuthUserContext from "../../contexts/user/AuthUserContext";
 import Box from "@material-ui/core/Box";
+import Popover from "@material-ui/core/Popover";
+import {Divider, Image} from "semantic-ui-react";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -90,10 +92,23 @@ export default function PrimarySearchAppBar() {
   const classes = useStyles();
   const history = useHistory();
   const {user, removeUser} = useContext(AuthUserContext);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const [anchorEl2, setAnchorEl2] = React.useState(null);
+
+  const handleTextFieldFocus = (event) => {
+    setAnchorEl2(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setAnchorEl2(null);
+  };
+
+  const open = Boolean(anchorEl2);
+  const id = open ? 'simple-popover' : undefined;
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -203,6 +218,32 @@ export default function PrimarySearchAppBar() {
               }}
               inputProps={{'aria-label': 'search'}}
             />
+            <Popover
+              id={id}
+              open={true}
+              anchorEl={anchorEl2}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+              <Typography className={classes.typography}>The content of the Popover.</Typography>
+              <Box padding={2} display='flex' justify='center'  direction={'column'}>
+                <Image
+                  draggable={false}
+                  style={{width: 80, height: 80, marginRight: 8}}/>
+                <Box justify='center' >
+                  <Box>Course tite</Box>
+                  <Box>Course description</Box>
+                </Box>
+              </Box>
+              <Divider/>
+            </Popover>
           </div>
           <DropdownMenu/>
           <div className={classes.grow}/>
