@@ -13,7 +13,12 @@ import {dateFormat, discountFormat, moneyFormat, ratingNumberFormat} from "../..
 import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
 import FavoriteOutlinedIcon from '@material-ui/icons/FavoriteOutlined';
 import {Image} from "semantic-ui-react";
-import {enrollCourse, getAllLessons, getPreviewLessons, getRelatedCourse} from "../../config/api/Lessons";
+import {
+  enrollCourse,
+  getCourseReviews,
+  getPreviewLessons,
+  getRelatedCourse
+} from "../../config/api/Lessons";
 import {CourseInfoLoading, DescriptionLoading, LessonsLoading, RelatedCourseLoading} from "../../components/Loading";
 import HorizontalCarousel from "../Homepage/HorizontalCarousel";
 import CustomFavouriteOutlinedButton from "../../components/Button/CustomFavouriteOutlinedButton";
@@ -27,7 +32,6 @@ import CustomViewContainedButton from "../../components/Button/CustomViewContain
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import CustomSecondaryOutlinedButton from "../../components/Button/CustomSecondaryOutlinedButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -84,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
   note: {
     fontWeight: "bold"
 
-  }
+  },
 }));
 export const CourseDetail = () => {
   const classes = useStyles();
@@ -101,6 +105,9 @@ export const CourseDetail = () => {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [ratingPoint, setRatingPoint] = useState(1);
   const [ratingContent, setRatingContent] = useState('');
+  const [reviewList, setReviewList] = useState([]);
+  const [reviewPage, setReviewPage] = useState(1);
+
   const isSignedIn = user != null;
   useEffect(() => {
     const eff = async () => {
@@ -155,23 +162,33 @@ export const CourseDetail = () => {
     setRatingContent(event.target.value);
   }
 
-  const handleLoadMoreReview = () => {
-
+  const handleLoadMoreReview = async () => {
+    const nextPage = reviewPage + 1;
+    const res = await getCourseReviews(id, 5, nextPage);
+    if (res === 200) {
+      const nextReviewList = res.data.results;
+      const newReviewList = [...reviewList, ...nextReviewList];
+      setReviewList(newReviewList)
+    }
   }
 
   const fetchCourseDetail = async () => {
     setIsPending(true);
     try {
-      const [info, lessons, related, favourite, mine] = await Promise.all([
-        getCourseById(id), getPreviewLessons(id), getRelatedCourse(id), getFavouriteCourse(user._id), getMyCourses()
+      const [info, lessons, related,
+        favourite, mine, reviews] = await Promise.all([
+        getCourseById(id), getPreviewLessons(id), getRelatedCourse(id),
+        getFavouriteCourse(user._id), getMyCourses(),
+        getCourseReviews(id, 10, reviewPage)
       ]);
       const favouriteIndex = favourite?.data?.findIndex(x => x.course === info?.data?._id);
       const enrolledIndex = mine?.data?.findIndex(x => x.course === info?.data?._id);
+      console.log("review: ", reviews.data)
 
       if (!(favouriteIndex < 0)) setIsFavourite(true);
       if (!(enrolledIndex < 0)) setIsEnrolled(true);
 
-      console.log(enrolledIndex);
+      setReviewList(reviews?.data?.results)
       setCourseInfo(info.data);
       setCourseLessons(lessons.data);
       setRelatedCourses(related.data);
@@ -300,6 +317,7 @@ export const CourseDetail = () => {
           }
         </Paper>
         <Paper className={classes.paper}>
+
           <Box className={classes.blockTitle}>Ratings</Box>
           {
             isSignedIn ? <Box direction="column">
@@ -320,28 +338,28 @@ export const CourseDetail = () => {
                 Send
               </Button>
               {
-                [1, 2, 3].map(item => <Box>
-                  <Box style={{marginLeft: 12}}> Username</Box>
-                  <Box style={{marginLeft: 12}}> review</Box>
-                  <Rating style={{marginLeft: 10}} readOnly value={5} size="medium"/>
+                reviewList.map(item => <Box>
+                  <Box className={classes.note} style={{marginLeft: 12}}> {item?.username}</Box>
+                  <Box style={{marginLeft: 12}}> {item?.review}</Box>
+                  <Rating style={{marginLeft: 10}} readOnly value={item?.rating} size="medium"/>
                 </Box>)
               }
               <Box>
                 <CustomEnrollOutlinedButton
+                  fullwidth
                   onClick={handleLoadMoreReview}
                   size="small"
-                  style={{marginRight: 12}}
+                  style={{marginRight: 12, marginLeft: 12, marginTop: 12}}
                   startIcon={<AddCircleOutlineIcon/>}
                 >
-                  Load more
+                  Show more reviews
                 </CustomEnrollOutlinedButton> </Box>
             </Box> : <Box>
               You need to sign in to read this content
             </Box>
-
           }
-
         </Paper>
+
       </Grid>
       <Grid item xs={12} sm={2}/>
     </Grid>
