@@ -115,6 +115,7 @@ export const CourseDetail = () => {
     }
     eff();
   }, [id]);
+  const isDiscount = courseInfo?.percentDiscount > 0
 
   const handleFavouriteButtonClick = async () => {
     setIsProcessing(true);
@@ -181,7 +182,7 @@ export const CourseDetail = () => {
         getFavouriteCourse(user._id), getMyCourses(),
         getCourseReviews(id, 10, reviewPage)
       ]);
-      if(info.status !== 200 ) {
+      if (info.status !== 200) {
         return;
       }
       const favouriteIndex = favourite?.data?.findIndex(x => x.course === info?.data?._id);
@@ -242,8 +243,12 @@ export const CourseDetail = () => {
                   <span>({courseInfo?.numberOfReviews}) Ratings</span>
                 </Box>
                 <Box className={classes.originMoney}>{moneyFormat(courseInfo?.price)}
-                  <span
-                    className={classes.discountMoney}>{moneyFormat(discountFormat(courseInfo?.price, courseInfo?.percentDiscount))}</span></Box>
+                  {
+                    isDiscount ? <span
+                        className={classes.discountMoney}>{moneyFormat(discountFormat(courseInfo?.price, courseInfo?.percentDiscount))}</span>
+                      : <></>
+                  }
+                </Box>
                 <Box className={classes.courseDescription}>{courseInfo.teacher}</Box>
                 <Box className={classes.courseDescription}>
                   Last updated: {dateFormat(courseInfo.updatedAt)}
@@ -319,7 +324,6 @@ export const CourseDetail = () => {
           }
         </Paper>
         <Paper className={classes.paper}>
-
           <Box className={classes.blockTitle}>Ratings</Box>
           {
             isSignedIn ? <Box direction="column">
