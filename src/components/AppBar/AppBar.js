@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {fade, makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -19,7 +19,17 @@ import CustomSecondaryOutlinedButton from "../Button/CustomSecondaryOutlinedButt
 import AuthUserContext from "../../contexts/user/AuthUserContext";
 import Box from "@material-ui/core/Box";
 import Popover from "@material-ui/core/Popover";
-import {Divider, Image} from "semantic-ui-react";
+
+import debounce from "@material-ui/core/utils/debounce";
+import {getAllCourses} from "../../config/api/Courses";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Paper from "@material-ui/core/Paper";
+import {Image} from "semantic-ui-react";
+import Rating from "@material-ui/lab/Rating";
+import {moneyFormat} from "../../utils/FormatHelper";
+import grey from "@material-ui/core/colors/grey";
+import CustomEnrollOutlinedButton from "../Button/CustomEnrollOutlinedButton";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -85,6 +95,33 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },
+  },
+  itemTitle: {
+    fontWeight: 'bold'
+  },
+  discountMoney: {
+    textDecoration: "line-through",
+    fontWeight: "normal"
+  },
+  originMoney: {
+    fontWeight: "bold",
+  },
+  itemDescription: {
+    whiteSpace: 'nowrap',
+    display: 'webkit-box',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    WebkitLineClamp: 2,
+  },
+  itemContainer: {
+    '&:hover': {
+      backgroundColor: grey[300],
+      cursor: "pointer"
+    },
+    searchContainer: {
+      height: 200,
+      maxHeight: 200,
+    }
   }
 }));
 
@@ -97,10 +134,35 @@ export default function PrimarySearchAppBar() {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const [anchorEl2, setAnchorEl2] = React.useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
+  const [search, setSearch] = useState('');
 
-  const handleTextFieldFocus = (event) => {
-    setAnchorEl2(event.currentTarget);
-  };
+  const debounceSearchRequest = useCallback(debounce((nextValue) => searchCourse(nextValue), 1000), []);
+  const searchCourse = async (value) => {
+    setIsSearching(true);
+    if (value.length === 1) {
+      setIsSearching(false);
+      return
+    }
+    const response = await getAllCourses(1, 10, null, value, null);
+    if (response.status === 200) {
+      const result = response.data;
+      setSearchResult(result.results);
+    }
+    setIsSearching(false);
+    setAnchorEl2(true);
+  }
+
+  const handleSearchInputChange = async (event) => {
+    setSearch(event.target.value);
+    if (event.target.value.length > 0) debounceSearchRequest(event.target.value);
+  }
+
+  const handleSearchItemClick = (event, id) => {
+    setSearch('');
+    history.push(`/courses/${id}`);
+  }
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -144,6 +206,10 @@ export default function PrimarySearchAppBar() {
 
   const handleSignUpButtonClick = () => {
     history.push('/sign-up');
+  }
+
+  const handleShowAllSearchResult = () => {
+    history.push('/courses/all');
   }
 
   const handleTitleClick = () => {
@@ -208,7 +274,9 @@ export default function PrimarySearchAppBar() {
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
-              <SearchIcon/>
+              {
+                isSearching ? <CircularProgress size={16}/> : <SearchIcon/>
+              }
             </div>
             <InputBase
               placeholder="Search…"
@@ -216,35 +284,71 @@ export default function PrimarySearchAppBar() {
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
+              value={search}
+              onChange={handleSearchInputChange}
               inputProps={{'aria-label': 'search'}}
             />
-            <Popover
-              id={id}
-              open={true}
-              anchorEl={anchorEl2}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-            >
-              <Typography className={classes.typography}>The content of the Popover.</Typography>
-              <Box padding={2} display='flex' justify='center'  direction={'column'}>
-                <Image
-                  draggable={false}
-                  style={{width: 80, height: 80, marginRight: 8}}/>
-                <Box justify='center' >
-                  <Box>Course tite</Box>
-                  <Box>Course description</Box>
-                </Box>
-              </Box>
-              <Divider/>
-            </Popover>
+
           </div>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl2}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            style={{marginTop: 50, marginLeft: 120, padding: 12}}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+          >
+            <Box height={450} className={classes.searchContainer}>
+              {
+                searchResult?.map(item => {
+                  return (
+                    <Paper
+                      style={{marginBottom: 10}}
+                      onClick={(event) => {
+                        setAnchorEl2(null);
+                        handleSearchItemClick(event, item._id)
+                      }}
+                      className={classes.itemContainer}>
+                      <Box padding={2} display='flex' justify='center' direction={'column'}>
+                        <Image
+                          src={item?.imageUrl}
+                          draggable={false}
+                          style={{width: 80, height: 80, marginRight: 8}}/>
+                        <Box width={300} justify='center'>
+                          <Box className={classes.itemTitle}>{item?.name}</Box>
+                          <Box className={classes.itemDescription}>{item?.shortDescription}</Box>
+                          <Box display="flex" alignItems="center"
+                               justify="center">
+                            <Rating name="read-only" value={5} readOnly/>
+                            <span>(123)</span>
+                          </Box>
+                          <Box className={classes.originMoney}>{moneyFormat(item?.price)} {true ?
+                            <span className={classes.discountMoney}>{moneyFormat(120)}</span> : <></>}
+                          </Box>
+                        </Box>
+                      </Box>
+                    </Paper>
+                  )
+                })
+              }
+              <Box>
+                <CustomEnrollOutlinedButton
+                  style={{marginBottom: 24, marginLeft: 12,marginRight: 30,paddingRight: 30, width:'95%'}}
+                  onClick={handleShowAllSearchResult}
+                  size="small"
+                  startIcon={<AddCircleOutlineIcon/>}
+                >
+                  Show all results
+                </CustomEnrollOutlinedButton> </Box>
+            </Box>
+          </Popover>
           <DropdownMenu/>
           <div className={classes.grow}/>
           <div className={classes.sectionDesktop}>
