@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {fade, makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -30,6 +30,7 @@ import {moneyFormat} from "../../utils/FormatHelper";
 import grey from "@material-ui/core/colors/grey";
 import CustomEnrollOutlinedButton from "../Button/CustomEnrollOutlinedButton";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import {getAllCategories, getCategoriesList} from "../../config/api/Categories";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -133,6 +134,20 @@ export default function PrimarySearchAppBar() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
   const [search, setSearch] = useState('');
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const eff = async () => {
+      await fetchCategoriesList();
+    }
+    eff();
+  }, []);
+
+  const fetchCategoriesList = async () => {
+    const res = await getCategoriesList();
+    console.log('categories: ', res.data)
+    setCategories(res.data)
+  }
 
   const debounceSearchRequest = useCallback(debounce((nextValue) => searchCourse(nextValue), 1000), []);
   const searchCourse = async (value) => {
