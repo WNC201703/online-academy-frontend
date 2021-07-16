@@ -8,6 +8,12 @@ export async function getAllCategories(level) {
   return await AXIOS_INSTANCE.get(`/api/categories?${level}`);
 }
 
+export async function getCategoriesList() {
+  return await AXIOS_INSTANCE.get(`/api/categories`);
+}
+
+
+
 export async function getCategoryById(id) {
   return await AXIOS_INSTANCE.get(`/api/categories/${id}`);
 }
