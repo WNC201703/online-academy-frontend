@@ -5,7 +5,7 @@ import Box from "@material-ui/core/Box";
 import Rating from '@material-ui/lab/Rating';
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core";
-import {moneyFormat} from "../../utils/FormatHelper";
+import {discountFormat, moneyFormat} from "../../utils/FormatHelper";
 import {useHistory} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -71,7 +71,7 @@ const HorizontalCarousel = ({title, data}) => {
         itemClass="image-item"
         responsive={responsive}>
         {data.map((item, index) => {
-          const isDiscount = true;
+          const isDiscount = item?.percentDiscount > 0
           return (
             <Paper className={classes.paper} key={index}
                    onClick={(event) => handleItemClick(event, item._id)}
@@ -84,7 +84,10 @@ const HorizontalCarousel = ({title, data}) => {
               <Box className={classes.title}>{item.name}</Box>
               <Box>{item?.category} - {item?.teacher}</Box>
               <Box className={classes.originMoney}>{moneyFormat(item?.price)} {isDiscount ?
-                <span className={classes.discountMoney}>{moneyFormat(120)}</span> : <></>} </Box>
+                <span
+                  className={classes.discountMoney}>{moneyFormat(discountFormat(item?.price, item?.percentDiscount))}
+                </span> : <></>}
+              </Box>
               <Box display="flex" alignItems="center"
                    justify="center">
                 <Rating name="read-only" value={5} readOnly/>

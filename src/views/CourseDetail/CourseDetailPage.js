@@ -115,6 +115,7 @@ export const CourseDetail = () => {
     }
     eff();
   }, [id]);
+  const isDiscount = courseInfo?.percentDiscount > 0
 
   const handleFavouriteButtonClick = async () => {
     setIsProcessing(true);
@@ -150,11 +151,10 @@ export const CourseDetail = () => {
   }
 
   const handleViewLessons = async () => {
-    history.push(`/courses/${courseInfo._id}/learning`)
+    history.push(`/courses/${courseInfo._id}/learn`)
   }
 
   const handleRatingBarChange = (event) => {
-    console.log("star: ", event.target.value)
     setRatingPoint(event.target.value);
   }
 
@@ -168,7 +168,8 @@ export const CourseDetail = () => {
     if (res === 200) {
       const nextReviewList = res.data.results;
       const newReviewList = [...reviewList, ...nextReviewList];
-      setReviewList(newReviewList)
+      setReviewList(newReviewList);
+      setReviewPage(nextPage);
     }
   }
 
@@ -181,9 +182,11 @@ export const CourseDetail = () => {
         getFavouriteCourse(user._id), getMyCourses(),
         getCourseReviews(id, 10, reviewPage)
       ]);
+      if (info.status !== 200) {
+        return;
+      }
       const favouriteIndex = favourite?.data?.findIndex(x => x.course === info?.data?._id);
       const enrolledIndex = mine?.data?.findIndex(x => x.course === info?.data?._id);
-      console.log("review: ", reviews.data)
 
       if (!(favouriteIndex < 0)) setIsFavourite(true);
       if (!(enrolledIndex < 0)) setIsEnrolled(true);
@@ -231,17 +234,21 @@ export const CourseDetail = () => {
                   style={{width: "100%", height: 350, borderRadius: 12}}
                   src={courseInfo?.imageUrl}
                 />
-                <Box className={classes.courseTitle}>{courseInfo.name}</Box>
-                <Box className={classes.courseDescription}>{courseInfo.shortDescription}</Box>
+                <Box className={classes.courseTitle}>{courseInfo?.name}</Box>
+                <Box className={classes.courseDescription}>{courseInfo?.shortDescription}</Box>
                 <Box className={classes.courseDescription} display="flex" alignItems="center"
                      justify="center">
-                  <span className={classes.rateText}>{ratingNumberFormat(courseInfo.averageRating)}</span>
-                  <Rating name="read-only" value={ratingNumberFormat(courseInfo.averageRating)} readOnly/>
-                  <span>({courseInfo.numberOfReviews}) Ratings</span>
+                  <span className={classes.rateText}>{ratingNumberFormat(courseInfo?.averageRating)}</span>
+                  <Rating name="read-only" value={ratingNumberFormat(courseInfo?.averageRating)} readOnly/>
+                  <span>({courseInfo?.numberOfReviews}) Ratings</span>
                 </Box>
                 <Box className={classes.originMoney}>{moneyFormat(courseInfo?.price)}
-                  <span
-                    className={classes.discountMoney}>{moneyFormat(discountFormat(courseInfo?.price, courseInfo?.percentDiscount))}</span></Box>
+                  {
+                    isDiscount ? <span
+                        className={classes.discountMoney}>{moneyFormat(discountFormat(courseInfo?.price, courseInfo?.percentDiscount))}</span>
+                      : <></>
+                  }
+                </Box>
                 <Box className={classes.courseDescription}>{courseInfo.teacher}</Box>
                 <Box className={classes.courseDescription}>
                   Last updated: {dateFormat(courseInfo.updatedAt)}
@@ -317,7 +324,6 @@ export const CourseDetail = () => {
           }
         </Paper>
         <Paper className={classes.paper}>
-
           <Box className={classes.blockTitle}>Ratings</Box>
           {
             isSignedIn ? <Box direction="column">
@@ -338,7 +344,7 @@ export const CourseDetail = () => {
                 Send
               </Button>
               {
-                reviewList.map(item => <Box>
+                reviewList?.map(item => <Box>
                   <Box className={classes.note} style={{marginLeft: 12}}> {item?.username}</Box>
                   <Box style={{marginLeft: 12}}> {item?.review}</Box>
                   <Rating style={{marginLeft: 10}} readOnly value={item?.rating} size="medium"/>
