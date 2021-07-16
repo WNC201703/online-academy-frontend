@@ -13,9 +13,10 @@ import {
 } from "../../components/Loading";
 import {SnackBarVariant} from "../../utils/constant";
 import Grid from "@material-ui/core/Grid";
-import {useHistory} from "react-router-dom";
+import {useHistory, useLocation, useParams} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
-import PageItem from 'react-bootstrap/PageItem'
+import {getCategoryById} from "../../config/api/Categories";
+
 
 const useStyles = makeStyles((theme) => ({
   itemTitle: {
@@ -48,15 +49,17 @@ const useStyles = makeStyles((theme) => ({
 export const CourseList = () => {
   const {enqueueSnackbar} = useSnackbar();
   const classes = useStyles();
+  const location = useLocation();
   const [courseList, setCourseList] = useState([]);
   const [isPending, setIsPending] = useState(false);
   const history = useHistory();
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-
+  const [categoryName, setCategoryName] = useState(null);
+  const {categoryId} = useParams();
   const handlePageChange = (event, value) => {
     setPage(value);
-    history.push(`/courses/all?page=${value}`)
+    history.push(`${location.pathname}?page=${value}`)
   };
 
   useEffect(() => {
@@ -70,7 +73,17 @@ export const CourseList = () => {
   const fetchCourseList = async () => {
     setIsPending(true);
     try {
-      const res = await getAllCourses(page, 5, null, null, null);
+      let res;
+      let category
+      if (categoryId === undefined) {
+        category = null;
+      } else {
+        category = categoryId
+        const result = await getCategoryById(category);
+        setCategoryName(result?.data?.name)
+      }
+
+      res = await getAllCourses(page, 5, null, null, category)
       if (res.status !== 200) {
         return;
       }
@@ -93,7 +106,7 @@ export const CourseList = () => {
       <Grid container xs={12}>
         <Grid item xs={12} sm={2}/>
         <Grid item xs={12} sm={8}>
-          <Box className={classes.blockTitle}>All courses</Box>
+          <Box className={classes.blockTitle}> {categoryName ?? ' All courses'} </Box>
           {
             isPending ? <LineListLoading/> :
               courseList?.map(item => {
