@@ -32,7 +32,9 @@ export default function Layout() {
         <Route exact path="/sign-in" component={SignInPage}/>
         <Route exact path="/sign-up" component={SignUpPage}/>
         <Route exact path="/not-found" component={PageNotFound}/>
+        <Route exact path="/courses/all" component={SamplePage}/>
         <Route exact path="/courses/:id" component={CourseDetail}/>
+
         <Route path="/profile">
           {user?._id ? <ProfilePage/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
         </Route>
