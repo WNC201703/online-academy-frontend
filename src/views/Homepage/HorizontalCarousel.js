@@ -84,7 +84,8 @@ const HorizontalCarousel = ({title, data}) => {
               <Box className={classes.title}>{item.name}</Box>
               <Box>{item?.category} - {item?.teacher}</Box>
               <Box className={classes.originMoney}>{moneyFormat(item?.price)} {isDiscount ?
-                <span className={classes.discountMoney}>{moneyFormat(120)}</span> : <></>} </Box>
+                <span className={classes.discountMoney}>{moneyFormat(120)}</span> : <></>}
+              </Box>
               <Box display="flex" alignItems="center"
                    justify="center">
                 <Rating name="read-only" value={5} readOnly/>
