@@ -150,11 +150,10 @@ export const CourseDetail = () => {
   }
 
   const handleViewLessons = async () => {
-    history.push(`/courses/${courseInfo._id}/learning`)
+    history.push(`/courses/${courseInfo._id}/learn`)
   }
 
   const handleRatingBarChange = (event) => {
-    console.log("star: ", event.target.value)
     setRatingPoint(event.target.value);
   }
 
