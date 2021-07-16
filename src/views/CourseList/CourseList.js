@@ -2,9 +2,6 @@ import React, {useEffect, useState} from "react";
 import Box from "@material-ui/core/Box";
 import {useSnackbar} from "notistack";
 import Paper from "@material-ui/core/Paper";
-import {Image} from "semantic-ui-react";
-import Rating from "@material-ui/lab/Rating";
-import {moneyFormat} from "../../utils/FormatHelper";
 import {getAllCourses} from "../../config/api/Courses";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import grey from "@material-ui/core/colors/grey";
@@ -16,19 +13,10 @@ import Grid from "@material-ui/core/Grid";
 import {useHistory, useLocation, useParams} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import {getCategoryById} from "../../config/api/Categories";
+import {CourseLineItem} from "./CourseLineItem";
 
 
 const useStyles = makeStyles((theme) => ({
-  itemTitle: {
-    fontWeight: 'bold'
-  },
-  discountMoney: {
-    textDecoration: "line-through",
-    fontWeight: "normal"
-  },
-  originMoney: {
-    fontWeight: "bold",
-  },
   itemContainer: {
     '&:hover': {
       backgroundColor: grey[300],
@@ -87,7 +75,6 @@ export const CourseList = () => {
       if (res.status !== 200) {
         return;
       }
-      console.log(res?.data?.results)
       setCourseList(res?.data?.results)
       setTotalPage(res?.data.totalPages)
     } catch (e) {
@@ -98,7 +85,7 @@ export const CourseList = () => {
     }
   }
 
-  const handleSearchItemClick = (event, id) => {
+  const handleItemClick = (event, id) => {
     history.push(`/courses/${id}`);
   }
   return <div>
@@ -112,27 +99,10 @@ export const CourseList = () => {
               courseList?.map(item => {
                 return (
                   <Paper
-                    onClick={(event) => handleSearchItemClick(event, item?._id)}
+                    onClick={(event) => handleItemClick(event, item?._id)}
                     style={{marginBottom: 10}}
                     className={classes.itemContainer}>
-                    <Box padding={2} display='flex' justify='center' direction={'column'}>
-                      <Image
-                        src={item?.imageUrl}
-                        draggable={false}
-                        style={{width: 80, height: 80, marginRight: 8}}/>
-                      <Box justify='center'>
-                        <Box className={classes.itemTitle}>{item?.name}</Box>
-                        <Box>{item?.shortDescription}</Box>
-                        <Box display="flex" alignItems="center"
-                             justify="center">
-                          <Rating name="read-only" value={5} readOnly/>
-                          <span>(123)</span>
-                        </Box>
-                        <Box className={classes.originMoney}>{moneyFormat(item?.price)} {true ?
-                          <span className={classes.discountMoney}>{moneyFormat(120)}</span> : <></>}
-                        </Box>
-                      </Box>
-                    </Box>
+                    <CourseLineItem item={item}/>
                   </Paper>
                 )
               })
@@ -141,8 +111,6 @@ export const CourseList = () => {
         </Grid>
         <Grid item xs={12} sm={2}/>
       </Grid>
-
     </Grid>
-
   </div>
 }
