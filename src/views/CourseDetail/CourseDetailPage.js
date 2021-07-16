@@ -182,7 +182,7 @@ export const CourseDetail = () => {
         getFavouriteCourse(user._id), getMyCourses(),
         getCourseReviews(id, 10, reviewPage)
       ]);
-      if(info.status != 200 ) {
+      if(info.status !== 200 ) {
         return;
       }
       const favouriteIndex = favourite?.data?.findIndex(x => x.course === info?.data?._id);
