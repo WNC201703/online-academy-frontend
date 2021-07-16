@@ -118,10 +118,6 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: grey[300],
       cursor: "pointer"
     },
-    searchContainer: {
-      height: 200,
-      maxHeight: 200,
-    }
   }
 }));
 
@@ -209,6 +205,7 @@ export default function PrimarySearchAppBar() {
   }
 
   const handleShowAllSearchResult = () => {
+    setAnchorEl2(null);
     history.push('/courses/all');
   }
 
@@ -305,7 +302,7 @@ export default function PrimarySearchAppBar() {
               horizontal: 'left',
             }}
           >
-            <Box height={450} className={classes.searchContainer}>
+            <Box height={450}>
               {
                 searchResult?.map(item => {
                   return (
@@ -340,7 +337,7 @@ export default function PrimarySearchAppBar() {
               }
               <Box>
                 <CustomEnrollOutlinedButton
-                  style={{marginBottom: 24, marginLeft: 12,marginRight: 30,paddingRight: 30, width:'95%'}}
+                  style={{marginBottom: 24, marginLeft: 12, marginRight: 30, paddingRight: 30, width: '95%'}}
                   onClick={handleShowAllSearchResult}
                   size="small"
                   startIcon={<AddCircleOutlineIcon/>}
