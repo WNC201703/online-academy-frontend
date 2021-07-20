@@ -3,7 +3,7 @@ import {
   Redirect,
   Link,
   useParams,
-  useRouteMatch
+  useRouteMatch,
 } from "react-router-dom";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Checkbox from '@material-ui/core/Checkbox';
@@ -60,6 +60,7 @@ export default function LearningPage() {
   const [courseName, setCourseName] = useState('');
   const [lessons, setLessons] = useState([]);
   const [selectedLesson, setSelectedLesson] = useState();
+  const [authorized, setAuthorized] = useState(false);
 
   let { path, url } = useRouteMatch();
 
@@ -76,8 +77,13 @@ export default function LearningPage() {
         if (data.length > 0) {
           setSelectedLesson(data[0]);
         }
+        setAuthorized(true);
       } else {
-        enqueueSnackbar("Error", { variant: SnackBarVariant.Error });
+        if (lessonsResponse==='Forbidden' || lessonsResponse==='Unauthorized'){
+
+        }else{
+        enqueueSnackbar(`Error`, { variant: SnackBarVariant.Error });
+        }
       }
 
       if (courseResponse.status === 200) {
@@ -120,6 +126,9 @@ export default function LearningPage() {
     setLessons([...lessons]);
   }
 
+  if (!authorized){
+    return <Redirect to={{ pathname: `/courses/${courseId}` }} />
+  }
   return (
     <div>
       {
@@ -168,7 +177,7 @@ export default function LearningPage() {
                 onVideoEnded={handleVideoEnded}
                 lesson={selectedLesson}
               >
-                {selectedLesson.name}
+                {selectedLesson?.name}
               </VideoPanel>
             </Grid>
           </Grid>

@@ -21,14 +21,14 @@ export default function VideoPanel(props) {
     return (
         <div
             role="tabpanel"
-            id={`vertical-tabpanel-${lesson._id}`}
-            aria-labelledby={`vertical-tab-${lesson._id}`}
+            id={`vertical-tabpanel-${lesson?._id}`}
+            aria-labelledby={`vertical-tab-${lesson?._id}`}
             {...other}
         >
             <Grid>
                 <Box m={3} >
                     <div >
-                        <Typography variant="h4" component="h2">{lesson.name}</Typography>
+                        <Typography variant="h4" component="h2">{lesson?.name}</Typography>
                         <Box m={2} />
                         <Grid item xs={9}>
                             <Player
@@ -36,7 +36,7 @@ export default function VideoPanel(props) {
                                 playsInline
                                 fluid={false}
                                 width={768} height={432}
-                                src={lesson.videoUrl}
+                                src={lesson?.videoUrl}
 
                             >
                                 <ControlBar>
@@ -52,7 +52,7 @@ export default function VideoPanel(props) {
                         <Box m={2} />
                         <Box mr={12} >
                             <Typography variant="h6" >{'Description:'}</Typography>
-                            <Typography component="h2">{lesson.description}</Typography>
+                            <Typography component="h2">{lesson?.description}</Typography>
                         </Box >
                         <Box my={12} />
                     </div>
