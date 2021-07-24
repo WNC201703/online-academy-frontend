@@ -30,7 +30,7 @@ import {moneyFormat} from "../../utils/FormatHelper";
 import grey from "@material-ui/core/colors/grey";
 import CustomEnrollOutlinedButton from "../Button/CustomEnrollOutlinedButton";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import {getAllCategories, getCategoriesList} from "../../config/api/Categories";
+import {getCategoriesList} from "../../config/api/Categories";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -145,8 +145,29 @@ export default function PrimarySearchAppBar() {
 
   const fetchCategoriesList = async () => {
     const res = await getCategoriesList();
-    console.log('categories: ', res.data)
-    setCategories(res.data)
+    const categoryList = res.data
+    let parentCategory = {}
+
+    ///Convert parent categories with hashmap
+    for (const item of categoryList) {
+      if (item.parent === null) {
+        parentCategory[item._id] = item;
+        parentCategory[item._id].childrens = []
+      }
+    }
+
+    for (const item of categoryList) {
+      if (item.parent !== null && parentCategory[item.parent] !== null) {
+        parentCategory[item.parent].childrens.push(item)
+      }
+    }
+
+    const newCategories = Object.keys(parentCategory)
+      .map(function (key) {
+        return parentCategory[key];
+      });
+
+    setCategories(newCategories)
   }
 
   const debounceSearchRequest = useCallback(debounce((nextValue) => searchCourse(nextValue), 1000), []);
@@ -228,6 +249,15 @@ export default function PrimarySearchAppBar() {
     history.push('/');
   }
 
+  const handleGotoFavourites = () => {
+    history.push('/me/favorites');
+  }
+
+
+  const handleGotoEnrollments = () => {
+    history.push('/me/enrollments');
+  }
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -239,6 +269,8 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
+      <MenuItem onClick={handleGotoEnrollments}>Enrollments</MenuItem>
+      <MenuItem onClick={handleGotoFavourites}>Favourites</MenuItem>
       <MenuItem onClick={handleGotoProfile}>Profile</MenuItem>
       <MenuItem onClick={handleLogOut}>Log out</MenuItem>
     </Menu>
@@ -361,7 +393,7 @@ export default function PrimarySearchAppBar() {
                 </CustomEnrollOutlinedButton> </Box>
             </Box>
           </Popover>
-          <DropdownMenu/>
+          <DropdownMenu data={categories}/>
           <div className={classes.grow}/>
           <div className={classes.sectionDesktop}>
             {

@@ -40,6 +40,9 @@ export default function Layout() {
         <Route path="/profile">
           {user?._id ? <ProfilePage/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
         </Route>
+        <Route exact path="/me/:type">
+          {user?._id ? <CourseList/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
+        </Route>
         <Route path="/courses/:courseId/learn" component={LearningPage}/>
         <Route path="/admin">
           {isAdmin ? <AdminDashboard/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}

@@ -36,3 +36,11 @@ export async function updateCourseImage(id) {
 export async function reviewCourse(id, data) {
   return await AXIOS_INSTANCE.post(`/api/courses/${id}/reviews`, data);
 }
+
+export async function getFavoriteCourses() {
+  return await AXIOS_INSTANCE.get(`/api/users/me/favorites`);
+}
+
+export async function getEnrollmentsCourse() {
+  return await AXIOS_INSTANCE.get(`/api/users/me/enrollments`);
+}
