@@ -8,6 +8,10 @@ export async function getAllCategories(level) {
   return await AXIOS_INSTANCE.get(`/api/categories?${level}`);
 }
 
+export async function getTopCategories() {
+  return await AXIOS_INSTANCE.get(`/api/categories/top_enrollment`);
+}
+
 export async function getCategoriesList() {
   return await AXIOS_INSTANCE.get(`/api/categories`);
 }
