@@ -60,7 +60,8 @@ export default function LearningPage() {
   const [courseName, setCourseName] = useState('');
   const [lessons, setLessons] = useState([]);
   const [selectedLesson, setSelectedLesson] = useState();
-  const [authorized, setAuthorized] = useState(false);
+  const [authorized, setAuthorized] = useState(true);
+  const [error, setError] = useState(false);
 
   let { path, url } = useRouteMatch();
 
@@ -77,12 +78,12 @@ export default function LearningPage() {
         if (data.length > 0) {
           setSelectedLesson(data[0]);
         }
-        setAuthorized(true);
       } else {
-        if (lessonsResponse==='Forbidden' || lessonsResponse==='Unauthorized'){
-
-        }else{
-        enqueueSnackbar(`Error`, { variant: SnackBarVariant.Error });
+        if (lessonsResponse === 'Forbidden' || lessonsResponse === 'Unauthorized') {
+          setAuthorized(false);
+        } else {
+          setError(true);
+          enqueueSnackbar(`Error`, { variant: SnackBarVariant.Error });
         }
       }
 
@@ -126,18 +127,21 @@ export default function LearningPage() {
     setLessons([...lessons]);
   }
 
-  if (!authorized){
+  if (pending) return (<Grid container justify="center">
+    <CircularProgress />
+  </Grid>);
+
+  if (!authorized) {
     return <Redirect to={{ pathname: `/courses/${courseId}` }} />
   }
+
   return (
     <div>
       {
         selectedLesson ? <Redirect to={{ pathname: `${url}/${selectedLesson._id}` }} /> : <></>
       }
       {
-        pending ? <Grid container justify="center">
-          <CircularProgress />
-        </Grid> : (
+        (
           <Grid container >
             <Grid item xs={12} sm={12}>
               <Typography className={classes.courseName}>{courseName} </Typography>
