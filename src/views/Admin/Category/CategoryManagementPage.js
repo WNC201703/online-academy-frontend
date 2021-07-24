@@ -48,10 +48,10 @@ export default function ListCategoryComponent() {
     const fetchData = async () => {
         setLoading(false);
         try {
-            const response = await getAllCategories();
+            const resType='list';
+            const response = await getAllCategories(resType);
             if (response.status === 200) {
                 let data = response.data;
-                console.log('refetch',data);
                 setCategories(data);
             } else {
                 enqueueSnackbar("Error, can not get category list", { variant: SnackBarVariant.Error });

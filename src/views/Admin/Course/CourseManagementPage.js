@@ -30,7 +30,6 @@ const StyledTableRow = withStyles((theme) => ({
 export default function ListCourseComponent() {
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
-    const [backgroundUpdate, setBackgroundUpdate] = useState();
     const [courses, setCourses] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -64,7 +63,7 @@ export default function ListCourseComponent() {
     useEffect(() => {
         const showCircularProgress=true;
         fetchData(showCircularProgress);
-    }, [page, rowsPerPage,backgroundUpdate]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [page, rowsPerPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -101,7 +100,6 @@ export default function ListCourseComponent() {
                 }
                 setTotalResults(totalResults - 1);
                 setCourses(courses);
-                setBackgroundUpdate(id);
                 enqueueSnackbar("Course deleted successfully", { variant: SnackBarVariant.Success });
             } else {
                 enqueueSnackbar("Delete failed", { variant: SnackBarVariant.Error });
