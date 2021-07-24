@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import Box from "@material-ui/core/Box";
 import {useSnackbar} from "notistack";
 import Paper from "@material-ui/core/Paper";
-import {getAllCourses} from "../../config/api/Courses";
+import {getAllCourses, getEnrollmentsCourse, getFavoriteCourses} from "../../config/api/Courses";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import grey from "@material-ui/core/colors/grey";
 import {
@@ -34,6 +34,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const CourseListType = {
+  ENROLLMENTS: 'enrollments',
+  FAVORITES: 'favorites'
+}
+
 export const CourseList = () => {
   const {enqueueSnackbar} = useSnackbar();
   const classes = useStyles();
@@ -45,6 +50,8 @@ export const CourseList = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [categoryName, setCategoryName] = useState(null);
   const {categoryId} = useParams();
+  const {type} = useParams();
+
   const handlePageChange = (event, value) => {
     setPage(value);
     history.push(`${location.pathname}?page=${value}`)
@@ -55,7 +62,7 @@ export const CourseList = () => {
       await fetchCourseList();
     }
     eff();
-  }, [page]);
+  }, [page, categoryId, type]);
 
 
   const fetchCourseList = async () => {
@@ -71,10 +78,17 @@ export const CourseList = () => {
         setCategoryName(result?.data?.name)
       }
 
-      res = await getAllCourses(page, 5, null, null, category)
+      if (type === CourseListType.FAVORITES) {
+        res = await getFavoriteCourses();
+        setCourseList(res?.data)
+      } else if (type === CourseListType.ENROLLMENTS) {
+        res = await getEnrollmentsCourse();
+      } else res = await getAllCourses(page, 5, null, null, category)
+
       if (res.status !== 200) {
         return;
       }
+
       setCourseList(res?.data?.results)
       setTotalPage(res?.data.totalPages)
     } catch (e) {
