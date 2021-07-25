@@ -218,6 +218,7 @@ export default function PrimarySearchAppBar() {
   };
 
   const handleLogOut = () => {
+    history.push('/sign-in');
     removeUser(null);
     setAnchorEl(null);
     handleMobileMenuClose();
