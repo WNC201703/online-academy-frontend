@@ -404,6 +404,8 @@ export default function PrimarySearchAppBar() {
                   aria-haspopup="true"
                   onClick={handleProfileMenuOpen}
                   color="inherit">
+                    <Typography >{user.fullname}</Typography>
+                    <Box m={0.5}></Box>
                   <AccountCircle/>
                 </IconButton> :
                 <Box>
