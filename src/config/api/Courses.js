@@ -1,7 +1,21 @@
-import {AXIOS_INSTANCE} from "./apiconfig";
+import {AXIOS_INSTANCE, FILEUPLOAD_AXIOS_INSTANCE} from "./apiconfig";
+import axios from "axios";
+import {getAccessToken} from "../../utils/LocalStorageUtils";
 
 export async function createCourse(data) {
-  return await AXIOS_INSTANCE.post(`/api/courses`, data);
+  const imageInstance = axios.create({
+    baseURL: process.env.REACT_APP_API_URL,
+    data: data,
+    headers: {"Content-Type": "multipart/form-data"},
+  });
+
+  imageInstance.interceptors.request.use((config) => {
+    const access_token = getAccessToken();
+    config.headers.Authorization = `Bearer ${access_token}`;
+    return config;
+  });
+
+  return await imageInstance.post(`/api/courses`, data);
 }
 
 export async function getAllCourses(pageNumber = 1, pageSize = 10, sortBy = null,
