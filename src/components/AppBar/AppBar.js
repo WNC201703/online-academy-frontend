@@ -397,7 +397,7 @@ export default function PrimarySearchAppBar() {
           <div className={classes.grow}/>
           <div className={classes.sectionDesktop}>
             {
-              user ? <IconButton
+              (user && user._id) ? <IconButton
                   edge="end"
                   aria-label="account of current user"
                   aria-controls={menuId}
