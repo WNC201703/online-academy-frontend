@@ -8,7 +8,7 @@ import grey from "@material-ui/core/colors/grey";
 import Grid from "@material-ui/core/Grid";
 import {useHistory, useLocation, useParams} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
-import {getAllCourses, getEnrollmentsCourse, getFavoriteCourses} from "../../../config/api/Courses";
+import {createCourse, getAllCourses, getEnrollmentsCourse, getFavoriteCourses} from "../../../config/api/Courses";
 import {getCategoryById} from "../../../config/api/Categories";
 import {LineListLoading} from "../../../components/Loading";
 import {CourseLineItem} from "../../CourseList/CourseLineItem";
@@ -63,7 +63,7 @@ export const CourseManagementTeacher = () => {
   const [coursePrice, setCoursePrice] = useState(0);
   const [courseShortDescription, setCourseShortDescription] = useState('');
   const [courseFullDescription, setCourseFullDescription] = useState('')
-
+  const [courseImage, setCourseImage] = useState(null);
   const handlePageChange = (event, value) => {
     setPage(value);
     history.push(`${location.pathname}?page=${value}`)
@@ -101,18 +101,43 @@ export const CourseManagementTeacher = () => {
 
   const handleDialogClose = () => {
     setOpen(false);
+    setCourseName('');
+    setCourseFullDescription('');
+    setCourseShortDescription('');
+    setCoursePrice(0);
+    setCourseImage(null);
   }
 
   const handleItemClick = (event, id) => {
     history.push(`/teacher/courses/${id}`);
   }
-  const handleCreateCourse = (event, id) => {
-    setOpen(false);
+  const handleCreateCourse = async (event, id) => {
+    const courseInfo = {
+      image: courseImage,
+      name: courseName,
+      shortDescription: courseShortDescription,
+      detailDescription: courseFullDescription,
+      price: coursePrice,
+      category: '60d5438fc84e49412f453a46',
+    }
+
+    let formData = new FormData();
+    formData.append('image', courseImage);
+    formData.append('name', courseName);
+    formData.append('shortDescription', courseShortDescription);
+    formData.append('detailDescription', courseFullDescription);
+    formData.append('price', coursePrice.toString());
+    formData.append('category', '60d5438fc84e49412f453a46');
+
+
+    console.log('Course info: ', courseInfo);
+    const res = await createCourse(formData);
+    console.log(res);
+    handleDialogClose()
   }
 
   const handleCourseNameChange = (event) => {
     setCourseName(event.target.value);
-
   }
 
   const handleCoursePriceChange = (event) => {
@@ -124,7 +149,17 @@ export const CourseManagementTeacher = () => {
   }
 
   const handleCourseFullDescriptionChange = (event) => {
-    setCourseFullDescription(event.target.value)
+    setCourseFullDescription(event.target?.value)
+  }
+
+  const onImageChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        setCourseImage(e.target.result)
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
   }
 
   return <div>
@@ -177,6 +212,10 @@ export const CourseManagementTeacher = () => {
               <Box fullWidth>
                 <ReactQuill onChange={handleCourseFullDescriptionChange} value={courseFullDescription}/>
               </Box>
+
+              <Label fullWidth>Course Cover</Label>
+              <img id="target" src={courseImage}/>
+              <input type="file" onChange={onImageChange} className="filetype" id="group_image"/>
 
             </DialogContent>
             <DialogActions>
