@@ -33,7 +33,16 @@ AXIOS_INSTANCE.interceptors.response.use(function (response) {
 
 export const FILEUPLOAD_AXIOS_INSTANCE = axios.create({
   baseURL: envInfo.dev.BASE_URL,
-  headers: {"Content-Type": "multipart/form-data"}
+  headers: {
+    'Content-Type': 'multipart/form-data; boundary=--------------------------986639832034939136002250'
+  },
 })
+
+FILEUPLOAD_AXIOS_INSTANCE.interceptors.request.use((config) => {
+  const access_token = getAccessToken();
+  config.headers.Authorization = `Bearer ${access_token}`;
+  return config;
+});
+
 
 export const {BASE_URL} = envInfo.dev.BASE_URL;
