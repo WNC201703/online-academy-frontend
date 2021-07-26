@@ -1,44 +1,89 @@
-import React, {useContext, useEffect, useState} from "react";
-import {makeStyles} from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControl from '@material-ui/core/FormControl';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 import CustomPrimaryContainedButton from "../components/Button/CustomPrimaryContainedButton";
 import Box from "@material-ui/core/Box";
-import {isValidEmail} from "../utils/ValidationHelper";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {getFavouriteCourse, getInfo, signIn, updateUser} from "../config/api/User";
-import {LocalKey, SnackBarVariant, UserRoles} from "../utils/constant";
-import {useSnackbar} from "notistack";
-import {saveAccessToken} from "../utils/LocalStorageUtils";
+import { getInfo , updateMyProfile } from "../config/api/User";
+import {  SnackBarVariant } from "../utils/constant";
+import { useSnackbar } from "notistack";
 import AuthUserContext from "../contexts/user/AuthUserContext";
-import {useHistory} from "react-router-dom";
-import {getCourseById} from "../config/api/Courses";
-import {getAllLessons, getRelatedCourse} from "../config/api/Lessons";
+import { useHistory } from "react-router-dom";
+import { isValidEmail, isValidName } from "../utils/ValidationHelper";
+import LockIcon from '@material-ui/icons/Lock';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import Email from '@material-ui/icons/Email';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
+    display: 'flex',
+    flexWrap: 'wrap',
   },
   paper: {
-    padding: theme.spacing(2),
+    display: 'flex',
+    flexWrap: 'wrap',
+    padding: theme.spacing(1),
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
   formTitle: {
     fontWeight: "bold",
+    color: 'black',
     fontSize: 26
+  },
+  formDesc: {
+    fontWeight: "normal",
+    color: 'black',
+    fontSize: 15
+  },
+  margin: {
+    margin: theme.spacing(2),
+  },
+  circularProgress: {
+    display: 'flex',
+    '& > * + *': {
+      marginLeft: theme.spacing(2),
+    },
+    marginTop: 100,
+    marginBottom: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
 
 export const ProfilePage = () => {
   const classes = useStyles();
-  const history = useHistory();
-  const {user} = useContext(AuthUserContext);
-  const {saveUser} = useContext(AuthUserContext);
-  const {enqueueSnackbar} = useSnackbar();
+  const { saveUser } = useContext(AuthUserContext);
+  const { enqueueSnackbar } = useSnackbar();
   const [isPending, setIsPending] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [profile, setProfile] = useState(null);
+  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [password, setPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+
+  const [emailFieldError, setEmailFieldError] = useState(false);
+  const [fullNameFieldError, setFullNameFieldError] = useState(false);
+  const [passwordFieldError, setPasswordFieldError] = useState(false);
+
+  const [changePasswordChecked, setChangePasswordChecked] = useState(false);
+  const [openCurrentPasswordDialog, setOpenCurrentPasswordDialog] = useState(false);
 
   useEffect(() => {
     const eff = async () => {
@@ -47,72 +92,279 @@ export const ProfilePage = () => {
     eff();
   }, []);
 
+  const handleUpdateProfile= (data) =>{
+      setEmail(data.email);
+      setFullName(data.fullname);
+      setChangePasswordChecked(false);
+      setPassword('');
+      setProfile(data);
+  }
+
   const fetchProfile = async () => {
     setIsPending(true);
     try {
       const res = await getInfo();
       if (res.status === 200) {
-        setProfile(res.data);
+        const data = res.data;
+        handleUpdateProfile(data);
       }
     } catch (e) {
-      enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Error});
+      enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
       console.log(e);
     } finally {
       setIsPending(false);
     }
   }
 
+  const handleCheckBoxChange = (event) => {
+    setChangePasswordChecked(event.target.checked);
+    setPassword('');
+  };
+
   const handleNameChange = (event) => {
-    const newProfile = {...profile};
-    newProfile.fullname = event.target.value
-    setProfile(newProfile);
+    setFullName(event.target.value);
   }
 
-  const handleUpdateButtonClick = async () => {
-    setIsPending(true);
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  }
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  }
+
+  const handleOpenCurrentPasswordDialog = () => {
+    setOpenCurrentPasswordDialog(true);
+  };
+
+  const handleCloseCurrentPasswordDialog = () => {
+    setOpenCurrentPasswordDialog(false);
+  };
+
+  const handleCurrentPasswordChange = (event) => {
+    setCurrentPassword(event.target.value);
+  }
+
+  const handleConfirmCurrentPassword = async () => {
+    if (currentPassword.length === 0) {
+      return;
+    }
+    setOpenCurrentPasswordDialog(false);
+    setIsUpdating(true);
 
     try {
-      const res = await updateUser(user._id, profile);
-      enqueueSnackbar("Update successfully", {variant: SnackBarVariant.Success});
+      const body = {
+        currentPassword: currentPassword
+      };
+      if (profile.fullname !== fullName) body['fullname'] = fullName;
+      if (profile.email !== email) body['email'] = email;
+      if (changePasswordChecked) body['password'] = password;
+      const res = await updateMyProfile(body);
+      console.log(res);
+
+      switch (res.status) {
+        case 200:
+          enqueueSnackbar("Update successfully", { variant: SnackBarVariant.Success });
+          handleUpdateProfile(res.data?.user);
+          saveUser(res.data?.user);
+
+          break;
+
+        case 401:
+          enqueueSnackbar("You current password is missing or incorrect", { variant: SnackBarVariant.Error });
+          handleUpdateProfile(profile);
+          break;
+        case 400:
+        default:
+          enqueueSnackbar("Update failed", { variant: SnackBarVariant.Error });
+          handleUpdateProfile(profile);
+      }
+     
 
 
     } catch (e) {
 
     } finally {
-      setIsPending(false);
+      setCurrentPassword('');
+      setIsUpdating(false);
     }
   }
 
+  const handleUpdateButtonClick = () => {
+    setFullNameFieldError(false);
+    setEmailFieldError(false);
+    setPasswordFieldError(false);
+
+    if (fullName.length === 0) {
+      setFullNameFieldError(true);
+      return;
+    }
+
+    if (changePasswordChecked && password.length < 6) {
+      setPasswordFieldError(true);
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setEmailFieldError(true);
+      return;
+    }
+
+    handleOpenCurrentPasswordDialog();
+
+
+  }
+
+  if (isPending)
+    return <div className={classes.circularProgress}>
+      <CircularProgress size={30} />
+    </div>
+
   return <div className={classes.root}>
+
     <Grid
       container
       spacing={0}
       direction="column"
       alignItems="center"
       justify="center"
-      style={{minHeight: '100vh'}}>
-      <Grid item xs={3}>
-        <Paper style={{justifyContent: 'center', padding: 48}} className={classes.paper}>
-          <Box className={classes.formTitle}>Your profile</Box>
-          <Box fontSize={14} style={{marginTop: 24, marginBottom: 24}}>Update your profile here.</Box>
-          <TextField fullWidth onChange={handleNameChange} value={profile?.fullname}
-                     variant="outlined"/>
-          <TextField fullWidth value={profile?.email}
-                     disabled
-                     style={{marginTop: 24, marginBottom: 24}}
-                     variant="outlined"/>
-          <Box>
-            {
-              isPending ? <CircularProgress/> : <CustomPrimaryContainedButton
-                onClick={handleUpdateButtonClick}
-                variant="contained"
-                color="primary">
-                Update
-              </CustomPrimaryContainedButton>
-            }
-          </Box>
+      style={{ minHeight: '100vh' }}>
+      <Grid item xs={12}>
+        <Paper style={{ justifyContent: 'center', padding: 48 }} className={classes.paper}>
+          <div>
+            <Box className={classes.formTitle}>Your profile</Box>
+            <Box className={classes.formDesc}>Update your profile here.</Box>
+          </div>
+          <FormControl variant='outlined'
+            fullWidth
+            className={classes.margin}
+          >
+            <InputLabel >Full name</InputLabel>
+            <Input
+              id="fullname"
+              onChange={handleNameChange}
+
+              value={fullName}
+
+              startAdornment={
+                <InputAdornment position="start">
+                  <AccountCircle />
+                </InputAdornment>
+              }
+              error={fullNameFieldError}
+            />
+          </FormControl>
+
+          <FormControl variant='outlined'
+            fullWidth
+            className={classes.margin}
+          >
+            <InputLabel >Email</InputLabel>
+            <Input
+              id="email"
+              type='email'
+              onChange={handleEmailChange}
+              value={email}
+              startAdornment={
+                <InputAdornment position="start">
+                  <Email />
+                </InputAdornment>
+              }
+              error={emailFieldError}
+            />
+          </FormControl>
+          <FormControl variant='outlined'
+            fullWidth
+            className={classes.margin}
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={changePasswordChecked}
+                  onChange={handleCheckBoxChange}
+                  name="checkedB"
+                  color="primary"
+                />
+              }
+              label="Change my password"
+            />
+          </FormControl>
+          <FormControl fullWidth className={classes.margin}>
+            <InputLabel>New Password</InputLabel>
+            <Input
+              id="password"
+              onChange={handlePasswordChange}
+              type="password"
+              value={password}
+              disabled={changePasswordChecked ? false : true}
+              disableUnderline={changePasswordChecked ? false : true}
+              error={passwordFieldError}
+              startAdornment={
+                <InputAdornment position="start">
+                  <LockIcon />
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+
+
+
+          <div>
+            <Box>
+              {
+                isUpdating ? <CircularProgress /> :
+                  <CustomPrimaryContainedButton
+                    onClick={handleUpdateButtonClick}
+                    variant="contained"
+                    color="primary">
+                    Update Info
+                  </CustomPrimaryContainedButton>
+              }
+            </Box>
+          </div>
         </Paper>
       </Grid>
     </Grid>
+
+    <div>
+      <Dialog
+        open={openCurrentPasswordDialog}
+        onClose={handleCloseCurrentPasswordDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Enter current password</DialogTitle>
+        <DialogContent fullWidth>
+          <DialogContentText id="alert-dialog-description">
+            <TextField variant="outlined"
+              autoFocus
+              margin="dense"
+              value={currentPassword}
+              onChange={handleCurrentPasswordChange}
+              label="Current Password"
+              type="password"
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseCurrentPasswordDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmCurrentPassword} color="primary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+
   </div>
 }
+
