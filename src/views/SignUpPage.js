@@ -60,8 +60,8 @@ export const SignUpPage = () => {
       // enqueueSnackbar("You account is created successfully", { variant: SnackBarVariant.Success });
     } else {
       //email is taken
-      if (res.error_message) {
-        enqueueSnackbar(res.error_message, { variant: SnackBarVariant.Error });
+      if (res.data?.error_message) {
+        enqueueSnackbar(res.data?.error_message, { variant: SnackBarVariant.Error });
       }
       else
         enqueueSnackbar("Can not create account, something went wrong.", { variant: SnackBarVariant.Error });
