@@ -28,7 +28,7 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 AXIOS_INSTANCE.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
-  return error.response?.data;
+  return error.response;
 });
 
 export const FILEUPLOAD_AXIOS_INSTANCE = axios.create({

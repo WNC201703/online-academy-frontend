@@ -30,7 +30,7 @@ import {moneyFormat} from "../../utils/FormatHelper";
 import grey from "@material-ui/core/colors/grey";
 import CustomEnrollOutlinedButton from "../Button/CustomEnrollOutlinedButton";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import {getCategoriesList} from "../../config/api/Categories";
+import {getAllCategories} from "../../config/api/Categories";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -144,7 +144,8 @@ export default function PrimarySearchAppBar() {
   }, []);
 
   const fetchCategoriesList = async () => {
-    const res = await getCategoriesList();
+    const resType='list';
+    const res = await getAllCategories(resType);
     const categoryList = res.data
     let parentCategory = {}
 
@@ -218,6 +219,7 @@ export default function PrimarySearchAppBar() {
   };
 
   const handleLogOut = () => {
+    history.push('/sign-in');
     removeUser(null);
     setAnchorEl(null);
     handleMobileMenuClose();
@@ -397,13 +399,15 @@ export default function PrimarySearchAppBar() {
           <div className={classes.grow}/>
           <div className={classes.sectionDesktop}>
             {
-              user ? <IconButton
+              (user && user._id) ? <IconButton
                   edge="end"
                   aria-label="account of current user"
                   aria-controls={menuId}
                   aria-haspopup="true"
                   onClick={handleProfileMenuOpen}
                   color="inherit">
+                    <Typography >{user.fullname}</Typography>
+                    <Box m={0.5}></Box>
                   <AccountCircle/>
                 </IconButton> :
                 <Box>
