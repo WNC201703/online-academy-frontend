@@ -17,7 +17,7 @@ export async function sendVerificationEmail(data) {
 }
 
 export async function verifyEmail(token) {
-  return await AXIOS_INSTANCE.post(`/api/users/email/verify/${token}`);
+  return await AXIOS_INSTANCE.get(`/api/users/email/verify/${token}`);
 }
 
 
