@@ -10,6 +10,7 @@ import {SamplePage} from "./views/SamplePage";
 import {Homepage} from "./views/Homepage/Homepage";
 import {SignUpPage} from "./views/SignUpPage";
 import {SignInPage} from "./views/SignInPage";
+import {EmailConfirmationPage} from "./views/EmailConfirmationPage";
 import LearningPage from "./views/Learning/LearningPage";
 import PageNotFound from "./components/PageNotFound";
 import AdminDashboard from "./views/Admin/Dashboard";
@@ -32,6 +33,7 @@ export default function Layout() {
         <Route exact path="/home" component={Homepage}/>
         <Route exact path="/sign-in" component={SignInPage}/>
         <Route exact path="/sign-up" component={SignUpPage}/>
+        <Route exact path="/comfirm-email/:token" component={EmailConfirmationPage}/>
         <Route exact path="/not-found" component={PageNotFound}/>
         <Route exact path="/courses/all/" component={CourseList}/>
         <Route exact path="/courses/all/:categoryId" component={CourseList}/>
