@@ -15,7 +15,7 @@ import {
   getFavoriteCourses,
   getPostedCourse
 } from "../../../config/api/Courses";
-import {getCategoryById} from "../../../config/api/Categories";
+import {getAllCategories, getCategoryById} from "../../../config/api/Categories";
 import {LineListLoading} from "../../../components/Loading";
 import {CourseLineItem} from "../../CourseList/CourseLineItem";
 import {SnackBarVariant} from "../../../utils/constant";
@@ -30,6 +30,7 @@ import TextField from "@material-ui/core/TextField";
 import {Editor} from "./Edittor";
 import ReactQuill from "react-quill";
 import {Label} from "semantic-ui-react";
+import MenuItem from "@material-ui/core/MenuItem";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -70,6 +71,9 @@ export const CourseManagementTeacher = () => {
   const [courseShortDescription, setCourseShortDescription] = useState('');
   const [courseFullDescription, setCourseFullDescription] = useState('')
   const [courseImage, setCourseImage] = useState(null);
+  const [courseCategory, setCourseCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+
   const handlePageChange = (event, value) => {
     setPage(value);
     history.push(`${location.pathname}?page=${value}`)
@@ -90,6 +94,8 @@ export const CourseManagementTeacher = () => {
       if (res.status !== 201) {
         return;
       }
+      let response = await getAllCategories()
+      setCategories(response.data)
 
       setCourseList(res?.data)
       setTotalPage(res?.data.totalPages)
@@ -154,8 +160,8 @@ export const CourseManagementTeacher = () => {
     setCourseShortDescription(event.target.value)
   }
 
-  const handleCourseFullDescriptionChange = (event) => {
-    setCourseFullDescription(event.target?.value)
+  const handleCourseFullDescriptionChange = (value) => {
+    setCourseFullDescription(value)
   }
 
   const onImageChange = (event) => {
@@ -168,6 +174,9 @@ export const CourseManagementTeacher = () => {
     }
   }
 
+  const handleCategoryChange = (event) => {
+    setCourseCategory(event.target.value)
+  }
   return <div>
     <Grid container spacing={3}>
       <Grid container xs={12}>
@@ -203,6 +212,24 @@ export const CourseManagementTeacher = () => {
                 fullWidth
                 value={coursePrice}
               />
+
+              <TextField
+                id="standard-select-currency"
+                select
+                fullWidth
+                label="Category"
+                value={courseCategory}
+                onChange={handleCategoryChange}
+                helperText="Please select your currency"
+              >
+                {categories.map((option) => (
+                  <MenuItem key={option._id} value={option._id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+
               <Label fullWidth>Short Description </Label>
               <TextField
                 autoFocus
