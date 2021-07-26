@@ -5,17 +5,17 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import TextField from "@material-ui/core/TextField";
 import {Label} from "semantic-ui-react";
 import ReactQuill from "react-quill";
-import DialogContent from "@material-ui/core/DialogContent";
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+
 import Button from "@material-ui/core/Button";
 import CustomPrimaryContainedButton from "../../../components/Button/CustomPrimaryContainedButton";
-import {deleteCategory} from "../../../config/api/Categories";
-import {getCourseById, updateCourse} from "../../../config/api/Courses";
+import {deleteCategory, getAllCategories} from "../../../config/api/Categories";
+import {getCourseById, updateCourse, updateCourseImage} from "../../../config/api/Courses";
 import {useSnackbar} from "notistack";
 import {SnackBarVariant} from "../../../utils/constant";
 import {useParams} from "react-router-dom";
-import {getCourseReviews, getPreviewLessons, getRelatedCourse} from "../../../config/api/Lessons";
-import {getFavouriteCourse, getMyCourses} from "../../../config/api/User";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import MenuItem from "@material-ui/core/MenuItem";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +31,7 @@ export const CourseDetailTeacher = () => {
   const {id} = useParams();
 
   const {enqueueSnackbar} = useSnackbar();
+  const [imagePreview, setImagePreview] = useState(null);
 
   const [courseName, setCourseName] = useState('');
   const [coursePrice, setCoursePrice] = useState(0);
@@ -38,7 +39,8 @@ export const CourseDetailTeacher = () => {
   const [courseFullDescription, setCourseFullDescription] = useState('')
   const [courseImage, setCourseImage] = useState(null);
   const [isPending, setIsPending] = useState(false);
-  const [courseInfo, setCourseInfo] = useState({});
+  const [courseCategory, setCourseCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const eff = async () => {
@@ -67,10 +69,11 @@ export const CourseDetailTeacher = () => {
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
       reader.onload = (e) => {
-        setCourseImage(e.target.result)
+        setImagePreview(e.target.result)
       };
       reader.readAsDataURL(event.target.files[0]);
     }
+    setCourseImage(event.target.files[0])
   }
 
   const handleDeleteCourse = async () => {
@@ -82,20 +85,28 @@ export const CourseDetailTeacher = () => {
 
   const handleUpdateCourse = async () => {
     const data = {
-      // category: '',
+      category: courseCategory,
       name: courseName,
       shortDescription: courseShortDescription,
       detailDescription: courseFullDescription,
       price: coursePrice,
-
     }
-    const res = updateCourse(id, data)
+    const res = await updateCourse(id, data)
     if (res.status === 200) {
       enqueueSnackbar("Update course successfully", {variant: SnackBarVariant.Success});
-
-    }
+    } else
+      enqueueSnackbar("Update course failed", {variant: SnackBarVariant.Error});
   }
 
+  const handleUpdateCourseImage = async () => {
+    let formData = new FormData();
+    formData.append('image', courseImage);
+    const res = await updateCourseImage(id, formData);
+    if (res.status === 200) {
+      enqueueSnackbar("Update image successfully", {variant: SnackBarVariant.Success});
+    } else
+      enqueueSnackbar("Update course failed", {variant: SnackBarVariant.Error});
+  }
 
   const fetchCourseDetail = async () => {
     setIsPending(true);
@@ -104,17 +115,24 @@ export const CourseDetailTeacher = () => {
       if (info.status !== 200) {
         return;
       }
-      // setCourseInfo(info.data);
+      let response = await getAllCategories('list')
+      setCategories(response?.data)
       setCoursePrice(info.data?.price)
       setCourseName(info.data?.name)
       setCourseShortDescription(info.data?.shortDescription)
       setCourseFullDescription(info.data.detailDescription)
+      setCourseCategory(info?.data?.category)
+      setImagePreview(info?.data?.imageUrl)
     } catch (e) {
       enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Error});
       console.log(e);
     } finally {
       setIsPending(false);
     }
+  }
+
+  const handleCategoryChange = (event) => {
+    setCourseCategory(event.target.value)
   }
 
   return <div className={classes.root}>
@@ -156,17 +174,38 @@ export const CourseDetailTeacher = () => {
                   fullWidth
                   value={courseShortDescription}
                 />
-
+                <TextField
+                  id="standard-select-currency"
+                  select
+                  fullWidth
+                  value={courseCategory}
+                  onChange={handleCategoryChange}
+                  helperText="Please select category">
+                  {categories.map((option) => (
+                    <MenuItem key={option._id} value={option._id}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
                 <Label fullWidth>Full Description </Label>
                 <Box fullWidth height={350}>
                   <ReactQuill style={{height: 300}} onChange={handleCourseFullDescriptionChange}
                               value={courseFullDescription || ''}/>
                 </Box>
 
-                <Label fullWidth>Course Cover</Label>
-                <img id="target" src={courseImage}/>
-                <input type="file" onChange={onImageChange} className="filetype" id="group_image"/>
 
+                <Label fullWidth>Course Cover</Label>
+                <img style={{height: 300, width: 300}} id="target" src={imagePreview}/>
+                <input type="file" onChange={onImageChange} className="filetype" id="group_image"/>
+                <Button
+                  variant="contained"
+                  color="default"
+                  onClick={handleUpdateCourseImage}
+                  className={classes.button}
+                  startIcon={<CloudUploadIcon/>}
+                >
+                  Upload
+                </Button>
                 <Box style={{marginBottom: 64}}>
                   <Button onClick={handleDeleteCourse} style={{marginRight: 24}} variant="contained" color="secondary">
                     Delete
@@ -176,7 +215,6 @@ export const CourseDetailTeacher = () => {
                   </CustomPrimaryContainedButton>
                 </Box>
               </Box>
-
           }
         </Grid>
         <Grid item xs={12} sm={2}/>
