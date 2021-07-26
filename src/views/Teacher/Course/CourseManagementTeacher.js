@@ -73,6 +73,7 @@ export const CourseManagementTeacher = () => {
   const [courseImage, setCourseImage] = useState(null);
   const [courseCategory, setCourseCategory] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -168,10 +169,12 @@ export const CourseManagementTeacher = () => {
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
       reader.onload = (e) => {
-        setCourseImage(e.target.result)
+        setImagePreview(e.target.result)
       };
       reader.readAsDataURL(event.target.files[0]);
     }
+
+    setCourseImage(event.target.files[0])
   }
 
   const handleCategoryChange = (event) => {
@@ -247,7 +250,7 @@ export const CourseManagementTeacher = () => {
               </Box>
 
               <Label fullWidth>Course Cover</Label>
-              <img id="target" src={courseImage}/>
+              <img style={{height: 300, width: 300}} id="target" src={imagePreview}/>
               <input type="file" onChange={onImageChange} className="filetype" id="group_image"/>
 
             </DialogContent>
