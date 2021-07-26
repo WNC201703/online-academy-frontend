@@ -27,6 +27,12 @@ export async function getNewestCourses() {
   return await AXIOS_INSTANCE.get(`/api/courses/newest`);
 }
 
+
+
+export async function getPostedCourse() {
+  return await AXIOS_INSTANCE.get(`/api/users/me/posted-courses`);
+}
+
 export async function getTopViewedCourses() {
   return await AXIOS_INSTANCE.get(`/api/courses/top_viewed`);
 }
@@ -35,8 +41,8 @@ export async function getCourseById(id) {
   return await AXIOS_INSTANCE.get(`/api/courses/${id}`);
 }
 
-export async function updateCourse(id) {
-  return await AXIOS_INSTANCE.put(`/api/courses/${id}`);
+export async function updateCourse(id, data) {
+  return await AXIOS_INSTANCE.put(`/api/courses/${id}`, data);
 }
 
 export async function deleteCourse(id) {
