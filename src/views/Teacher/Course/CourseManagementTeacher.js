@@ -8,7 +8,13 @@ import grey from "@material-ui/core/colors/grey";
 import Grid from "@material-ui/core/Grid";
 import {useHistory, useLocation, useParams} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
-import {createCourse, getAllCourses, getEnrollmentsCourse, getFavoriteCourses} from "../../../config/api/Courses";
+import {
+  createCourse,
+  getAllCourses,
+  getEnrollmentsCourse,
+  getFavoriteCourses,
+  getPostedCourse
+} from "../../../config/api/Courses";
 import {getCategoryById} from "../../../config/api/Categories";
 import {LineListLoading} from "../../../components/Loading";
 import {CourseLineItem} from "../../CourseList/CourseLineItem";
@@ -80,12 +86,12 @@ export const CourseManagementTeacher = () => {
   const fetchCourseList = async () => {
     setIsPending(true);
     try {
-      let res = await getAllCourses(page, 5, null, null, null)
-      if (res.status !== 200) {
+      let res = await getPostedCourse()
+      if (res.status !== 201) {
         return;
       }
 
-      setCourseList(res?.data?.results)
+      setCourseList(res?.data)
       setTotalPage(res?.data.totalPages)
     } catch (e) {
       enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Error});
