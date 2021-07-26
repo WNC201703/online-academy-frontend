@@ -95,9 +95,8 @@ export const CourseManagementTeacher = () => {
       if (res.status !== 201) {
         return;
       }
-      let response = await getAllCategories()
-      setCategories(response.data)
-
+      let response = await getAllCategories('list')
+      setCategories(response?.data)
       setCourseList(res?.data)
       setTotalPage(res?.data.totalPages)
     } catch (e) {
@@ -125,25 +124,14 @@ export const CourseManagementTeacher = () => {
     history.push(`/teacher/courses/${id}`);
   }
   const handleCreateCourse = async (event, id) => {
-    const courseInfo = {
-      image: courseImage,
-      name: courseName,
-      shortDescription: courseShortDescription,
-      detailDescription: courseFullDescription,
-      price: coursePrice,
-      category: '60d5438fc84e49412f453a46',
-    }
-
     let formData = new FormData();
     formData.append('image', courseImage);
     formData.append('name', courseName);
     formData.append('shortDescription', courseShortDescription);
     formData.append('detailDescription', courseFullDescription);
     formData.append('price', coursePrice.toString());
-    formData.append('category', '60d5438fc84e49412f453a46');
+    formData.append('category', courseCategory);
 
-
-    console.log('Course info: ', courseInfo);
     const res = await createCourse(formData);
     console.log(res);
     handleDialogClose()
@@ -223,8 +211,7 @@ export const CourseManagementTeacher = () => {
                 label="Category"
                 value={courseCategory}
                 onChange={handleCategoryChange}
-                helperText="Please select your currency"
-              >
+                helperText="Please select your currency">
                 {categories.map((option) => (
                   <MenuItem key={option._id} value={option._id}>
                     {option.name}
@@ -248,11 +235,9 @@ export const CourseManagementTeacher = () => {
               <Box fullWidth>
                 <ReactQuill onChange={handleCourseFullDescriptionChange} value={courseFullDescription}/>
               </Box>
-
               <Label fullWidth>Course Cover</Label>
               <img style={{height: 300, width: 300}} id="target" src={imagePreview}/>
               <input type="file" onChange={onImageChange} className="filetype" id="group_image"/>
-
             </DialogContent>
             <DialogActions>
               <Button onClick={handleDialogClose} color="primary">
