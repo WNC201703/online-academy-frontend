@@ -18,6 +18,21 @@ export async function createCourse(data) {
   return await imageInstance.post(`/api/courses`, data);
 }
 
+export async function updateCourseImage(id, data) {
+  const imageInstance = axios.create({
+    baseURL: process.env.REACT_APP_API_URL,
+    data: data,
+    headers: {"Content-Type": "multipart/form-data"},
+  });
+  imageInstance.interceptors.request.use((config) => {
+    const access_token = getAccessToken();
+    config.headers.Authorization = `Bearer ${access_token}`;
+    return config;
+  });
+
+  return await imageInstance.put(`/api/courses/${id}/image`, data);
+}
+
 export async function getAllCourses(pageNumber = 1, pageSize = 10, sortBy = null,
                                     key_word = null, categoryId = null) {
   return await AXIOS_INSTANCE.get(`/api/courses/?page_number=${pageNumber}&page_size=${pageSize}&key_word=${key_word ? key_word : ''}&category=${categoryId ? categoryId : ''}`);
@@ -26,7 +41,6 @@ export async function getAllCourses(pageNumber = 1, pageSize = 10, sortBy = null
 export async function getNewestCourses() {
   return await AXIOS_INSTANCE.get(`/api/courses/newest`);
 }
-
 
 
 export async function getPostedCourse() {
@@ -47,10 +61,6 @@ export async function updateCourse(id, data) {
 
 export async function deleteCourse(id) {
   return await AXIOS_INSTANCE.delete(`/api/courses/${id}`);
-}
-
-export async function updateCourseImage(id) {
-  return await AXIOS_INSTANCE.post(`/api/courses/${id}/image`);
 }
 
 export async function reviewCourse(id, data) {
