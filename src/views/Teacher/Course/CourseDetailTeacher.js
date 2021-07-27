@@ -16,7 +16,15 @@ import {SnackBarVariant} from "../../../utils/constant";
 import {useParams} from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import MenuItem from "@material-ui/core/MenuItem";
-
+import {getAllLessons, updateLesson, updateLessonVideo} from "../../../config/api/Lessons";
+import {
+  Accordion
+} from 'react-bootstrap';
+import Card from "react-bootstrap/Card";
+import {TextFields} from "@material-ui/icons";
+import VideoPanel from "../../Learning/VideoPanel";
+import {Player} from "video-react";
+import DialogContent from "@material-ui/core/DialogContent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +49,8 @@ export const CourseDetailTeacher = () => {
   const [isPending, setIsPending] = useState(false);
   const [courseCategory, setCourseCategory] = useState(null);
   const [categories, setCategories] = useState([]);
-
+  const [lessons, setLessons] = useState([])
+  const [videoPreview, setVideoPreview] = useState(null);
   useEffect(() => {
     const eff = async () => {
       await fetchCourseDetail();
@@ -76,6 +85,20 @@ export const CourseDetailTeacher = () => {
     setCourseImage(event.target.files[0])
   }
 
+  const onVideoChange = (event, lessonId) => {
+    if (event.target.files && event.target.files[0]) {
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        setVideoPreview(e.target.result)
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    let lessonsList = [...lessons]
+    let lesson = lessonsList.find(item => item?._id === lessonId)
+    lesson.videoUrl = event.target.files[0]
+    setLessons(lessonsList)
+  }
   const handleDeleteCourse = async () => {
     const res = deleteCategory(id)
     if (res.status === 200) {
@@ -102,7 +125,7 @@ export const CourseDetailTeacher = () => {
     let formData = new FormData();
     formData.append('image', courseImage);
     const res = await updateCourseImage(id, formData);
-    if (res.status === 200) {
+    if (res.status === 201) {
       enqueueSnackbar("Update image successfully", {variant: SnackBarVariant.Success});
     } else
       enqueueSnackbar("Update course failed", {variant: SnackBarVariant.Error});
@@ -116,6 +139,8 @@ export const CourseDetailTeacher = () => {
         return;
       }
       let response = await getAllCategories('list')
+      let res = await getAllLessons(id)
+      setLessons(res?.data)
       setCategories(response?.data)
       setCoursePrice(info.data?.price)
       setCourseName(info.data?.name)
@@ -133,6 +158,39 @@ export const CourseDetailTeacher = () => {
 
   const handleCategoryChange = (event) => {
     setCourseCategory(event.target.value)
+  }
+
+  const handleUpdateLessonVideo = async lessonId => {
+    let formData = new FormData();
+    formData.append('video', videoPreview);
+    const res = await updateLessonVideo(id, formData,lessonId);
+    if(res.status === 200) {
+      enqueueSnackbar('Update lesson video successfully', {variant: SnackBarVariant.Success})
+
+    } else {
+      enqueueSnackbar('Update lesson video failed', {variant: SnackBarVariant.Error})
+    }
+
+  }
+
+  const handleUpdateLessonInfo = async (event, payload) => {
+    let data = {
+      description: payload?.description
+    };
+    const res = await updateLesson(id, data, data?._id)
+    if (res.status === 200) {
+      enqueueSnackbar('Update lesson description successfully', {variant: SnackBarVariant.Success})
+    } else {
+      enqueueSnackbar('Update lesson description failed', {variant: SnackBarVariant.Error})
+
+    }
+  }
+
+  const handleLessonDescriptionChange = (event, lessonId) => {
+    let lessonsList = [...lessons]
+    let lesson = lessonsList.find(item => item?._id === lessonId);
+    lesson.description = event.target.value;
+    setLessons(lessonsList)
   }
 
   return <div className={classes.root}>
@@ -214,6 +272,77 @@ export const CourseDetailTeacher = () => {
                     Update
                   </CustomPrimaryContainedButton>
                 </Box>
+
+                <Box fullWidth>
+                  <Label>Lessons</Label>
+                  <CustomPrimaryContainedButton className={classes.buttonText}>
+                    Add course
+                  </CustomPrimaryContainedButton>
+                </Box>
+                <div style={{marginBottom: 64}}>
+                  <Accordion>
+                    {
+                      lessons.map((item, index) => <Card>
+                        <Card.Header fullwidth>
+                          <Accordion.Toggle as={Button}
+                                            variant="link" eventKey={index + 1}>
+                            #{item?.lessonNumber} - {item?.name}
+                          </Accordion.Toggle>
+                        </Card.Header>
+                        <Accordion.Collapse eventKey={index + 1}>
+                          <Card.Body>
+                            <TextField
+                              fullWidth
+                              onChange={(event) =>
+                                handleLessonDescriptionChange(event, item?._id)}
+                              autoFocus
+                              margin="dense"
+                              id="name"
+                              type="email"
+                              value={item?.description}
+                            />
+                            <CustomPrimaryContainedButton onClick={() => handleUpdateLessonInfo(item)}
+                                                          className={classes.buttonText}>
+                              Update info
+                            </CustomPrimaryContainedButton>
+
+                            <Player
+                              playsInline
+                              fluid={false}
+                              width={768} height={432}
+                              src={item?.videoUrl}></Player>
+
+                            <input type="file" onChange={(event) => onVideoChange(event, item?._id)}
+                                   className="filetype" id="group_image"/>
+
+                            <Button
+                              variant="contained"
+                              color="default"
+                              onClick={() => handleUpdateLessonVideo(item?._id)}
+                              className={classes.button}
+                              startIcon={<CloudUploadIcon/>}>
+                              Upload video
+                            </Button>
+
+                          </Card.Body>
+
+                          {/*<Button*/}
+                          {/*  variant="contained"*/}
+                          {/*  color="default"*/}
+                          {/*  onClick={handleUpdateCourseImage}*/}
+                          {/*  className={classes.button}*/}
+                          {/*  startIcon={<CloudUploadIcon/>}*/}
+                          {/*>*/}
+                          {/*  Upload lesson*/}
+                          {/*</Button>*/}
+                        </Accordion.Collapse>
+                      </Card>)
+                    }
+
+
+                  </Accordion>
+                </div>
+
               </Box>
           }
         </Grid>
