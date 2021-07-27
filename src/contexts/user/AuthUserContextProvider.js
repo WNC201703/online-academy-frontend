@@ -9,7 +9,8 @@ const UserContext = (props) => {
   const saveUser = (user) => setUser(user);
   const removeUser = () => {
     setUser(null);
-    localStorage.setItem(LocalKey.UserInfo, null);
+    // localStorage.setItem(LocalKey.UserInfo, null);
+    localStorage.clear();
   }
 
   return (
