@@ -21,6 +21,9 @@ export async function updateLesson(courseId, data, lessonId) {
 
 export async function updateLessonVideo(courseId, data, lessonId) {
   const videoInstance = axios.create({
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
     baseURL: process.env.REACT_APP_API_URL,
     data: data,
     headers: {"Content-Type": "multipart/form-data"},
@@ -31,7 +34,7 @@ export async function updateLessonVideo(courseId, data, lessonId) {
     config.headers.Authorization = `Bearer ${access_token}`;
     return config;
   });
-  return await videoInstance.post(`/api/courses/${courseId}/lessons/${lessonId}/video`, data);
+  return await videoInstance.put(`/api/courses/${courseId}/lessons/${lessonId}/video`, data);
 }
 
 export async function getLessonByNumber(courseId, data, lessonNumber) {
