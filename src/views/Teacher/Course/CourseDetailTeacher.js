@@ -58,6 +58,7 @@ export const CourseDetailTeacher = () => {
   const [open, setOpen] = useState(false);
   const [lessonName, setLessonName] = useState('');
   const [lessonDescription, setLessonDescription] = useState('');
+  const [video, setVideo] = useState(null);
   useEffect(() => {
     const eff = async () => {
       await fetchCourseDetail();
@@ -96,12 +97,13 @@ export const CourseDetailTeacher = () => {
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
       reader.onload = (e) => {
-        setVideoPreview(e.target.result)
+        setVideo(e.target.result);
       };
       reader.readAsDataURL(event.target.files[0]);
-      setVideoPreview(event.target.files[0])
 
     }
+    setVideoPreview(event.target.files[0])
+
   }
   const handleDeleteCourse = async () => {
     const res = deleteCategory(id)
@@ -168,7 +170,7 @@ export const CourseDetailTeacher = () => {
     let formData = new FormData();
     formData.append('video', videoPreview);
     const res = await updateLessonVideo(id, formData, lessonId);
-    if (res.status === 200) {
+    if (res.status === 201) {
       enqueueSnackbar('Update lesson video successfully', {variant: SnackBarVariant.Success})
     } else {
       enqueueSnackbar('Update lesson video failed', {variant: SnackBarVariant.Error})
@@ -394,7 +396,7 @@ export const CourseDetailTeacher = () => {
                                   playsInline
                                   fluid={false}
                                   width={250} height={250}
-                                  src={videoPreview}></Player>
+                                  src={video}></Player>
 
                                 <input type="file" onChange={(event) => onVideoChange(event, item?._id)}
                                        className="filetype" id="group_image"/>
