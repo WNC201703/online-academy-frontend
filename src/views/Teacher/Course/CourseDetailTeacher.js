@@ -16,7 +16,7 @@ import {SnackBarVariant} from "../../../utils/constant";
 import {useParams} from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import MenuItem from "@material-ui/core/MenuItem";
-import {getAllLessons, updateLesson, updateLessonVideo} from "../../../config/api/Lessons";
+import {addLesson, getAllLessons, updateLesson, updateLessonVideo} from "../../../config/api/Lessons";
 import {
   Accordion
 } from 'react-bootstrap';
@@ -25,6 +25,10 @@ import {TextFields} from "@material-ui/icons";
 import VideoPanel from "../../Learning/VideoPanel";
 import {Player} from "video-react";
 import DialogContent from "@material-ui/core/DialogContent";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,6 +55,9 @@ export const CourseDetailTeacher = () => {
   const [categories, setCategories] = useState([]);
   const [lessons, setLessons] = useState([])
   const [videoPreview, setVideoPreview] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [lessonName, setLessonName] = useState('');
+  const [lessonDescription, setLessonDescription] = useState('');
   useEffect(() => {
     const eff = async () => {
       await fetchCourseDetail();
@@ -92,12 +99,9 @@ export const CourseDetailTeacher = () => {
         setVideoPreview(e.target.result)
       };
       reader.readAsDataURL(event.target.files[0]);
-    }
+      setVideoPreview(event.target.files[0])
 
-    let lessonsList = [...lessons]
-    let lesson = lessonsList.find(item => item?._id === lessonId)
-    lesson.videoUrl = event.target.files[0]
-    setLessons(lessonsList)
+    }
   }
   const handleDeleteCourse = async () => {
     const res = deleteCategory(id)
@@ -163,10 +167,9 @@ export const CourseDetailTeacher = () => {
   const handleUpdateLessonVideo = async lessonId => {
     let formData = new FormData();
     formData.append('video', videoPreview);
-    const res = await updateLessonVideo(id, formData,lessonId);
-    if(res.status === 200) {
+    const res = await updateLessonVideo(id, formData, lessonId);
+    if (res.status === 200) {
       enqueueSnackbar('Update lesson video successfully', {variant: SnackBarVariant.Success})
-
     } else {
       enqueueSnackbar('Update lesson video failed', {variant: SnackBarVariant.Error})
     }
@@ -186,6 +189,30 @@ export const CourseDetailTeacher = () => {
     }
   }
 
+  const handleCreateLesson = async () => {
+    const data = {
+      name: lessonName,
+      description: lessonDescription
+    }
+    const res = await addLesson(id, data)
+    if (res.status === 201) {
+      enqueueSnackbar('Add lesson successfully', {variant: SnackBarVariant.Success})
+    } else {
+      enqueueSnackbar('Add lesson description failed', {variant: SnackBarVariant.Error})
+    }
+    handleDialogClose()
+  }
+
+  const handleDialogOpen = () => {
+    setOpen(true);
+  }
+
+  const handleDialogClose = () => {
+    setOpen(false);
+    setLessonName('')
+    setLessonDescription('')
+  }
+
   const handleLessonDescriptionChange = (event, lessonId) => {
     let lessonsList = [...lessons]
     let lesson = lessonsList.find(item => item?._id === lessonId);
@@ -193,11 +220,59 @@ export const CourseDetailTeacher = () => {
     setLessons(lessonsList)
   }
 
+  const handleNewLessonDescriptionChange = (event) => {
+    setLessonDescription(event.target.value)
+  }
+
+  const handleNewLessonNameChange = (event) => {
+    setLessonName(event.target.value)
+  }
+
   return <div className={classes.root}>
     <Grid container spacing={3}>
       <Grid className={classes.cover} container xs={12}>
         <Grid item xs={12} sm={2}/>
         <Grid item xs={12} sm={8}>
+
+
+          <Dialog open={open} onClose={handleDialogClose} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">Create new lesson</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Please enter information to create a new lesson
+              </DialogContentText>
+              <Label fullWidth>Lesson Name </Label>
+              <TextField
+                fullWidth
+                onChange={handleNewLessonNameChange}
+                autoFocus
+                margin="dense"
+                id="name"
+                type="email"
+                value={lessonName}
+              />
+              <Label fullWidth>Lesson Description </Label>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                onChange={handleNewLessonDescriptionChange}
+                type="text"
+                fullWidth
+                value={lessonDescription}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleDialogClose} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleCreateLesson} color="primary">
+                Create
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+
           {
             isPending ? <CircularProgress/> :
 
@@ -254,6 +329,7 @@ export const CourseDetailTeacher = () => {
 
                 <Label fullWidth>Course Cover</Label>
                 <img style={{height: 300, width: 300}} id="target" src={imagePreview}/>
+
                 <input type="file" onChange={onImageChange} className="filetype" id="group_image"/>
                 <Button
                   variant="contained"
@@ -275,73 +351,70 @@ export const CourseDetailTeacher = () => {
 
                 <Box fullWidth>
                   <Label>Lessons</Label>
-                  <CustomPrimaryContainedButton className={classes.buttonText}>
-                    Add course
+                  <CustomPrimaryContainedButton onClick={handleDialogOpen} className={classes.buttonText}>
+                    Add lesson
                   </CustomPrimaryContainedButton>
                 </Box>
-                <div style={{marginBottom: 64}}>
-                  <Accordion>
-                    {
-                      lessons.map((item, index) => <Card>
-                        <Card.Header fullwidth>
-                          <Accordion.Toggle as={Button}
-                                            variant="link" eventKey={index + 1}>
-                            #{item?.lessonNumber} - {item?.name}
-                          </Accordion.Toggle>
-                        </Card.Header>
-                        <Accordion.Collapse eventKey={index + 1}>
-                          <Card.Body>
-                            <TextField
-                              fullWidth
-                              onChange={(event) =>
-                                handleLessonDescriptionChange(event, item?._id)}
-                              autoFocus
-                              margin="dense"
-                              id="name"
-                              type="email"
-                              value={item?.description}
-                            />
-                            <CustomPrimaryContainedButton onClick={() => handleUpdateLessonInfo(item)}
-                                                          className={classes.buttonText}>
-                              Update info
-                            </CustomPrimaryContainedButton>
+                {
+                  isPending ? <CircularProgress/> :
+                    <div style={{marginBottom: 64}}>
+                      <Accordion>
+                        {
+                          lessons?.map((item, index) => <Card>
+                            <Card.Header fullwidth>
+                              <Accordion.Toggle as={Button}
+                                                variant="link" eventKey={index + 1}>
+                                #{item?.lessonNumber} - {item?.name}
+                              </Accordion.Toggle>
+                            </Card.Header>
+                            <Accordion.Collapse eventKey={index + 1} onEntered={() => setVideoPreview(null)}>
+                              <Card.Body>
+                                <TextField
+                                  fullWidth
+                                  onChange={(event) =>
+                                    handleLessonDescriptionChange(event, item?._id)}
+                                  autoFocus
+                                  margin="dense"
+                                  id="name"
+                                  type="email"
+                                  value={item?.description}
+                                />
+                                <CustomPrimaryContainedButton onClick={() => handleUpdateLessonInfo(item)}
+                                                              className={classes.buttonText}>
+                                  Update info
+                                </CustomPrimaryContainedButton>
 
-                            <Player
-                              playsInline
-                              fluid={false}
-                              width={768} height={432}
-                              src={item?.videoUrl}></Player>
+                                <Player
+                                  playsInline
+                                  fluid={false}
+                                  width={768} height={432}
+                                  src={item?.videoUrl}></Player>
+                                <label>Preview video</label>
+                                <Player
+                                  playsInline
+                                  fluid={false}
+                                  width={250} height={250}
+                                  src={videoPreview}></Player>
 
-                            <input type="file" onChange={(event) => onVideoChange(event, item?._id)}
-                                   className="filetype" id="group_image"/>
+                                <input type="file" onChange={(event) => onVideoChange(event, item?._id)}
+                                       className="filetype" id="group_image"/>
 
-                            <Button
-                              variant="contained"
-                              color="default"
-                              onClick={() => handleUpdateLessonVideo(item?._id)}
-                              className={classes.button}
-                              startIcon={<CloudUploadIcon/>}>
-                              Upload video
-                            </Button>
+                                <Button
+                                  variant="contained"
+                                  color="default"
+                                  onClick={() => handleUpdateLessonVideo(item?._id)}
+                                  className={classes.button}
+                                  startIcon={<CloudUploadIcon/>}>
+                                  Upload video
+                                </Button>
+                              </Card.Body>
+                            </Accordion.Collapse>
+                          </Card>)
+                        }
+                      </Accordion>
+                    </div>
+                }
 
-                          </Card.Body>
-
-                          {/*<Button*/}
-                          {/*  variant="contained"*/}
-                          {/*  color="default"*/}
-                          {/*  onClick={handleUpdateCourseImage}*/}
-                          {/*  className={classes.button}*/}
-                          {/*  startIcon={<CloudUploadIcon/>}*/}
-                          {/*>*/}
-                          {/*  Upload lesson*/}
-                          {/*</Button>*/}
-                        </Accordion.Collapse>
-                      </Card>)
-                    }
-
-
-                  </Accordion>
-                </div>
 
               </Box>
           }
