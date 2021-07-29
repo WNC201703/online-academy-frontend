@@ -45,7 +45,6 @@ const TeacherLayout = props => {
 
   return (
     <div style={{display: 'flex', flexGrow: 1, width: '100%', height: '100%', flexDirection:'column'}}>
-      <ButtonAppBar/>
       <SideBar/>
       <div className={classes.page}>
         <main>
