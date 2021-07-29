@@ -19,11 +19,18 @@ import {UserRoles} from "./utils/constant";
 import {CourseDetail} from "./views/CourseDetail/CourseDetailPage";
 import {ProfilePage} from "./views/ProfilePage";
 import {CourseList} from "./views/CourseList/CourseList";
+import RouteWithLayout from "./components/RouteWithLayout";
+import TeacherLayout from "./components/Layout/TeacherLayout";
+import {CourseManagementTeacher} from "./views/Teacher/Course/CourseManagementTeacher";
+import {CourseDetailTeacher} from "./views/Teacher/Course/CourseDetailTeacher";
+import SecureView from "./components/SecureView";
 
 export default function Layout() {
   const {user} = useContext(AuthUserContext);
   const isAdmin = user?.role === UserRoles.Admin;
-
+  const isTeacher = user?.role === UserRoles.Admin;
+  const isStudent = user?.role === UserRoles.Student;
+  const isAdminOrTeacher = !isStudent
   return (
     <div>
       <ButtonAppBar/>
@@ -33,12 +40,10 @@ export default function Layout() {
         <Route exact path="/home" component={Homepage}/>
         <Route exact path="/sign-in" component={SignInPage}/>
         <Route exact path="/sign-up" component={SignUpPage}/>
-        <Route exact path="/confirm-email/:token" component={EmailConfirmationPage}/>
         <Route exact path="/not-found" component={PageNotFound}/>
         <Route exact path="/courses/all/" component={CourseList}/>
         <Route exact path="/courses/all/:categoryId" component={CourseList}/>
         <Route exact path="/courses/:id" component={CourseDetail}/>
-
         <Route path="/profile">
           {user?._id ? <ProfilePage/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
         </Route>
@@ -49,6 +54,11 @@ export default function Layout() {
         <Route path="/admin">
           {isAdmin ? <AdminDashboard/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
         </Route>
+
+        <RouteWithLayout layout={TeacherLayout} exact path='/teacher/courses'
+                         component={CourseManagementTeacher}/>
+        <RouteWithLayout layout={TeacherLayout} exact path='/teacher/courses/:id'
+                         component={CourseDetailTeacher}/>
         <Route component={PageNotFound}/>
       </Switch>
     </div>
