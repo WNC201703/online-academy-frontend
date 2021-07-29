@@ -177,18 +177,25 @@ export const CourseDetail = () => {
     setIsPending(true);
     try {
       const [info, lessons, related,
-        favourite, mine, reviews] = await Promise.all([
+        mine, reviews] = await Promise.all([
         getCourseById(id), getPreviewLessons(id), getRelatedCourse(id),
-        getFavouriteCourse(user._id), getMyCourses(),
+        getMyCourses(),
         getCourseReviews(id, 10, reviewPage)
       ]);
+      let favourite;
+      if (user._id) {
+        favourite = await getFavouriteCourse(user._id);
+        console.log('data: ',favourite?.data)
+        const favouriteIndex = favourite?.data?.findIndex(x => x._id === info?.data?._id);
+        console.log('Fav index: ', favouriteIndex)
+        if (!(favouriteIndex < 0)) setIsFavourite(true);
+      }
+
       if (info.status !== 200) {
         return;
       }
-      const favouriteIndex = favourite?.data?.findIndex(x => x.course === info?.data?._id);
       const enrolledIndex = mine?.data?.findIndex(x => x.course === info?.data?._id);
 
-      if (!(favouriteIndex < 0)) setIsFavourite(true);
       if (!(enrolledIndex < 0)) setIsEnrolled(true);
 
       setReviewList(reviews?.data?.results)
