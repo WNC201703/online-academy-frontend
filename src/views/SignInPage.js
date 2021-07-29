@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { makeStyles } from "@material-ui/core";
+import React, {useContext, useState} from "react";
+import {makeStyles} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -7,14 +7,14 @@ import Typography from "@material-ui/core/Typography";
 import CustomPrimaryContainedButton from "../components/Button/CustomPrimaryContainedButton";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import { isValidEmail } from "../utils/ValidationHelper";
+import {isValidEmail} from "../utils/ValidationHelper";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { signIn, sendVerificationEmail } from "../config/api/User";
-import { LocalKey, SnackBarVariant, UserRoles } from "../utils/constant";
-import { useSnackbar } from "notistack";
-import { saveAccessToken } from "../utils/LocalStorageUtils";
+import {signIn, sendVerificationEmail} from "../config/api/User";
+import {LocalKey, SnackBarVariant, UserRoles} from "../utils/constant";
+import {useSnackbar} from "notistack";
+import {saveAccessToken} from "../utils/LocalStorageUtils";
 import AuthUserContext from "../contexts/user/AuthUserContext";
-import { useHistory } from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,8 +34,8 @@ const useStyles = makeStyles((theme) => ({
 export const SignInPage = () => {
   const classes = useStyles();
   const history = useHistory();
-  const { saveUser } = useContext(AuthUserContext);
-  const { enqueueSnackbar } = useSnackbar();
+  const {saveUser} = useContext(AuthUserContext);
+  const {enqueueSnackbar} = useSnackbar();
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [isPending, setIsPending] = useState(false);
@@ -51,13 +51,12 @@ export const SignInPage = () => {
   }
 
   const resendVerificationEmail = async () => {
-    const res = await sendVerificationEmail({ email: email });
+    const res = await sendVerificationEmail({email: email});
     if (res.status === 200) {
       setIsSent(true);
-    }
-    else {
+    } else {
       if (res.status === 400) {
-        enqueueSnackbar(`${res.data?.error_message}`, { variant: SnackBarVariant.Error });
+        enqueueSnackbar(`${res.data?.error_message}`, {variant: SnackBarVariant.Error});
       }
     }
   }
@@ -71,29 +70,30 @@ export const SignInPage = () => {
 
     const res = await signIn(signInInfo);
     if (res.status === 200) {
-      const { accessToken, user } = res.data;
+      const {accessToken, user} = res.data;
       delete user['password'];
       saveAccessToken(accessToken);
       localStorage.setItem(LocalKey.UserInfo, JSON.stringify(user));
       saveUser(user);
       if (user.role === UserRoles.Admin) {
         history.push('/admin');
+      } else if (user.role === UserRoles.Teacher) {
+        history.push('/teacher/courses');
       } else history.push('/');
 
-      enqueueSnackbar("Sign in successfully", { variant: SnackBarVariant.Success });
+
+      enqueueSnackbar("Sign in successfully", {variant: SnackBarVariant.Success});
     } else {
       //email or password is incorrect
       if (res.status === 401) {
-        enqueueSnackbar("Can not sign in to your account, please check your email and password.", { variant: SnackBarVariant.Error });
-      }
-      else {
+        enqueueSnackbar("Can not sign in to your account, please check your email and password.", {variant: SnackBarVariant.Error});
+      } else {
         console.log(res);
         //email is not verified
         if (res.status === 403) {
           setEmailNotVerified(true);
-        }
-        else {
-          enqueueSnackbar("Can not sign in to your account", { variant: SnackBarVariant.Error });
+        } else {
+          enqueueSnackbar("Can not sign in to your account", {variant: SnackBarVariant.Error});
         }
       }
     }
@@ -108,19 +108,20 @@ export const SignInPage = () => {
         direction="column"
         alignItems="center"
         justify="center"
-        style={{ minHeight: '100vh' }}>
+        style={{minHeight: '100vh'}}>
         <Grid item xs={6}>
-          <div style={{ justifyContent: 'center' }} className={classes.paper}>
-            <Typography variant="h6"  >
+          <div style={{justifyContent: 'center'}} className={classes.paper}>
+            <Typography variant="h6">
               {`You have to confirm your email: ${email} address before continuing`}
             </Typography>
             {isSent
               ?
-              <Typography  >
+              <Typography>
                 {`A verification link has been sent to your email account.`}
               </Typography>
-               :
-              <Button variant="outlined" color="primary" onClick={resendVerificationEmail}>Resend verification email</Button>
+              :
+              <Button variant="outlined" color="primary" onClick={resendVerificationEmail}>Resend verification
+                email</Button>
             }
 
 
@@ -137,21 +138,21 @@ export const SignInPage = () => {
       direction="column"
       alignItems="center"
       justify="center"
-      style={{ minHeight: '100vh' }}>
+      style={{minHeight: '100vh'}}>
       <Grid item xs={3}>
-        <Paper style={{ justifyContent: 'center', padding: 48 }} className={classes.paper}>
+        <Paper style={{justifyContent: 'center', padding: 48}} className={classes.paper}>
           <Box className={classes.formTitle}>Sign in to your account</Box>
-          <Box fontSize={14} style={{ marginTop: 24, marginBottom: 24 }}>Build skills for
+          <Box fontSize={14} style={{marginTop: 24, marginBottom: 24}}>Build skills for
             today, tomorrow, and beyond.
             Education to future-proof your career.</Box>
-          <TextField fullWidth onChange={handleEmailChange} value={email} label="Email" variant="outlined" />
+          <TextField fullWidth onChange={handleEmailChange} value={email} label="Email" variant="outlined"/>
           <TextField fullWidth value={password}
-            onChange={handlePasswordChange} style={{ marginTop: 24, marginBottom: 24 }} type="password"
-            label="Password"
-            variant="outlined" />
+                     onChange={handlePasswordChange} style={{marginTop: 24, marginBottom: 24}} type="password"
+                     label="Password"
+                     variant="outlined"/>
           <Box>
             {
-              isPending ? <CircularProgress /> : <CustomPrimaryContainedButton
+              isPending ? <CircularProgress/> : <CustomPrimaryContainedButton
                 onClick={handleSignInButtonClick}
                 disabled={!(isValidEmail(email) > 0 && password?.length > 0)}
                 variant="contained"

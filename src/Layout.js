@@ -23,6 +23,7 @@ import RouteWithLayout from "./components/RouteWithLayout";
 import TeacherLayout from "./components/Layout/TeacherLayout";
 import {CourseManagementTeacher} from "./views/Teacher/Course/CourseManagementTeacher";
 import {CourseDetailTeacher} from "./views/Teacher/Course/CourseDetailTeacher";
+import SecureView from "./components/SecureView";
 
 export default function Layout() {
   const {user} = useContext(AuthUserContext);
@@ -31,37 +32,35 @@ export default function Layout() {
   const isStudent = user?.role === UserRoles.Student;
   const isAdminOrTeacher = !isStudent
   return (
-    false ?
-      <div>
-        <ButtonAppBar/>
-        <Switch>
-          <Route exact path="/" component={Homepage}/>
-          <Route exact path="/sample" component={SamplePage}/>
-          <Route exact path="/home" component={Homepage}/>
-          <Route exact path="/sign-in" component={SignInPage}/>
-          <Route exact path="/sign-up" component={SignUpPage}/>
-          <Route exact path="/not-found" component={PageNotFound}/>
-          <Route exact path="/courses/all/" component={CourseList}/>
-          <Route exact path="/courses/all/:categoryId" component={CourseList}/>
-          <Route exact path="/courses/:id" component={CourseDetail}/>
-          <Route path="/profile">
-            {user?._id ? <ProfilePage/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
-          </Route>
-          <Route exact path="/me/:type">
-            {user?._id ? <CourseList/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
-          </Route>
-          <Route path="/courses/:courseId/learn" component={LearningPage}/>
-          <Route path="/admin">
-            {isAdmin ? <AdminDashboard/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
-          </Route>
-          <Route component={PageNotFound}/>
-        </Switch>
-      </div> :
-      <div>
-        <Switch>
-          <RouteWithLayout layout={TeacherLayout} exact path='/teacher/courses' component={CourseManagementTeacher}/>
-          <RouteWithLayout layout={TeacherLayout} exact path='/teacher/courses/:id' component={CourseDetailTeacher}/>
-        </Switch>
-      </div>
+    <div>
+      <ButtonAppBar/>
+      <Switch>
+        <Route exact path="/" component={Homepage}/>
+        <Route exact path="/sample" component={SamplePage}/>
+        <Route exact path="/home" component={Homepage}/>
+        <Route exact path="/sign-in" component={SignInPage}/>
+        <Route exact path="/sign-up" component={SignUpPage}/>
+        <Route exact path="/not-found" component={PageNotFound}/>
+        <Route exact path="/courses/all/" component={CourseList}/>
+        <Route exact path="/courses/all/:categoryId" component={CourseList}/>
+        <Route exact path="/courses/:id" component={CourseDetail}/>
+        <Route path="/profile">
+          {user?._id ? <ProfilePage/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
+        </Route>
+        <Route exact path="/me/:type">
+          {user?._id ? <CourseList/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
+        </Route>
+        <Route path="/courses/:courseId/learn" component={LearningPage}/>
+        <Route path="/admin">
+          {isAdmin ? <AdminDashboard/> : <Redirect to={{pathname: "/not-found", state: {from: '/'}}}/>}
+        </Route>
+
+        <RouteWithLayout layout={TeacherLayout} exact path='/teacher/courses'
+                         component={CourseManagementTeacher}/>
+        <RouteWithLayout layout={TeacherLayout} exact path='/teacher/courses/:id'
+                         component={CourseDetailTeacher}/>
+        <Route component={PageNotFound}/>
+      </Switch>
+    </div>
   );
 }
