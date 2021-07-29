@@ -1,9 +1,9 @@
 import React from 'react';
-import Denied from '../views/Error/Denied';
-import Route from "react-router-dom";
+import {Route} from "react-router-dom";
+import PageNotFound from "./PageNotFound";
 
 const RouteWithLayout = props => {
-  const { layout: Layout, component: Component, shouldRender = true, ...rest } = props;
+  const {layout: Layout, component: Component, shouldRender = true, ...rest} = props;
 
   return (
     <Route {...rest}>
@@ -12,8 +12,8 @@ const RouteWithLayout = props => {
             <Layout>
               <Component {...matchProps} />
             </Layout>
-          ):
-          <Denied />
+          ) :
+          <PageNotFound/>
       }
     </Route>
   );

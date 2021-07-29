@@ -1,13 +1,15 @@
 import React, {useMemo, useContext} from "react";
-import { makeStyles } from "@material-ui/core";
-import Route, { Switch } from "react-router-dom";
+import {makeStyles} from "@material-ui/core";
+import {Route, Switch} from "react-router-dom";
 import './SideBar/styles.scss';
-import Box from "@material-ui/core/Box";
 import AuthUserContext from "../contexts/user/AuthUserContext";
 import RouteWithLayout from "./RouteWithLayout";
-import MainAppBarLayout from "./MainAppBarLayout";
-import {Homepage} from "../views/Homepage/Homepage";
-import PrimarySearchAppBar from "./AppBar/AppBar";
+import {UserRoles} from "../utils/constant";
+import TeacherLayout from "./Layout/TeacherLayout";
+import {CourseManagementTeacher} from "../views/Teacher/Course/CourseManagementTeacher";
+import {CourseDetailTeacher} from "../views/Teacher/Course/CourseDetailTeacher";
+import {SignInPage} from "../views/SignInPage";
+
 const useStyles = makeStyles(theme => ({
   root: {
     height: "100%",
@@ -35,22 +37,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function SecureView(){
+export default function SecureView() {
   const classes = useStyles();
-  const { user } = useContext(AuthUserContext);
-
+  const {user} = useContext(AuthUserContext);
+  const isTeacher = user?.role === UserRoles.Admin;
   return (
-      <div className={classes.root}>
-        <PrimarySearchAppBar />
-        <Box mt="65px" width={1} height={1} className={classes.content}>
-          <Switch>
-            <RouteWithLayout
-              exact path="/home"
-              layout={MainAppBarLayout}
-              component={Homepage}
-            />
-          </Switch>
-        </Box>
-      </div>
+    <div className={classes.root}>
+      <Switch>
+        <Route exact path="/sign-in" component={SignInPage}/>
+        <RouteWithLayout shouldRender={isTeacher} layout={TeacherLayout} exact path='/teacher/courses'
+                         component={CourseManagementTeacher}/>
+        <RouteWithLayout shouldRender={isTeacher} layout={TeacherLayout} exact path='/teacher/courses/:id'
+                         component={CourseDetailTeacher}/>
+      </Switch>
+    </div>
   )
 }
