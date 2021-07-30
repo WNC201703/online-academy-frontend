@@ -185,16 +185,14 @@ export const CourseDetail = () => {
       let favourite;
       if (user._id) {
         favourite = await getFavouriteCourse(user._id);
-        console.log('data: ',favourite?.data)
         const favouriteIndex = favourite?.data?.findIndex(x => x._id === info?.data?._id);
-        console.log('Fav index: ', favouriteIndex)
         if (!(favouriteIndex < 0)) setIsFavourite(true);
       }
 
       if (info.status !== 200) {
         return;
       }
-      const enrolledIndex = mine?.data?.findIndex(x => x.course === info?.data?._id);
+      const enrolledIndex = mine?.data?.findIndex(x => x._id === info?.data?._id);
 
       if (!(enrolledIndex < 0)) setIsEnrolled(true);
 
@@ -217,7 +215,9 @@ export const CourseDetail = () => {
       review: ratingContent,
       rating: ratingPoint
     }
-
+    if (!user._id) {
+      history.push('/sign-in')
+    }
     const res = await reviewCourse(courseInfo._id, review)
     if (res === 201) {
       enqueueSnackbar("Review course successfully", {variant: SnackBarVariant.Success});
@@ -260,46 +260,47 @@ export const CourseDetail = () => {
                 <Box className={classes.courseDescription}>
                   Last updated: {dateFormat(courseInfo.updatedAt)}
                 </Box>
-                <Box className={classes.courseDescription} direction='column'>
-                  {
-                    isFavourite ? <CustomFavouriteContainedButton
-                        size="large"
-                        style={{marginRight: 12}}
-                        onClick={handleRemoveFavouriteCourse}
-                        disabled={isProcessing}
-                        startIcon={<FavoriteOutlinedIcon/>}
-                      >
-                        Your favourite course
-                      </CustomFavouriteContainedButton> :
-                      <CustomFavouriteOutlinedButton
-                        onClick={handleFavouriteButtonClick}
-                        size="large"
-                        style={{marginRight: 12}}
-                        startIcon={<FavoriteBorderOutlinedIcon/>}
-                      >
-                        Add to favourite
-                      </CustomFavouriteOutlinedButton>
-                  }
+                {
+                  user._id ? <Box className={classes.courseDescription} direction='column'>
+                    {
+                      isFavourite ? <CustomFavouriteContainedButton
+                          size="large"
+                          style={{marginRight: 12}}
+                          onClick={handleRemoveFavouriteCourse}
+                          disabled={isProcessing}
+                          startIcon={<FavoriteOutlinedIcon/>}
+                        >
+                          Your favourite course
+                        </CustomFavouriteContainedButton> :
+                        <CustomFavouriteOutlinedButton
+                          onClick={handleFavouriteButtonClick}
+                          size="large"
+                          style={{marginRight: 12}}
+                          startIcon={<FavoriteBorderOutlinedIcon/>}
+                        >
+                          Add to favourite
+                        </CustomFavouriteOutlinedButton>
+                    }
 
-                  {
-                    isEnrolled ? <CustomViewContainedButton
-                        size="large"
-                        onClick={handleViewLessons}
-                        disabled={isProcessing}
-                        startIcon={<VisibilityIcon/>}
-                      >
-                        View lessons
-                      </CustomViewContainedButton> :
-                      <CustomEnrollOutlinedButton
-                        onClick={handleEnrollCourse}
-                        size="large"
-                        startIcon={<SubscriptionsOutlinedIcon/>}
-                      >
-                        Enroll this course
-                      </CustomEnrollOutlinedButton>
-                  }
-
-                </Box>
+                    {
+                      isEnrolled ? <CustomViewContainedButton
+                          size="large"
+                          onClick={handleViewLessons}
+                          disabled={isProcessing}
+                          startIcon={<VisibilityIcon/>}
+                        >
+                          View lessons
+                        </CustomViewContainedButton> :
+                        <CustomEnrollOutlinedButton
+                          onClick={handleEnrollCourse}
+                          size="large"
+                          startIcon={<SubscriptionsOutlinedIcon/>}
+                        >
+                          Enroll this course
+                        </CustomEnrollOutlinedButton>
+                    }
+                  </Box> : <div>You should sign in to use this service</div>
+                }
               </Box>
             )
           }
@@ -312,7 +313,7 @@ export const CourseDetail = () => {
         <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Description</Box>
           {
-            isPending ? <DescriptionLoading/> : <Box>{courseInfo.detailDescription}</Box>
+            isPending ? <DescriptionLoading/> : <div>{courseInfo.detailDescription}</div>
           }
         </Paper>
         <Paper className={classes.paper}>
@@ -351,11 +352,20 @@ export const CourseDetail = () => {
                 Send
               </Button>
               {
-                reviewList?.map(item => <Box>
-                  <Box className={classes.note} style={{marginLeft: 12}}> {item?.username}</Box>
-                  <Box style={{marginLeft: 12}}> {item?.review}</Box>
-                  <Rating style={{marginLeft: 10}} readOnly value={item?.rating} size="medium"/>
-                </Box>)
+                reviewList?.map(item => {
+                  if (item.user === user._id) {
+                    return <Box style={{backgroundColor: grey[300]}}>
+                      <Box className={classes.note} style={{marginLeft: 12}}> {item?.username}</Box>
+                      <Box style={{marginLeft: 12}}> {item?.review}</Box>
+                      <Rating style={{marginLeft: 10}} readOnly value={item?.rating} size="medium"/>
+                    </Box>
+                  } else
+                    return <Box>
+                      <Box className={classes.note} style={{marginLeft: 12}}> {item?.username}</Box>
+                      <Box style={{marginLeft: 12}}> {item?.review}</Box>
+                      <Rating style={{marginLeft: 10}} readOnly value={item?.rating} size="medium"/>
+                    </Box>
+                })
               }
               <Box>
                 <CustomEnrollOutlinedButton
