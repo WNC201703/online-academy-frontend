@@ -2,20 +2,20 @@ import React, { useEffect, useState } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead } from '@material-ui/core';
 import { useSnackbar } from "notistack";
+import Skeleton from "@material-ui/lab/Skeleton";
 import DeleteIcon from '@material-ui/icons/Delete';
 import { SnackBarVariant } from "../../../utils/constant";
 import { getAllCourses, deleteCourse } from "../../../config/api/Courses";
 import Rating from '@material-ui/lab/Rating';
 import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
 import TablePaginationActions from '../../../components/TablePaginationActions'
-
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.common.black,
         color: theme.palette.common.white,
     },
     body: {
-        fontSize: 14,
+        fontSize: 13,
     },
 }))(TableCell);
 
@@ -109,6 +109,22 @@ export default function ListCourseComponent() {
         });
 
     }
+    
+    const loadingTable = ()=>{
+        var rows = [];
+        for (var i=0; i < rowsPerPage; i++) (
+            rows.push (<StyledTableRow>
+                <StyledTableCell><Skeleton/></StyledTableCell>
+                <StyledTableCell><Skeleton/></StyledTableCell>
+                <StyledTableCell><Skeleton/></StyledTableCell>
+                <StyledTableCell><Skeleton/></StyledTableCell>
+                <StyledTableCell><Skeleton/></StyledTableCell>
+                <StyledTableCell><Skeleton/></StyledTableCell>
+                <StyledTableCell><Skeleton/></StyledTableCell>
+            </StyledTableRow>)
+            );
+        return rows;
+    }
 
 
     return (
@@ -131,9 +147,7 @@ export default function ListCourseComponent() {
 
                     <TableBody>
                         {loading ?
-                            <StyledTableRow>
-                                {/* <CircularProgress /> */}
-                            </StyledTableRow>
+                            loadingTable()
                             :
                             courses
                                 .map((row, index) => (

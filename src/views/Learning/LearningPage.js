@@ -79,7 +79,7 @@ export default function LearningPage() {
           setSelectedLesson(data[0]);
         }
       } else {
-        if (lessonsResponse === 'Forbidden' || lessonsResponse === 'Unauthorized') {
+        if (lessonsResponse.status === 403 || lessonsResponse.status === 401) {
           setAuthorized(false);
         } else {
           setError(true);

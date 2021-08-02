@@ -40,6 +40,7 @@ export default function Layout() {
         <Route exact path="/home" component={Homepage}/>
         <Route exact path="/sign-in" component={SignInPage}/>
         <Route exact path="/sign-up" component={SignUpPage}/>
+        <Route exact path="/confirm-email/:token" component={EmailConfirmationPage}/>
         <Route exact path="/not-found" component={PageNotFound}/>
         <Route exact path="/courses/all/" component={CourseList}/>
         <Route exact path="/courses/all/:categoryId" component={CourseList}/>
