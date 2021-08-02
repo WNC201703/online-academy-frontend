@@ -177,13 +177,15 @@ export const CourseDetail = () => {
     setIsPending(true);
     try {
       const [info, lessons, related,
-        mine, reviews] = await Promise.all([
+        reviews] = await Promise.all([
         getCourseById(id), getPreviewLessons(id), getRelatedCourse(id),
-        getMyCourses(),
         getCourseReviews(id, 10, reviewPage)
       ]);
+
       let favourite;
+      let mine;
       if (user._id) {
+        mine = await getMyCourses()
         favourite = await getFavouriteCourse(user._id);
         const favouriteIndex = favourite?.data?.findIndex(x => x._id === info?.data?._id);
         if (!(favouriteIndex < 0)) setIsFavourite(true);
@@ -256,9 +258,9 @@ export const CourseDetail = () => {
                       : <></>
                   }
                 </Box>
-                <Box className={classes.courseDescription}>{courseInfo.teacher}</Box>
+                <Box className={classes.courseDescription}>{courseInfo?.teacher}</Box>
                 <Box className={classes.courseDescription}>
-                  Last updated: {dateFormat(courseInfo.updatedAt)}
+                  Last updated: {dateFormat(courseInfo?.updatedAt)}
                 </Box>
                 {
                   user._id ? <Box className={classes.courseDescription} direction='column'>
