@@ -95,8 +95,17 @@ const HorizontalCarousel = ({title, data}) => {
                 <span>({item?.numberOfReviews})</span>
                 {
                   item?.new ?
-                    <Box style={{backgroundColor: yellow[300], borderRadius: 5, padding: 5, fontWeight:'bold',
-                      margin: 8, color: 'black'}}> New </Box> : <></>
+                    <Box style={{
+                      backgroundColor: yellow[300], borderRadius: 5, padding: 5, fontWeight: 'bold',
+                      margin: 8, color: 'black'
+                    }}> New </Box> : <></>
+                }
+                {
+                  item?.bestseller ?
+                    <Box style={{
+                      backgroundColor: yellow[300], borderRadius: 5, padding: 5, fontWeight: 'bold',
+                      margin: 8, color: 'black'
+                    }}> Best seller </Box> : <></>
                 }
               </Box>
             </Paper>
