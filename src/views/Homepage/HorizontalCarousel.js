@@ -5,8 +5,9 @@ import Box from "@material-ui/core/Box";
 import Rating from '@material-ui/lab/Rating';
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core";
-import {discountFormat, moneyFormat} from "../../utils/FormatHelper";
+import {discountFormat, moneyFormat, ratingNumberFormat} from "../../utils/FormatHelper";
 import {useHistory} from "react-router-dom";
+import {yellow} from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -90,8 +91,13 @@ const HorizontalCarousel = ({title, data}) => {
               </Box>
               <Box display="flex" alignItems="center"
                    justify="center">
-                <Rating name="read-only" value={5} readOnly/>
-                <span>(123)</span>
+                <Rating name="read-only" value={ratingNumberFormat(item?.averageRating)} readOnly/>
+                <span>({item?.numberOfReviews})</span>
+                {
+                  item?.new ?
+                    <Box style={{backgroundColor: yellow[300], borderRadius: 5, padding: 5, fontWeight:'bold',
+                      margin: 8, color: 'black'}}> New </Box> : <></>
+                }
               </Box>
             </Paper>
           );

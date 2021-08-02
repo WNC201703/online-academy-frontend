@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Box from "@material-ui/core/Box";
 import {useSnackbar} from "notistack";
 import Paper from "@material-ui/core/Paper";
@@ -14,6 +14,7 @@ import {useHistory, useLocation, useParams} from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import {getCategoryById} from "../../config/api/Categories";
 import {CourseLineItem} from "./CourseLineItem";
+import AuthUserContext from "../../contexts/user/AuthUserContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +42,7 @@ const CourseListType = {
 
 export const CourseList = () => {
   const {enqueueSnackbar} = useSnackbar();
+
   const classes = useStyles();
   const location = useLocation();
   const [courseList, setCourseList] = useState([]);
@@ -83,13 +85,15 @@ export const CourseList = () => {
         setCourseList(res?.data)
       } else if (type === CourseListType.ENROLLMENTS) {
         res = await getEnrollmentsCourse();
-      } else res = await getAllCourses(page, 5, null, null, category)
-
+        setCourseList(res?.data)
+      } else {
+        res = await getAllCourses(page, 5, null, null, category)
+        setCourseList(res?.data?.results)
+      }
       if (res.status !== 200) {
         return;
       }
 
-      setCourseList(res?.data?.results)
       setTotalPage(res?.data.totalPages)
     } catch (e) {
       enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Error});
