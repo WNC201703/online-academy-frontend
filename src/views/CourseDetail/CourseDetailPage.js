@@ -142,7 +142,7 @@ export const CourseDetail = () => {
   }
 
   const handleEnrollCourse = async () => {
-    const res = enrollCourse(courseInfo._id)
+    const res = await enrollCourse(courseInfo._id)
     if (res.status === 201) {
       setIsEnrolled(true);
       enqueueSnackbar("Enroll this course successfully", {variant: SnackBarVariant.Success});
