@@ -1,5 +1,5 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {fade, makeStyles} from '@material-ui/core/styles';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -7,12 +7,13 @@ import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import {useHistory} from "react-router-dom";
+import Button from '@material-ui/core/Button';
+import { useHistory } from "react-router-dom";
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import DropdownMenu from "../Menu/DropdownMenu";
+import CascadingMenu from '../Menu/CascadingMenu';
 import blue from "@material-ui/core/colors/blue";
 import CustomPrimaryContainedButton from "../Button/CustomPrimaryContainedButton";
 import CustomSecondaryOutlinedButton from "../Button/CustomSecondaryOutlinedButton";
@@ -21,16 +22,16 @@ import Box from "@material-ui/core/Box";
 import Popover from "@material-ui/core/Popover";
 
 import debounce from "@material-ui/core/utils/debounce";
-import {getAllCourses} from "../../config/api/Courses";
+import { getAllCourses } from "../../config/api/Courses";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Paper from "@material-ui/core/Paper";
-import {Image} from "semantic-ui-react";
+import { Image } from "semantic-ui-react";
 import Rating from "@material-ui/lab/Rating";
-import {moneyFormat} from "../../utils/FormatHelper";
+import { moneyFormat } from "../../utils/FormatHelper";
 import grey from "@material-ui/core/colors/grey";
 import CustomEnrollOutlinedButton from "../Button/CustomEnrollOutlinedButton";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import {getAllCategories} from "../../config/api/Categories";
+import { getAllCategories } from "../../config/api/Categories";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -125,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
 export default function PrimarySearchAppBar() {
   const classes = useStyles();
   const history = useHistory();
-  const {user, removeUser} = useContext(AuthUserContext);
+  const { user, removeUser } = useContext(AuthUserContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -135,6 +136,7 @@ export default function PrimarySearchAppBar() {
   const [searchResult, setSearchResult] = useState([]);
   const [search, setSearch] = useState('');
   const [categories, setCategories] = useState([]);
+  const [anchorElement, setAnchorElement] = useState();
 
   useEffect(() => {
     const eff = async () => {
@@ -143,32 +145,33 @@ export default function PrimarySearchAppBar() {
     eff();
   }, []);
 
+
   const fetchCategoriesList = async () => {
-    const resType='list';
-    const res = await getAllCategories(resType);
-    const categoryList = res.data
-    let parentCategory = {}
+    // const resType='list';
+    const res = await getAllCategories();
+    // const categoryList = res.data
+    // let parentCategory = {}
 
     ///Convert parent categories with hashmap
-    for (const item of categoryList) {
-      if (item.parent === null) {
-        parentCategory[item._id] = item;
-        parentCategory[item._id].childrens = []
-      }
-    }
+    // for (const item of categoryList) {
+    //   if (item.parent === null) {
+    //     parentCategory[item._id] = item;
+    //     parentCategory[item._id].childrens = []
+    //   }
+    // }
 
-    for (const item of categoryList) {
-      if (item.parent !== null && parentCategory[item.parent] !== null) {
-        parentCategory[item.parent].childrens.push(item)
-      }
-    }
+    // for (const item of categoryList) {
+    //   if (item.parent !== null && parentCategory[item.parent] !== null) {
+    //     parentCategory[item.parent].childrens.push(item)
+    //   }
+    // }
 
-    const newCategories = Object.keys(parentCategory)
-      .map(function (key) {
-        return parentCategory[key];
-      });
+    // const newCategories = Object.keys(parentCategory)
+    //   .map(function (key) {
+    //     return parentCategory[key];
+    //   });
 
-    setCategories(newCategories)
+    setCategories(res.data);
   }
 
   const debounceSearchRequest = useCallback(debounce((nextValue) => searchCourse(nextValue), 1000), []);
@@ -264,10 +267,10 @@ export default function PrimarySearchAppBar() {
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
-      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       id={menuId}
       keepMounted
-      transformOrigin={{vertical: 'top', horizontal: 'right'}}
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
@@ -282,10 +285,10 @@ export default function PrimarySearchAppBar() {
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       id={mobileMenuId}
       keepMounted
-      transformOrigin={{vertical: 'top', horizontal: 'right'}}
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
@@ -295,7 +298,7 @@ export default function PrimarySearchAppBar() {
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit">
-          <AccountCircle/>
+          <AccountCircle />
         </IconButton>
         <p>Profile</p>
       </MenuItem>
@@ -305,7 +308,7 @@ export default function PrimarySearchAppBar() {
   return (
     <div className={classes.grow}>
       <AppBar
-        style={{backgroundColor: blue[500]}}
+        style={{ backgroundColor: blue[500] }}
         position="static">
         <Toolbar>
           <IconButton
@@ -313,7 +316,7 @@ export default function PrimarySearchAppBar() {
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer">
-            <MenuIcon/>
+            <MenuIcon />
           </IconButton>
           <Typography onClick={handleTitleClick} className={classes.title} variant="h6" noWrap>
             Online Academy
@@ -321,7 +324,7 @@ export default function PrimarySearchAppBar() {
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               {
-                isSearching ? <CircularProgress size={16}/> : <SearchIcon/>
+                isSearching ? <CircularProgress size={16} /> : <SearchIcon />
               }
             </div>
             <InputBase
@@ -332,7 +335,7 @@ export default function PrimarySearchAppBar() {
               }}
               value={search}
               onChange={handleSearchInputChange}
-              inputProps={{'aria-label': 'search'}}
+              inputProps={{ 'aria-label': 'search' }}
             />
 
           </div>
@@ -345,7 +348,7 @@ export default function PrimarySearchAppBar() {
               vertical: 'top',
               horizontal: 'left',
             }}
-            style={{marginTop: 50, marginLeft: 120, padding: 12}}
+            style={{ marginTop: 50, marginLeft: 120, padding: 12 }}
             transformOrigin={{
               vertical: 'top',
               horizontal: 'left',
@@ -356,7 +359,7 @@ export default function PrimarySearchAppBar() {
                 searchResult?.map(item => {
                   return (
                     <Paper
-                      style={{marginBottom: 10}}
+                      style={{ marginBottom: 10 }}
                       onClick={(event) => {
                         setAnchorEl2(null);
                         handleSearchItemClick(event, item._id)
@@ -366,13 +369,13 @@ export default function PrimarySearchAppBar() {
                         <Image
                           src={item?.imageUrl}
                           draggable={false}
-                          style={{width: 80, height: 80, marginRight: 8}}/>
+                          style={{ width: 80, height: 80, marginRight: 8 }} />
                         <Box width={300} justify='center'>
                           <Box className={classes.itemTitle}>{item?.name}</Box>
                           <Box className={classes.itemDescription}>{item?.shortDescription}</Box>
                           <Box display="flex" alignItems="center"
-                               justify="center">
-                            <Rating name="read-only" value={5} readOnly/>
+                            justify="center">
+                            <Rating name="read-only" value={5} readOnly />
                             <span>(123)</span>
                           </Box>
                           <Box className={classes.originMoney}>{moneyFormat(item?.price)} {true ?
@@ -386,34 +389,63 @@ export default function PrimarySearchAppBar() {
               }
               <Box>
                 <CustomEnrollOutlinedButton
-                  style={{marginBottom: 24, marginLeft: 12, marginRight: 30, paddingRight: 30, width: '95%'}}
+                  style={{ marginBottom: 24, marginLeft: 12, marginRight: 30, paddingRight: 30, width: '95%' }}
                   onClick={handleShowAllSearchResult}
                   size="small"
-                  startIcon={<AddCircleOutlineIcon/>}
+                  startIcon={<AddCircleOutlineIcon />}
                 >
                   Show all results
                 </CustomEnrollOutlinedButton> </Box>
             </Box>
           </Popover>
-          <DropdownMenu data={categories}/>
-          <div className={classes.grow}/>
+          {/* <DropdownMenu data={categories}/> */}
+          <React.Fragment>
+            <CustomPrimaryContainedButton
+        aria-controls="customized-menu"
+        aria-haspopup="true"
+        variant="contained"
+        color="primary"
+        onClick={(event) => {
+          setAnchorElement(event.currentTarget);
+        }}>
+        Categories
+      </CustomPrimaryContainedButton>
+            <CascadingMenu
+              anchorElement={anchorElement}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+              menuItems={categories}
+              history={history}
+              onClose={() => {
+                setAnchorElement(null);
+              }}
+              open={Boolean(anchorElement)}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+            />
+          </React.Fragment>
+          <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             {
               (user && user._id) ? <IconButton
-                  edge="end"
-                  aria-label="account of current user"
-                  aria-controls={menuId}
-                  aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
-                  color="inherit">
-                    <Typography >{user.fullname}</Typography>
-                    <Box m={0.5}></Box>
-                  <AccountCircle/>
-                </IconButton> :
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit">
+                <Typography >{user.fullname}</Typography>
+                <Box m={0.5}></Box>
+                <AccountCircle />
+              </IconButton> :
                 <Box>
-                  <CustomPrimaryContainedButton onClick={handleSignInButtonClick} style={{marginRight: 8}}
-                                                variant="contained"
-                                                color="primary">Sign in</CustomPrimaryContainedButton>
+                  <CustomPrimaryContainedButton onClick={handleSignInButtonClick} style={{ marginRight: 8 }}
+                    variant="contained"
+                    color="primary">Sign in</CustomPrimaryContainedButton>
                   <CustomSecondaryOutlinedButton onClick={handleSignUpButtonClick} variant="outlined">Sign
                     up</CustomSecondaryOutlinedButton>
                 </Box>
@@ -427,7 +459,7 @@ export default function PrimarySearchAppBar() {
               aria-haspopup="true"
               onClick={handleMobileMenuOpen}
               color="inherit">
-              <MoreIcon/>
+              <MoreIcon />
             </IconButton>
           </div>
         </Toolbar>
