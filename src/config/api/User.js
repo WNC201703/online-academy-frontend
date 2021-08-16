@@ -63,5 +63,5 @@ export async function removeFavouriteCourse(courseId) {
 }
 
 export async function getMyCourses() {
-  return await AXIOS_INSTANCE.get(`/api/users/me/courses`);
+  return await AXIOS_INSTANCE.get(`/api/users/me/enrollments`);
 }

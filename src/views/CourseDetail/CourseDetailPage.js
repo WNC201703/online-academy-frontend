@@ -343,7 +343,7 @@ export const CourseDetail = () => {
                            label="Write your review"
                            variant="outlined"/>
                 <Box className={classes.note}>Note: If you have not seen this course yet, you can not write review</Box>
-                <Rating value={ratingPoint} onChange={handleRatingBarChange} size="large" name="read-only"/>
+                <Rating precision={0.5} value={ratingPoint} onChange={handleRatingBarChange} size="large" name="read-only"/>
               </Box>
               <Button size="medium"
                       height={65}
@@ -365,7 +365,7 @@ export const CourseDetail = () => {
                     return <Box>
                       <Box className={classes.note} style={{marginLeft: 12}}> {item?.username}</Box>
                       <Box style={{marginLeft: 12}}> {item?.review}</Box>
-                      <Rating style={{marginLeft: 10}} readOnly value={item?.rating} size="medium"/>
+                      <Rating style={{marginLeft: 10}} readOnly value={item?.rating/2} precision={0.5} size="medium"/>
                     </Box>
                 })
               }

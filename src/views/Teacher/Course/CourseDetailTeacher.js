@@ -182,8 +182,10 @@ export const CourseDetailTeacher = () => {
     let data = {
       description: payload?.description
     };
-    const res = await updateLesson(id, data, data?._id)
-    if (res.status === 200) {
+    console.log(payload);
+    console.log(data);
+    const res = await updateLesson(id, data, payload?._id)
+    if (res.status === 201) {
       enqueueSnackbar('Update lesson description successfully', {variant: SnackBarVariant.Success})
     } else {
       enqueueSnackbar('Update lesson description failed', {variant: SnackBarVariant.Error})
@@ -381,7 +383,7 @@ export const CourseDetailTeacher = () => {
                                   type="email"
                                   value={item?.description}
                                 />
-                                <CustomPrimaryContainedButton onClick={() => handleUpdateLessonInfo(item)}
+                                <CustomPrimaryContainedButton onClick={(e) => handleUpdateLessonInfo(e,item)}
                                                               className={classes.buttonText}>
                                   Update info
                                 </CustomPrimaryContainedButton>

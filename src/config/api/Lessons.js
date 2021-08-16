@@ -16,7 +16,7 @@ export async function addLesson(courseId, data) {
 
 export async function updateLesson(courseId, data, lessonId) {
 
-  return await AXIOS_INSTANCE.post(`/api/courses/${courseId}/lessons/${lessonId}`, data);
+  return await AXIOS_INSTANCE.put(`/api/courses/${courseId}/lessons/${lessonId}`, data);
 }
 
 export async function updateLessonVideo(courseId, data, lessonId) {
@@ -54,9 +54,9 @@ export async function getCourseReviews(courseId, pageSize, pageNumber) {
 }
 
 export async function completedLesson(courseId, lessonId) {
-  return await AXIOS_INSTANCE.post(`/api/users/me/courses/${courseId}/completed-lesson`, {lessonId: lessonId});
+  return await AXIOS_INSTANCE.post(`/api/users/me/enrollments/${courseId}/completed-lesson`, {lessonId: lessonId});
 }
 
 export async function deleteCompletedLesson(courseId, lessonId) {
-  return await AXIOS_INSTANCE.delete(`/api/users/me/courses/${courseId}/completed-lesson`, {data: {lessonId: lessonId}});
+  return await AXIOS_INSTANCE.delete(`/api/users/me/enrollments/${courseId}/completed-lesson`, {data: {lessonId: lessonId}});
 }
