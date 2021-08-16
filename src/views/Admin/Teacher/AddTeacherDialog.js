@@ -79,15 +79,14 @@ export default function AddTeacherDialog({ show, cancel, success, fail }) {
                 email: email,
                 password: password
             });
-            console.log(response);
             if (response.status === 201) {
                 clearFieldsValue();
                 success();
                 cancel();
             }
             else {
-                if (response.error_message) {
-                    fail(response.error_message);
+                if (response.data?.error_message) {
+                    fail(response.data?.error_message);
                 } else {
                     fail();
                 }

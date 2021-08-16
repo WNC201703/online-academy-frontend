@@ -91,8 +91,8 @@ export default function EditStudentDialog({ show, student, cancel, success, fail
                 cancel();
             }
             else {
-                if (response.error_message) {
-                    fail(response.error_message);
+                if (response.data?.error_message) {
+                    fail(response.data?.error_message);
                 } else {
                     fail();
                 }

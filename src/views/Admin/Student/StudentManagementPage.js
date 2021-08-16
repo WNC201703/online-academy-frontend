@@ -87,8 +87,7 @@ export default function ListStudentComponent() {
                 setLoading(false);
                 enqueueSnackbar("Student deleted successfully", { variant: SnackBarVariant.Success });
             } else {
-                console.log(response.error_message);
-                enqueueSnackbar(`Delete failed ${response.error_message ? `:${response.error_message}` : ''}`, { variant: SnackBarVariant.Error });
+                enqueueSnackbar(`Delete failed ${response.data?.error_message ? `:${response.data?.error_message}` : ''}`, { variant: SnackBarVariant.Error });
             }
         }).catch((err) => {
             enqueueSnackbar("Delete failed", { variant: SnackBarVariant.Error });

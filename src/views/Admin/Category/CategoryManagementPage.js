@@ -85,8 +85,7 @@ export default function ListCategoryComponent() {
                 setReload(reload+1);
                 enqueueSnackbar("Category deleted successfully", { variant: SnackBarVariant.Success });
             } else {
-                console.log(response.error_message);
-                enqueueSnackbar(`Delete failed: ${response.error_message}`, { variant: SnackBarVariant.Error });
+                enqueueSnackbar(`Delete failed: ${response.data?.error_message}`, { variant: SnackBarVariant.Error });
             }
         }).catch((err) => {
             enqueueSnackbar("Delete failed", { variant: SnackBarVariant.Error });

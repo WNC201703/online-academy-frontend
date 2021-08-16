@@ -67,8 +67,9 @@ export default function AddCategoryDialog({ show, parents, cancel, success, fail
             const body = {
                 name: categoryName,
             }
-            if (subCategory) body['parent'] = parentCategory ? parentCategory : null;
+            body['parent'] = parentCategory ? parentCategory : null;
             const response = await createCategory(body);
+            console.log(body);
             if (response.status === 201) {
                 clearFieldsValue();
                 success();

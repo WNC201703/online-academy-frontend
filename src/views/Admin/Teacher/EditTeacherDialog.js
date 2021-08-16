@@ -94,15 +94,14 @@ export default function EditTeacherDialog({ show, teacher, cancel, success, fail
             if (changePasswordChecked) body['password']=password;
             console.log(body);
             const response = await updateUser(teacher._id,body);
-            console.log(response);
             if (response.status === 200) {
                 clearFieldsValue();
                 success();
                 cancel();
             }
             else {
-                if (response.error_message) {
-                    fail(response.error_message);
+                if (response.data?.error_message) {
+                    fail(response.data?.error_message);
                 } else {
                     fail();
                 }
