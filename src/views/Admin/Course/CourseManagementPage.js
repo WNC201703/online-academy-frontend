@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { withStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead,Grid } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead, Grid } from '@material-ui/core';
 import { useSnackbar } from "notistack";
 import Skeleton from "@material-ui/lab/Skeleton";
 import DeleteIcon from '@material-ui/icons/Delete';
+import debounce from "@material-ui/core/utils/debounce";
 import { SnackBarVariant } from "../../../utils/constant";
 import { getAllCourses, deleteCourse } from "../../../config/api/Courses";
 import { getAllCategories } from "../../../config/api/Categories";
 import Rating from '@material-ui/lab/Rating';
 import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
 import TablePaginationActions from '../../../components/TablePaginationActions'
-import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import { FormControl, InputLabel, Select, MenuItem, TextField } from "@material-ui/core";
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.common.black,
@@ -36,6 +37,7 @@ export default function ListCourseComponent() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [totalResults, setTotalResults] = useState(0);
+    const [search, setSearch] = useState();
     const [category, setCategory] = useState();
     const [categories, setCategories] = useState([]);
     const [openDeleteDialog, setOpenDeleteDialog] = useState({
@@ -47,9 +49,9 @@ export default function ListCourseComponent() {
     const fetchData = async (loading) => {
         setLoading(loading);
         try {
-            const response = await getAllCourses(page + 1, rowsPerPage === -1 ? 0 : rowsPerPage, 'reviews', '', category);
+            const response = await getAllCourses(page + 1, rowsPerPage === -1 ? 0 : rowsPerPage, 'reviews', '', category, search);
             if (!categories || categories.length < 1) {
-                const categoriesRes = await getAllCategories('list');
+                const categoriesRes = await getAllCategories();
                 if (categoriesRes.status === 200) {
                     const data = categoriesRes?.data;
                     setCategories(data);
@@ -74,7 +76,7 @@ export default function ListCourseComponent() {
     useEffect(() => {
         const showCircularProgress = true;
         fetchData(showCircularProgress);
-    }, [page, rowsPerPage, category]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [page, rowsPerPage, category, search]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -126,6 +128,12 @@ export default function ListCourseComponent() {
         setCategory(event.target.value);
     };
 
+    const handleSearchInputChange = (event) => {
+        debounceSearchRequest(event.target.value);
+    };
+    const debounceSearchRequest = useCallback(debounce((nextValue) => setSearch(nextValue), 300), []);
+
+
     const loadingTable = () => {
         var rows = [];
         for (var i = 0; i < rowsPerPage; i++) (
@@ -146,8 +154,16 @@ export default function ListCourseComponent() {
     return (
         <>
             <div>
-                <Grid container justify="flex-end">
-                    <FormControl style={{ marginBottom: 30, width: 250 }} variant="outlined" >
+                <Grid style={{ marginBottom: 30 }} container justify="flex-end">
+                    <TextField
+                        style={{ marginRight: 10, width: 300 }}
+                        id="outlined-search-input"
+                        label="Search by teacher name"
+                        onChange={handleSearchInputChange}
+                        type="text"
+                        variant="outlined"
+                    />
+                    <FormControl style={{ width: 250 }} variant="outlined" >
                         <InputLabel id="demo-simple-select-outlined-label">Category</InputLabel>
                         <Select
                             labelId="demo-simple-select-outlined-label"
@@ -159,11 +175,20 @@ export default function ListCourseComponent() {
                             <MenuItem value="">
                                 <em>All</em>
                             </MenuItem>
-                            {categories.map((option) => (
-                                <MenuItem disabled={option.parent === null} key={option._id} value={option._id}>
-                                    {option.name}
-                                </MenuItem>
-                            ))}
+                            {categories.map((option) => {
+                                if (option.children) {
+                                    let cps = [];
+                                    cps.push((<MenuItem disabled key={option._id} value={option._id}>
+                                        {option.name}
+                                    </MenuItem>));
+                                    cps.push(option.children.map(
+                                        (subItem) => ((<MenuItem key={subItem._id} value={subItem._id}>
+                                            {subItem.name}
+                                        </MenuItem>))));
+                                    return cps;
+                                }
+
+                            })}
                         </Select>
                     </FormControl>
                 </Grid>
