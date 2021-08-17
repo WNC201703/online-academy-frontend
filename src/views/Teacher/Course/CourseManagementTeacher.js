@@ -133,6 +133,13 @@ export const CourseManagementTeacher = () => {
     formData.append('category', courseCategory);
 
     const res = await createCourse(formData);
+    if (res.status === 201) {
+      enqueueSnackbar("Create successfully", {variant: SnackBarVariant.Success})
+      window.location.reload();
+    } else {
+      enqueueSnackbar("Failed to create", {variant: SnackBarVariant.Error})
+
+    }
     console.log(res);
     handleDialogClose()
   }
@@ -213,7 +220,7 @@ export const CourseManagementTeacher = () => {
                 onChange={handleCategoryChange}
                 helperText="Please select your currency">
                 {categories.map((option) => (
-                  <MenuItem disabled={option.parent===null} key={option._id} value={option._id}>
+                  <MenuItem disabled={option.parent === null} key={option._id} value={option._id}>
                     {option.name}
                   </MenuItem>
                 ))}
