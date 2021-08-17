@@ -232,6 +232,7 @@ export const CourseDetail = () => {
     setRatingContent('');
     setRatingPoint(1);
   }
+
   return <div className={classes.root}>
     <Grid container spacing={3}>
       <Grid className={classes.cover} container xs={12}>
@@ -316,7 +317,7 @@ export const CourseDetail = () => {
         <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Description</Box>
           {
-            isPending ? <DescriptionLoading/> : <div>{courseInfo.detailDescription}</div>
+            isPending ? <DescriptionLoading/> : <div dangerouslySetInnerHTML={{__html: courseInfo?.detailDescription}} />
           }
         </Paper>
         <Paper className={classes.paper}>

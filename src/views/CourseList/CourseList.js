@@ -144,7 +144,7 @@ export const CourseList = () => {
               </Select>
             </FormControl>
           }
-          <Box className={classes.blockTitle}> {categoryName ?? type===CourseListType.ENROLLMENTS ? 'Enrollments' : type===CourseListType.FAVORITES ? 'Favorites'  : ' All courses'} </Box>
+          <Box className={classes.blockTitle}> {categoryName ?? ' All courses'} </Box>
           {
             isPending ? <LineListLoading /> :
               courseList?.map(item => {
