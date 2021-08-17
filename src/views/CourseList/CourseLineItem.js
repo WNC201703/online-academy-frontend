@@ -42,8 +42,8 @@ export const CourseLineItem = ({item}) => {
         <Box>{item?.shortDescription}</Box>
         <Box display="flex" alignItems="center"
              justify="center">
-          <Rating name="read-only" value={5} readOnly/>
-          <span>(123)</span>
+          <Rating precision={0.5} name="read-only" value={item?.averageRating/2} readOnly/>
+          <span> ({item?.numberOfReviews})</span>
         </Box>
         <Box className={classes.originMoney}>{moneyFormat(item?.price)} {isDiscount ?
           <span

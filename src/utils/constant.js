@@ -14,3 +14,9 @@ export const UserRoles = {
   Teacher: 'teacher',
   Student: 'student'
 }
+
+export const SortType = {
+  MostPopular: 'Most Popular',
+  HighestRated: 'Highest Rated',
+  Newest: 'Newest'
+}
