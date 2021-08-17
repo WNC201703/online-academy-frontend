@@ -174,7 +174,7 @@ export default function PrimarySearchAppBar() {
     setCategories(res.data);
   }
 
-  const debounceSearchRequest = useCallback(debounce((nextValue) => searchCourse(nextValue), 1000), []);
+  const debounceSearchRequest = useCallback(debounce((nextValue) => searchCourse(nextValue), 300), []);
   const searchCourse = async (value) => {
     setIsSearching(true);
     if (value.length === 1) {
