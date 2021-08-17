@@ -153,7 +153,7 @@ export const CourseList = () => {
                     onClick={(event) => handleItemClick(event, item?._id)}
                     style={{ marginBottom: 10 }}
                     className={classes.itemContainer}>
-                    <CourseLineItem item={item} />
+                    <CourseLineItem type={type} item={item} />
                   </Paper>
                 )
               })
