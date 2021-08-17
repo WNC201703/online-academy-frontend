@@ -103,7 +103,7 @@ export const Homepage = () => {
       </Row>
       {
         isPending ? <div className={classes.root}>
-            <CircularProgress/></div>
+            <div/></div>
           : <Box direction={"column"}>
             <HorizontalCarousel data={newestCourses} deviceType={"desktop"} title={"Latest courses"}/>
             <HorizontalCarousel data={newestCourses} deviceType={"desktop"} title={"Latest courses"}/>
