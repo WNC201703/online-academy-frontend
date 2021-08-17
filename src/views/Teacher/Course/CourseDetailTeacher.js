@@ -319,7 +319,7 @@ export const CourseDetailTeacher = () => {
                   onChange={handleCategoryChange}
                   helperText="Please select category">
                   {categories.map((option) => (
-                    <MenuItem key={option._id} value={option._id}>
+                    <MenuItem disabled={option.parent===null} key={option._id} value={option._id}>
                       {option.name}
                     </MenuItem>
                   ))}

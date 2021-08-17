@@ -213,7 +213,7 @@ export const CourseManagementTeacher = () => {
                 onChange={handleCategoryChange}
                 helperText="Please select your currency">
                 {categories.map((option) => (
-                  <MenuItem key={option._id} value={option._id}>
+                  <MenuItem disabled={option.parent===null} key={option._id} value={option._id}>
                     {option.name}
                   </MenuItem>
                 ))}
