@@ -136,7 +136,7 @@ export const CourseList = () => {
                 label="Age"
               >
                 <MenuItem value="">
-                  <em>None</em>
+                  <em>All</em>
                 </MenuItem>
                 <MenuItem value={SortType.MostPopular}>Most Popular</MenuItem>
                 <MenuItem value={SortType.HighestRated}>Highest Rated</MenuItem>

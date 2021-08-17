@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { withStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableFooter, TableRow, TablePagination, TableHead,Grid } from '@material-ui/core';
 import { useSnackbar } from "notistack";
 import Skeleton from "@material-ui/lab/Skeleton";
 import DeleteIcon from '@material-ui/icons/Delete';
 import { SnackBarVariant } from "../../../utils/constant";
 import { getAllCourses, deleteCourse } from "../../../config/api/Courses";
+import { getAllCategories } from "../../../config/api/Categories";
 import Rating from '@material-ui/lab/Rating';
 import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
 import TablePaginationActions from '../../../components/TablePaginationActions'
+import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.common.black,
@@ -34,6 +36,8 @@ export default function ListCourseComponent() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [totalResults, setTotalResults] = useState(0);
+    const [category, setCategory] = useState();
+    const [categories, setCategories] = useState([]);
     const [openDeleteDialog, setOpenDeleteDialog] = useState({
         isOpen: false,
         id: null
@@ -43,7 +47,14 @@ export default function ListCourseComponent() {
     const fetchData = async (loading) => {
         setLoading(loading);
         try {
-            const response = await getAllCourses(page + 1, rowsPerPage === -1 ? 0 : rowsPerPage);
+            const response = await getAllCourses(page + 1, rowsPerPage === -1 ? 0 : rowsPerPage, 'reviews', '', category);
+            if (!categories || categories.length < 1) {
+                const categoriesRes = await getAllCategories('list');
+                if (categoriesRes.status === 200) {
+                    const data = categoriesRes?.data;
+                    setCategories(data);
+                }
+            }
             if (response.status === 200) {
                 const data = response.data;
                 setTotalResults(data.totalResults);
@@ -61,9 +72,9 @@ export default function ListCourseComponent() {
     }
 
     useEffect(() => {
-        const showCircularProgress=true;
+        const showCircularProgress = true;
         fetchData(showCircularProgress);
-    }, [page, rowsPerPage]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [page, rowsPerPage, category]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -109,20 +120,25 @@ export default function ListCourseComponent() {
         });
 
     }
-    
-    const loadingTable = ()=>{
+
+    const handleChangeCategory = (event) => {
+        setPage(0);
+        setCategory(event.target.value);
+    };
+
+    const loadingTable = () => {
         var rows = [];
-        for (var i=0; i < rowsPerPage; i++) (
-            rows.push (<StyledTableRow>
-                <StyledTableCell><Skeleton/></StyledTableCell>
-                <StyledTableCell><Skeleton/></StyledTableCell>
-                <StyledTableCell><Skeleton/></StyledTableCell>
-                <StyledTableCell><Skeleton/></StyledTableCell>
-                <StyledTableCell><Skeleton/></StyledTableCell>
-                <StyledTableCell><Skeleton/></StyledTableCell>
-                <StyledTableCell><Skeleton/></StyledTableCell>
+        for (var i = 0; i < rowsPerPage; i++) (
+            rows.push(<StyledTableRow>
+                <StyledTableCell><Skeleton /></StyledTableCell>
+                <StyledTableCell><Skeleton /></StyledTableCell>
+                <StyledTableCell><Skeleton /></StyledTableCell>
+                <StyledTableCell><Skeleton /></StyledTableCell>
+                <StyledTableCell><Skeleton /></StyledTableCell>
+                <StyledTableCell><Skeleton /></StyledTableCell>
+                <StyledTableCell><Skeleton /></StyledTableCell>
             </StyledTableRow>)
-            );
+        );
         return rows;
     }
 
@@ -130,6 +146,27 @@ export default function ListCourseComponent() {
     return (
         <>
             <div>
+                <Grid container justify="flex-end">
+                    <FormControl style={{ marginBottom: 30, width: 250 }} variant="outlined" >
+                        <InputLabel id="demo-simple-select-outlined-label">Category</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-outlined-label"
+                            id="demo-simple-select-outlined"
+                            value={category}
+                            onChange={handleChangeCategory}
+                            label="Category"
+                        >
+                            <MenuItem value="">
+                                <em>All</em>
+                            </MenuItem>
+                            {categories.map((option) => (
+                                <MenuItem disabled={option.parent === null} key={option._id} value={option._id}>
+                                    {option.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -153,7 +190,7 @@ export default function ListCourseComponent() {
                                 .map((row, index) => (
                                     <StyledTableRow key={row._id}>
                                         <StyledTableCell>{page * rowsPerPage + index + 1}</StyledTableCell>
-                                        <StyledTableCell component="th">{row.name}</StyledTableCell>
+                                        <StyledTableCell component="th">{row.name} ({row.numberOfReviews})</StyledTableCell>
                                         <StyledTableCell ><Rating precision={0.5} name="read-only" value={row.averageRating / 2} readOnly /></StyledTableCell>
                                         <StyledTableCell >{row.category}</StyledTableCell>
                                         <StyledTableCell >{row.teacher}</StyledTableCell>
