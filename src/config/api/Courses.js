@@ -1,12 +1,12 @@
-import {AXIOS_INSTANCE, FILEUPLOAD_AXIOS_INSTANCE} from "./apiconfig";
+import { AXIOS_INSTANCE, FILEUPLOAD_AXIOS_INSTANCE } from "./apiconfig";
 import axios from "axios";
-import {getAccessToken} from "../../utils/LocalStorageUtils";
+import { getAccessToken } from "../../utils/LocalStorageUtils";
 
 export async function createCourse(data) {
   const imageInstance = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
     data: data,
-    headers: {"Content-Type": "multipart/form-data"},
+    headers: { "Content-Type": "multipart/form-data" },
   });
 
   imageInstance.interceptors.request.use((config) => {
@@ -22,7 +22,7 @@ export async function updateCourseImage(id, data) {
   const imageInstance = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
     data: data,
-    headers: {"Content-Type": "multipart/form-data"},
+    headers: { "Content-Type": "multipart/form-data" },
   });
   imageInstance.interceptors.request.use((config) => {
     const access_token = getAccessToken();
@@ -34,8 +34,12 @@ export async function updateCourseImage(id, data) {
 }
 
 export async function getAllCourses(pageNumber = 1, pageSize = 10, sortBy = null,
-                                    key_word = null, categoryId = null) {
-  return await AXIOS_INSTANCE.get(`/api/courses/?page_number=${pageNumber}&page_size=${pageSize}&key_word=${key_word ? key_word : ''}&category=${categoryId ? categoryId : ''}`);
+  key_word = '', categoryId = null, teacher = null) {
+  return await AXIOS_INSTANCE.get(`/api/courses/?page_number=${pageNumber}&page_size=${pageSize}&sort_by=${sortBy}${key_word ? `&key_word=${key_word}` : ''}${categoryId ? `&category=${categoryId}` : ''}${teacher ? `&teacher=${teacher}` : ''}`);
+}
+
+export async function getPopularCourses() {
+  return await AXIOS_INSTANCE.get(`/api/courses/popular`);
 }
 
 export async function getNewestCourses() {

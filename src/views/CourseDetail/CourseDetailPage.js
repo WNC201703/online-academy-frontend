@@ -23,7 +23,7 @@ import {CourseInfoLoading, DescriptionLoading, LessonsLoading, RelatedCourseLoad
 import HorizontalCarousel from "../Homepage/HorizontalCarousel";
 import CustomFavouriteOutlinedButton from "../../components/Button/CustomFavouriteOutlinedButton";
 import CustomFavouriteContainedButton from "../../components/Button/CustomFavouriteContainedButton";
-import {addFavouriteCourse, getFavouriteCourse, getMyCourses, removeFavouriteCourse} from "../../config/api/User";
+import {addFavouriteCourse, getMyFavouriteCourseByCourseId, getMyCourseByCourseId, removeFavouriteCourse} from "../../config/api/User";
 import AuthUserContext from "../../contexts/user/AuthUserContext";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import SubscriptionsOutlinedIcon from '@material-ui/icons/SubscriptionsOutlined';
@@ -185,18 +185,19 @@ export const CourseDetail = () => {
       let favourite;
       let mine;
       if (user._id) {
-        mine = await getMyCourses()
-        favourite = await getFavouriteCourse(user._id);
-        const favouriteIndex = favourite?.data?.findIndex(x => x._id === info?.data?._id);
-        if (!(favouriteIndex < 0)) setIsFavourite(true);
+        mine = await getMyCourseByCourseId(id);
+        favourite = await getMyFavouriteCourseByCourseId(id);
+        //not found
+        if (favourite.status===200) setIsFavourite(true) ;
+        else setIsFavourite(false);
+
+        if (mine.status===200) setIsEnrolled(true);
+        else setIsEnrolled(false);
       }
 
       if (info.status !== 200) {
         return;
       }
-      const enrolledIndex = mine?.data?.findIndex(x => x._id === info?.data?._id);
-
-      if (!(enrolledIndex < 0)) setIsEnrolled(true);
 
       setReviewList(reviews?.data?.results)
       setCourseInfo(info.data);
@@ -231,6 +232,7 @@ export const CourseDetail = () => {
     setRatingContent('');
     setRatingPoint(1);
   }
+
   return <div className={classes.root}>
     <Grid container spacing={3}>
       <Grid className={classes.cover} container xs={12}>
@@ -315,7 +317,7 @@ export const CourseDetail = () => {
         <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Description</Box>
           {
-            isPending ? <DescriptionLoading/> : <div>{courseInfo.detailDescription}</div>
+            isPending ? <DescriptionLoading/> : <div dangerouslySetInnerHTML={{__html: courseInfo?.detailDescription}} />
           }
         </Paper>
         <Paper className={classes.paper}>

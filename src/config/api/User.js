@@ -53,6 +53,10 @@ export async function getFavouriteCourse(id) {
   return await AXIOS_INSTANCE.get(`/api/users/${id}/favorites`);
 }
 
+export async function getMyFavouriteCourseByCourseId(courseId) {
+  return await AXIOS_INSTANCE.get(`/api/users/me/favorites/${courseId}`);
+}
+
 export async function addFavouriteCourse(courseId) {
   return await AXIOS_INSTANCE.put(`/api/users/me/favorites/${courseId}`);
 }
@@ -64,4 +68,9 @@ export async function removeFavouriteCourse(courseId) {
 
 export async function getMyCourses() {
   return await AXIOS_INSTANCE.get(`/api/users/me/enrollments`);
+}
+
+
+export async function getMyCourseByCourseId(courseId) {
+  return await AXIOS_INSTANCE.get(`/api/users/me/enrollments/${courseId}`);
 }

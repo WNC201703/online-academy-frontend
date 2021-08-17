@@ -48,8 +48,8 @@ export default function ListCategoryComponent() {
     const fetchData = async () => {
         setLoading(false);
         try {
-            const resType='list';
-            const response = await getAllCategories(resType);
+            // const resType = 'list';
+            const response = await getAllCategories();
             if (response.status === 200) {
                 let data = response.data;
                 setCategories(data);
@@ -82,7 +82,7 @@ export default function ListCategoryComponent() {
         });
         deleteCategory(id).then((response) => {
             if (response.status === 204) {
-                setReload(reload+1);
+                setReload(reload + 1);
                 enqueueSnackbar("Category deleted successfully", { variant: SnackBarVariant.Success });
             } else {
                 enqueueSnackbar(`Delete failed: ${response.data?.error_message}`, { variant: SnackBarVariant.Error });
@@ -112,9 +112,9 @@ export default function ListCategoryComponent() {
                     <TableHead>
                         <TableRow>
                             <StyledTableCell style={{ width: '10%' }}>#</StyledTableCell>
-                            <StyledTableCell style={{ width: '20%' }}>Name</StyledTableCell>
-                            <StyledTableCell style={{ width: '15%' }}>Type</StyledTableCell>
-                            <StyledTableCell style={{ width: '20%' }}>Parent</StyledTableCell>
+                            <StyledTableCell style={{ width: '30%' }}>Name</StyledTableCell>
+                            <StyledTableCell style={{ width: '25%' }}>Type</StyledTableCell>
+                            {/* <StyledTableCell style={{ width: '20%' }}>Parent</StyledTableCell> */}
                             <StyledTableCell style={{ width: '25%' }}>Created At</StyledTableCell>
                             <StyledTableCell style={{ width: '5%' }} align="right">Edit</StyledTableCell>
                             <StyledTableCell style={{ width: '5%' }} align="right">Delete</StyledTableCell>
@@ -130,22 +130,43 @@ export default function ListCategoryComponent() {
                             </StyledTableRow>
                             :
                             categories
-                                .map((row, index) => (
-                                    <StyledTableRow key={row._id} className='tableRow'>
-                                        <StyledTableCell >
-                                            {index + 1}
-                                        </StyledTableCell>
-                                        <StyledTableCell style={!row.parent ? { fontWeight: 'bold' } : {}}  >
+                                .map((row, index) => {
+                                    let cps=[];
+                                    cps.push(
+                                        <StyledTableRow key={row._id} className='tableRow'>
+                                            <StyledTableCell >
+                                                {index + 1}
+                                            </StyledTableCell>
+                                            <StyledTableCell style={{ fontWeight: 'bold' }}  >
                                                 {row.parent ? `___${row.name}` : row.name}
-                                        </StyledTableCell>
-                                        <StyledTableCell >{row.parent ? 'Sub category' : 'Category'}</StyledTableCell>
-                                        <StyledTableCell >{row.parentName}</StyledTableCell>
-                                        <StyledTableCell >{row.createdAt}</StyledTableCell>
-                                        <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => onEditCategoryClick(row)}><CreateIcon /></StyledTableCell>
-                                        <StyledTableCell align="right" style={{ color: 'red' }} onClick={() => onDeleteCategoryClick(row._id)}><DeleteIcon /></StyledTableCell>
+                                            </StyledTableCell>
+                                            <StyledTableCell >{'Category'}</StyledTableCell>
+                                            {/* <StyledTableCell >{row.parentName}</StyledTableCell> */}
+                                            <StyledTableCell >{row.createdAt}</StyledTableCell>
+                                            <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => onEditCategoryClick(row)}><CreateIcon /></StyledTableCell>
+                                            <StyledTableCell align="right" style={{ color: 'red' }} onClick={() => onDeleteCategoryClick(row._id)}><DeleteIcon /></StyledTableCell>
 
-                                    </StyledTableRow>
-                                ))}
+                                        </StyledTableRow>
+                                    );
+
+                                    cps.push(row.children.map(
+                                        (subItem) => (( <StyledTableRow key={subItem._id} className='tableRow'>
+                                        <StyledTableCell >
+                                        </StyledTableCell>
+                                        <StyledTableCell style={{ }}  >
+                                            {subItem.parent ? `___${subItem.name}` : subItem.name}
+                                        </StyledTableCell>
+                                        <StyledTableCell >{'Sub category'}</StyledTableCell>
+                                        {/* <StyledTableCell >{subItem.parentName}</StyledTableCell> */}
+                                        <StyledTableCell >{subItem.createdAt}</StyledTableCell>
+                                        <StyledTableCell align="right" style={{ color: 'blue' }} onClick={() => onEditCategoryClick(subItem)}><CreateIcon /></StyledTableCell>
+                                        <StyledTableCell align="right" style={{ color: 'red' }} onClick={() => onDeleteCategoryClick(subItem._id)}><DeleteIcon /></StyledTableCell>
+
+                                    </StyledTableRow>))));
+
+                                    return cps;
+                                })}
+
                     </TableBody>
                 </Table>
 
