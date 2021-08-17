@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import HorizontalCarousel from "./HorizontalCarousel";
-import {getNewestCourses, getTopViewedCourses} from "../../config/api/Courses";
+import {getNewestCourses, getTopViewedCourses,getPopularCourses} from "../../config/api/Courses";
 import {useSnackbar} from "notistack";
 import {SnackBarVariant} from "../../utils/constant";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -30,6 +30,7 @@ export const Homepage = () => {
   const {enqueueSnackbar} = useSnackbar();
   const [index, setIndex] = useState(0);
   const [isPending, setIsPending] = useState(false);
+  const [popularCourses, setPopularCourses] = useState([]);
   const [newestCourses, setNewestCourses] = useState([]);
   const [topViewedCourses, setTopViewedCourses] = useState([]);
   const [category, setCategory] = useState([]);
@@ -45,11 +46,13 @@ export const Homepage = () => {
   const fetchCourseList = async () => {
     setIsPending(true);
     try {
-      const [newestList, topViewedList, topCategory] = await Promise.all([
+      const [popularList,newestList, topViewedList, topCategory] = await Promise.all([
+        getPopularCourses(),
         getNewestCourses(),
         getTopViewedCourses(),
         getTopCategories()
       ]);
+      setPopularCourses(popularList.data);
       setNewestCourses(newestList.data);
       setTopViewedCourses(topViewedList.data);
       if (topCategory.data?.length > 0) setCategory(topCategory.data)
@@ -105,9 +108,9 @@ export const Homepage = () => {
         isPending ? <div className={classes.root}>
             <div/></div>
           : <Box direction={"column"}>
+            <HorizontalCarousel data={popularCourses} deviceType={"desktop"} title={"Popular courses"}/>
             <HorizontalCarousel data={newestCourses} deviceType={"desktop"} title={"Latest courses"}/>
-            <HorizontalCarousel data={newestCourses} deviceType={"desktop"} title={"Latest courses"}/>
-            <HorizontalCarousel data={topViewedCourses} deviceType={"desktop"} title={"Top of the week"}/>
+            <HorizontalCarousel data={topViewedCourses} deviceType={"desktop"} title={"Top viewed"}/>
           </Box>
       }
 

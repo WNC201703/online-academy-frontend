@@ -38,6 +38,10 @@ export async function getAllCourses(pageNumber = 1, pageSize = 10, sortBy = null
   return await AXIOS_INSTANCE.get(`/api/courses/?page_number=${pageNumber}&page_size=${pageSize}&key_word=${key_word ? key_word : ''}&category=${categoryId ? categoryId : ''}`);
 }
 
+export async function getPopularCourses() {
+  return await AXIOS_INSTANCE.get(`/api/courses/popular`);
+}
+
 export async function getNewestCourses() {
   return await AXIOS_INSTANCE.get(`/api/courses/newest`);
 }
