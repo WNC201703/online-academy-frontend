@@ -50,10 +50,10 @@ export default function Layout() {
         <Route exact path="/category-management" component={CategoryManagementPage} />
         <Route exact path="/student-management" component={StudentManagementPage} />
         <Route exact path="/teacher-management" component={TeacherManagementPage} />
-        <Route exact path="/not-found" component={PageNotFound} />
         <Route path="/profile">
           {user?._id ? <ProfilePage /> : <Redirect to={{ pathname: "/not-found", state: { from: '/' } }} />}
         </Route>
+        <Route exact path="/not-found" component={PageNotFound} />
       </Switch>
     </div>;
   return (
