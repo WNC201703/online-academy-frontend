@@ -12,7 +12,7 @@ import {SnackBarVariant} from "../../utils/constant";
 import {dateFormat, discountFormat, moneyFormat, ratingNumberFormat} from "../../utils/FormatHelper";
 import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
 import FavoriteOutlinedIcon from '@material-ui/icons/FavoriteOutlined';
-import {Image} from "semantic-ui-react";
+import {Image, Label} from "semantic-ui-react";
 import {
   enrollCourse,
   getCourseReviews,
@@ -23,7 +23,12 @@ import {CourseInfoLoading, DescriptionLoading, LessonsLoading, RelatedCourseLoad
 import HorizontalCarousel from "../Homepage/HorizontalCarousel";
 import CustomFavouriteOutlinedButton from "../../components/Button/CustomFavouriteOutlinedButton";
 import CustomFavouriteContainedButton from "../../components/Button/CustomFavouriteContainedButton";
-import {addFavouriteCourse, getMyFavouriteCourseByCourseId, getMyCourseByCourseId, removeFavouriteCourse} from "../../config/api/User";
+import {
+  addFavouriteCourse,
+  getMyFavouriteCourseByCourseId,
+  getMyCourseByCourseId,
+  removeFavouriteCourse
+} from "../../config/api/User";
 import AuthUserContext from "../../contexts/user/AuthUserContext";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import SubscriptionsOutlinedIcon from '@material-ui/icons/SubscriptionsOutlined';
@@ -32,6 +37,15 @@ import CustomViewContainedButton from "../../components/Button/CustomViewContain
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import MenuItem from "@material-ui/core/MenuItem";
+import ReactQuill from "react-quill";
+import DialogActions from "@material-ui/core/DialogActions";
+import Dialog from "@material-ui/core/Dialog";
+import {Player} from "video-react";
+import CustomPrimaryContainedButton from "../../components/Button/CustomPrimaryContainedButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -107,6 +121,8 @@ export const CourseDetail = () => {
   const [ratingContent, setRatingContent] = useState('');
   const [reviewList, setReviewList] = useState([]);
   const [reviewPage, setReviewPage] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [previewVideo, setPreviewVideo] = useState(false);
 
   const isSignedIn = user != null;
   useEffect(() => {
@@ -161,7 +177,10 @@ export const CourseDetail = () => {
   const handleRatingContentChange = (event) => {
     setRatingContent(event.target.value);
   }
-
+  const handleDialogOpen = (e, videoUrl) => {
+    setPreviewVideo(videoUrl)
+    setOpen(true);
+  }
   const handleLoadMoreReview = async () => {
     const nextPage = reviewPage + 1;
     const res = await getCourseReviews(id, 5, nextPage);
@@ -188,10 +207,10 @@ export const CourseDetail = () => {
         mine = await getMyCourseByCourseId(id);
         favourite = await getMyFavouriteCourseByCourseId(id);
         //not found
-        if (favourite.status===200) setIsFavourite(true) ;
+        if (favourite.status === 200) setIsFavourite(true);
         else setIsFavourite(false);
 
-        if (mine.status===200) setIsEnrolled(true);
+        if (mine.status === 200) setIsEnrolled(true);
         else setIsEnrolled(false);
       }
 
@@ -212,6 +231,10 @@ export const CourseDetail = () => {
     }
   }
 
+  const handleDialogClose = () => {
+    setOpen(false);
+  }
+
   const handleRatingCourse = async () => {
     setIsProcessing(true)
     const review = {
@@ -222,9 +245,8 @@ export const CourseDetail = () => {
       history.push('/sign-in')
     }
     const res = await reviewCourse(courseInfo._id, review)
-    if (res === 201) {
+    if (res !== 400) {
       enqueueSnackbar("Review course successfully", {variant: SnackBarVariant.Success});
-
     } else {
       enqueueSnackbar("Failed to review course", {variant: SnackBarVariant.Error});
     }
@@ -317,7 +339,7 @@ export const CourseDetail = () => {
         <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Description</Box>
           {
-            isPending ? <DescriptionLoading/> : <div dangerouslySetInnerHTML={{__html: courseInfo?.detailDescription}} />
+            isPending ? <DescriptionLoading/> : <div dangerouslySetInnerHTML={{__html: courseInfo?.detailDescription}}/>
           }
         </Paper>
         <Paper className={classes.paper}>
@@ -326,9 +348,36 @@ export const CourseDetail = () => {
           {
             isPending ? <LessonsLoading/> :
               courseLessons?.map(item => {
-                return <Box className={classes.listItem}>{item.lessonNumber} - {item.name}</Box>
+                const hasPreview = item?.videoUrl != null
+                return <Box>
+                  <Box className={classes.listItem}>
+                    {item.lessonNumber} - {item.name}
+                  </Box>
+                  {
+                    hasPreview ? <CustomPrimaryContainedButton style={{marginTop: 12, marginBottom: 12}}
+                                                               onClick={(e) => handleDialogOpen(e, item?.videoUrl)}>
+                      Preview
+                    </CustomPrimaryContainedButton> : <></>
+                  }
+                </Box>
+
               }) || 0
           }
+
+          <Dialog fullWidth open={open} onClose={handleDialogClose} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">Preview Lesson</DialogTitle>
+            <DialogContent>
+              <Player
+                playsInline
+                fluid={false}
+                width={320} height={200}
+                src={previewVideo}></Player>
+            </DialogContent>
+            <DialogActions>
+            </DialogActions>
+          </Dialog>
+
+
         </Paper>
         <Paper className={classes.paper}>
           {
@@ -345,12 +394,13 @@ export const CourseDetail = () => {
                            label="Write your review"
                            variant="outlined"/>
                 <Box className={classes.note}>Note: If you have not seen this course yet, you can not write review</Box>
-                <Rating precision={0.5} value={ratingPoint} onChange={handleRatingBarChange} size="large" name="read-only"/>
+                <Rating precision={0.5} value={ratingPoint} onChange={handleRatingBarChange} size="large"
+                        name="read-only"/>
               </Box>
               <Button size="medium"
                       height={65}
                       color="primary"
-                      disabled={isProcessing || ratingContent.length < 0}
+                      disabled={isProcessing || ratingContent.length < 0 || !isEnrolled}
                       onClick={handleRatingCourse}
                       variant='contained'>
                 Send
@@ -367,7 +417,7 @@ export const CourseDetail = () => {
                     return <Box>
                       <Box className={classes.note} style={{marginLeft: 12}}> {item?.username}</Box>
                       <Box style={{marginLeft: 12}}> {item?.review}</Box>
-                      <Rating style={{marginLeft: 10}} readOnly value={item?.rating/2} precision={0.5} size="medium"/>
+                      <Rating style={{marginLeft: 10}} readOnly value={item?.rating / 2} precision={0.5} size="medium"/>
                     </Box>
                 })
               }

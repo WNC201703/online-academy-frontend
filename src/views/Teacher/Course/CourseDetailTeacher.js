@@ -122,6 +122,7 @@ export const CourseDetailTeacher = () => {
     }
     const res = await updateCourse(id, data)
     if (res.status === 200) {
+      window.location.reload();
       enqueueSnackbar("Update course successfully", {variant: SnackBarVariant.Success});
     } else
       enqueueSnackbar("Update course failed", {variant: SnackBarVariant.Error});
@@ -132,6 +133,7 @@ export const CourseDetailTeacher = () => {
     formData.append('image', courseImage);
     const res = await updateCourseImage(id, formData);
     if (res.status === 201) {
+      window.location.reload();
       enqueueSnackbar("Update image successfully", {variant: SnackBarVariant.Success});
     } else
       enqueueSnackbar("Update course failed", {variant: SnackBarVariant.Error});
@@ -171,6 +173,7 @@ export const CourseDetailTeacher = () => {
     formData.append('video', videoPreview);
     const res = await updateLessonVideo(id, formData, lessonId);
     if (res.status === 201) {
+      window.location.reload();
       enqueueSnackbar('Update lesson video successfully', {variant: SnackBarVariant.Success})
     } else {
       enqueueSnackbar('Update lesson video failed', {variant: SnackBarVariant.Error})
@@ -186,6 +189,7 @@ export const CourseDetailTeacher = () => {
     console.log(data);
     const res = await updateLesson(id, data, payload?._id)
     if (res.status === 201) {
+      window.location.reload();
       enqueueSnackbar('Update lesson description successfully', {variant: SnackBarVariant.Success})
     } else {
       enqueueSnackbar('Update lesson description failed', {variant: SnackBarVariant.Error})
@@ -200,6 +204,7 @@ export const CourseDetailTeacher = () => {
     }
     const res = await addLesson(id, data)
     if (res.status === 201) {
+      window.location.reload();
       enqueueSnackbar('Add lesson successfully', {variant: SnackBarVariant.Success})
     } else {
       enqueueSnackbar('Add lesson description failed', {variant: SnackBarVariant.Error})

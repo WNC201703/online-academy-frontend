@@ -7,7 +7,7 @@ import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core";
 import {discountFormat, moneyFormat, ratingNumberFormat} from "../../utils/FormatHelper";
 import {useHistory} from "react-router-dom";
-import {yellow} from "@material-ui/core/colors";
+import {grey, yellow} from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -108,6 +108,13 @@ const HorizontalCarousel = ({title, data}) => {
                     }}> Best seller </Box> : <></>
                 }
               </Box>
+              {
+                !item?.upload_complete ?
+                  <Box style={{
+                    backgroundColor: grey[300], borderRadius: 5, padding: 5, fontWeight: 'bold',
+                    margin: 8, color: 'black'
+                  }}> Not completed</Box> : <></>
+              }
             </Paper>
           );
         })}
