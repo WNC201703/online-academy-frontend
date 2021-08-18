@@ -1,29 +1,29 @@
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import TextField from "@material-ui/core/TextField";
-import {Label} from "semantic-ui-react";
+import { Label } from "semantic-ui-react";
 import ReactQuill from "react-quill";
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import Button from "@material-ui/core/Button";
 import CustomPrimaryContainedButton from "../../../components/Button/CustomPrimaryContainedButton";
-import {deleteCategory, getAllCategories} from "../../../config/api/Categories";
-import {getCourseById, updateCourse, updateCourseImage} from "../../../config/api/Courses";
-import {useSnackbar} from "notistack";
-import {SnackBarVariant} from "../../../utils/constant";
-import {useParams} from "react-router-dom";
+import { deleteCategory, getAllCategories } from "../../../config/api/Categories";
+import { getCourseById, updateCourse, updateCourseImage } from "../../../config/api/Courses";
+import { useSnackbar } from "notistack";
+import { SnackBarVariant } from "../../../utils/constant";
+import { useParams } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import MenuItem from "@material-ui/core/MenuItem";
-import {addLesson, getAllLessons, updateLesson, updateLessonVideo} from "../../../config/api/Lessons";
+import { addLesson, getAllLessons, updateLesson, updateLessonVideo } from "../../../config/api/Lessons";
 import {
   Accordion
 } from 'react-bootstrap';
 import Card from "react-bootstrap/Card";
-import {TextFields} from "@material-ui/icons";
+import { TextFields } from "@material-ui/icons";
 import VideoPanel from "../../Learning/VideoPanel";
-import {Player} from "video-react";
+import { Player } from "video-react";
 import DialogContent from "@material-ui/core/DialogContent";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -36,13 +36,18 @@ const useStyles = makeStyles((theme) => ({
   },
   buttonText: {
     color: 'white'
+  },
+  textFieldLabelText: {
+    color: 'grey',
+    fontSize:12,
+    paddingTop:15
   }
 }));
 export const CourseDetailTeacher = () => {
   const classes = useStyles();
-  const {id} = useParams();
+  const { id } = useParams();
 
-  const {enqueueSnackbar} = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const [imagePreview, setImagePreview] = useState(null);
 
   const [courseName, setCourseName] = useState('');
@@ -108,7 +113,7 @@ export const CourseDetailTeacher = () => {
   const handleDeleteCourse = async () => {
     const res = deleteCategory(id)
     if (res.status === 200) {
-      enqueueSnackbar("Delete course successfully", {variant: SnackBarVariant.Success});
+      enqueueSnackbar("Delete course successfully", { variant: SnackBarVariant.Success });
     }
   }
 
@@ -123,9 +128,9 @@ export const CourseDetailTeacher = () => {
     const res = await updateCourse(id, data)
     if (res.status === 200) {
       window.location.reload();
-      enqueueSnackbar("Update course successfully", {variant: SnackBarVariant.Success});
+      enqueueSnackbar("Update course successfully", { variant: SnackBarVariant.Success });
     } else
-      enqueueSnackbar("Update course failed", {variant: SnackBarVariant.Error});
+      enqueueSnackbar("Update course failed", { variant: SnackBarVariant.Error });
   }
 
   const handleUpdateCourseImage = async () => {
@@ -134,9 +139,9 @@ export const CourseDetailTeacher = () => {
     const res = await updateCourseImage(id, formData);
     if (res.status === 201) {
       window.location.reload();
-      enqueueSnackbar("Update image successfully", {variant: SnackBarVariant.Success});
+      enqueueSnackbar("Update image successfully", { variant: SnackBarVariant.Success });
     } else
-      enqueueSnackbar("Update course failed", {variant: SnackBarVariant.Error});
+      enqueueSnackbar("Update course failed", { variant: SnackBarVariant.Error });
   }
 
   const fetchCourseDetail = async () => {
@@ -146,7 +151,7 @@ export const CourseDetailTeacher = () => {
       if (info.status !== 200) {
         return;
       }
-      let response = await getAllCategories('list')
+      let response = await getAllCategories()
       let res = await getAllLessons(id)
       setLessons(res?.data)
       setCategories(response?.data)
@@ -154,10 +159,10 @@ export const CourseDetailTeacher = () => {
       setCourseName(info.data?.name)
       setCourseShortDescription(info.data?.shortDescription)
       setCourseFullDescription(info.data.detailDescription)
-      setCourseCategory(info?.data?.category)
+      setCourseCategory(info?.data?.categoryId)
       setImagePreview(info?.data?.imageUrl)
     } catch (e) {
-      enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Error});
+      enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
       console.log(e);
     } finally {
       setIsPending(false);
@@ -174,9 +179,9 @@ export const CourseDetailTeacher = () => {
     const res = await updateLessonVideo(id, formData, lessonId);
     if (res.status === 201) {
       window.location.reload();
-      enqueueSnackbar('Update lesson video successfully', {variant: SnackBarVariant.Success})
+      enqueueSnackbar('Update lesson video successfully', { variant: SnackBarVariant.Success })
     } else {
-      enqueueSnackbar('Update lesson video failed', {variant: SnackBarVariant.Error})
+      enqueueSnackbar('Update lesson video failed', { variant: SnackBarVariant.Error })
     }
 
   }
@@ -190,9 +195,9 @@ export const CourseDetailTeacher = () => {
     const res = await updateLesson(id, data, payload?._id)
     if (res.status === 201) {
       window.location.reload();
-      enqueueSnackbar('Update lesson description successfully', {variant: SnackBarVariant.Success})
+      enqueueSnackbar('Update lesson description successfully', { variant: SnackBarVariant.Success })
     } else {
-      enqueueSnackbar('Update lesson description failed', {variant: SnackBarVariant.Error})
+      enqueueSnackbar('Update lesson description failed', { variant: SnackBarVariant.Error })
 
     }
   }
@@ -205,9 +210,9 @@ export const CourseDetailTeacher = () => {
     const res = await addLesson(id, data)
     if (res.status === 201) {
       window.location.reload();
-      enqueueSnackbar('Add lesson successfully', {variant: SnackBarVariant.Success})
+      enqueueSnackbar('Add lesson successfully', { variant: SnackBarVariant.Success })
     } else {
-      enqueueSnackbar('Add lesson description failed', {variant: SnackBarVariant.Error})
+      enqueueSnackbar('Add lesson description failed', { variant: SnackBarVariant.Error })
     }
     handleDialogClose()
   }
@@ -240,7 +245,7 @@ export const CourseDetailTeacher = () => {
   return <div className={classes.root}>
     <Grid container spacing={3}>
       <Grid className={classes.cover} container xs={12}>
-        <Grid item xs={12} sm={2}/>
+        <Grid item xs={12} sm={2} />
         <Grid item xs={12} sm={8}>
 
 
@@ -283,22 +288,20 @@ export const CourseDetailTeacher = () => {
 
 
           {
-            isPending ? <CircularProgress/> :
+            isPending ? <CircularProgress /> :
 
               <Box>
-                <Label fullWidth>Course Name </Label>
+                <Label className={classes.textFieldLabelText} fullWidth>Course Name </Label>
                 <TextField
                   fullWidth
                   onChange={handleCourseNameChange}
-                  autoFocus
                   margin="dense"
                   id="name"
                   type="email"
                   value={courseName}
                 />
-                <Label fullWidth>Price </Label>
+                <Label className={classes.textFieldLabelText} fullWidth>Price </Label>
                 <TextField
-                  autoFocus
                   margin="dense"
                   id="name"
                   onChange={handleCoursePriceChange}
@@ -306,9 +309,8 @@ export const CourseDetailTeacher = () => {
                   fullWidth
                   value={coursePrice}
                 />
-                <Label fullWidth>Short Description </Label>
+                <Label className={classes.textFieldLabelText} fullWidth>Short Description </Label>
                 <TextField
-                  autoFocus
                   margin="dense"
                   id="name"
                   onChange={handleCourseShortDescriptionChange}
@@ -316,41 +318,51 @@ export const CourseDetailTeacher = () => {
                   fullWidth
                   value={courseShortDescription}
                 />
+                  <Label  className={classes.textFieldLabelText} fullWidth>Category </Label>
                 <TextField
                   id="standard-select-currency"
                   select
                   fullWidth
                   value={courseCategory}
                   onChange={handleCategoryChange}
-                  helperText="Please select category">
-                  {categories.map((option) => (
-                    <MenuItem disabled={option.parent===null} key={option._id} value={option._id}>
-                      {option.name}
-                    </MenuItem>
-                  ))}
+                  >
+                  {categories.map((option) => {
+                    if (option.children) {
+                      let cps = [];
+                      cps.push((<MenuItem disabled key={option._id} value={option._id}>
+                        {option.name}
+                      </MenuItem>));
+                      cps.push(option.children.map(
+                        (subItem) => ((<MenuItem key={subItem._id} value={subItem._id}>
+                          {subItem.name}
+                        </MenuItem>))));
+                      return cps;
+                    }
+
+                  })}
                 </TextField>
-                <Label fullWidth>Full Description </Label>
+                <Label className={classes.textFieldLabelText} fullWidth>Full Description </Label>
                 <Box fullWidth height={350}>
-                  <ReactQuill style={{height: 300}} onChange={handleCourseFullDescriptionChange}
-                              value={courseFullDescription || ''}/>
+                  <ReactQuill style={{ height: 300 }} onChange={handleCourseFullDescriptionChange}
+                    value={courseFullDescription || ''} />
                 </Box>
 
 
-                <Label fullWidth>Course Cover</Label>
-                <img style={{height: 300, width: 300}} id="target" src={imagePreview}/>
+                <Label className={classes.textFieldLabelText} fullWidth>Course Cover</Label>
+                <img style={{ height: 300, width: 300 }} id="target" src={imagePreview} />
 
-                <input type="file" onChange={onImageChange} className="filetype" id="group_image"/>
+                <input type="file" onChange={onImageChange} className="filetype" id="group_image" />
                 <Button
                   variant="contained"
                   color="default"
                   onClick={handleUpdateCourseImage}
                   className={classes.button}
-                  startIcon={<CloudUploadIcon/>}
+                  startIcon={<CloudUploadIcon />}
                 >
                   Upload
                 </Button>
-                <Box style={{marginBottom: 64}}>
-                  <Button onClick={handleDeleteCourse} style={{marginRight: 24}} variant="contained" color="secondary">
+                <Box style={{ marginBottom: 64 }}>
+                  <Button onClick={handleDeleteCourse} style={{ marginRight: 24 }} variant="contained" color="secondary">
                     Delete
                   </Button>
                   <CustomPrimaryContainedButton onClick={handleUpdateCourse} className={classes.buttonText}>
@@ -365,14 +377,14 @@ export const CourseDetailTeacher = () => {
                   </CustomPrimaryContainedButton>
                 </Box>
                 {
-                  isPending ? <CircularProgress/> :
-                    <div style={{marginBottom: 64}}>
+                  isPending ? <CircularProgress /> :
+                    <div style={{ marginBottom: 64 }}>
                       <Accordion>
                         {
                           lessons?.map((item, index) => <Card>
                             <Card.Header fullwidth>
                               <Accordion.Toggle as={Button}
-                                                variant="link" eventKey={index + 1}>
+                                variant="link" eventKey={index + 1}>
                                 #{item?.lessonNumber} - {item?.name}
                               </Accordion.Toggle>
                             </Card.Header>
@@ -388,8 +400,8 @@ export const CourseDetailTeacher = () => {
                                   type="email"
                                   value={item?.description}
                                 />
-                                <CustomPrimaryContainedButton onClick={(e) => handleUpdateLessonInfo(e,item)}
-                                                              className={classes.buttonText}>
+                                <CustomPrimaryContainedButton onClick={(e) => handleUpdateLessonInfo(e, item)}
+                                  className={classes.buttonText}>
                                   Update info
                                 </CustomPrimaryContainedButton>
 
@@ -406,14 +418,14 @@ export const CourseDetailTeacher = () => {
                                   src={video}></Player>
 
                                 <input type="file" onChange={(event) => onVideoChange(event, item?._id)}
-                                       className="filetype" id="group_image"/>
+                                  className="filetype" id="group_image" />
 
                                 <Button
                                   variant="contained"
                                   color="default"
                                   onClick={() => handleUpdateLessonVideo(item?._id)}
                                   className={classes.button}
-                                  startIcon={<CloudUploadIcon/>}>
+                                  startIcon={<CloudUploadIcon />}>
                                   Upload video
                                 </Button>
                               </Card.Body>
@@ -428,7 +440,7 @@ export const CourseDetailTeacher = () => {
               </Box>
           }
         </Grid>
-        <Grid item xs={12} sm={2}/>
+        <Grid item xs={12} sm={2} />
       </Grid>
     </Grid>
   </div>

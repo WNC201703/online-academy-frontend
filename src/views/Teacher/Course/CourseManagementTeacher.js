@@ -219,11 +219,20 @@ export const CourseManagementTeacher = () => {
                 value={courseCategory}
                 onChange={handleCategoryChange}
                 helperText="Please select your currency">
-                {categories.map((option) => (
-                  <MenuItem disabled={option.parent === null} key={option._id} value={option._id}>
-                    {option.name}
-                  </MenuItem>
-                ))}
+                 {categories.map((option) => {
+                    if (option.children) {
+                      let cps = [];
+                      cps.push((<MenuItem disabled key={option._id} value={option._id}>
+                        {option.name}
+                      </MenuItem>));
+                      cps.push(option.children.map(
+                        (subItem) => ((<MenuItem key={subItem._id} value={subItem._id}>
+                          {subItem.name}
+                        </MenuItem>))));
+                      return cps;
+                    }
+
+                  })}
               </TextField>
 
 
