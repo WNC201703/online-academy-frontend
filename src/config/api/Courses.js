@@ -42,6 +42,13 @@ export async function getPopularCourses() {
   return await AXIOS_INSTANCE.get(`/api/courses/popular`);
 }
 
+
+export async function getTopWeek() {
+  return await AXIOS_INSTANCE.get(`/api/courses/top`);
+
+}
+
+
 export async function getNewestCourses() {
   return await AXIOS_INSTANCE.get(`/api/courses/newest`);
 }
