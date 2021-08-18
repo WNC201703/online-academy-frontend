@@ -54,6 +54,21 @@ export const RelatedCourseLoading = () => {
   }      </Box>
 }
 
+export const HomePageLoading = () => {
+  const classes = useStyles();
+  return <Box display='flex' direction='row' justify={'space-between'}>{
+      mockArray.map(_ => <Box style={{marginRight: 12}} className={classes.loading}>
+          <CourseInfoLoading/>
+          <Skeleton height={300} width={150} animation="wave"/>
+          <Skeleton height={30} width={150} animation="wave"/>
+          <Skeleton height={30} width={150} animation="wave"/>
+          <Skeleton height={30} width={150} animation="wave"/>
+        </Box>
+      )
+    }      </Box>
+}
+
+
 export const LineListLoading = () => {
   return (
     mockArray.map(_ => <Paper fullwidth
