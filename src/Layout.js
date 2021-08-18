@@ -18,6 +18,7 @@ import AuthUserContext from "./contexts/user/AuthUserContext";
 import { UserRoles } from "./utils/constant";
 import { CourseDetail } from "./views/CourseDetail/CourseDetailPage";
 import { AccountPage } from "./views/AccountPage";
+import { TeacherProfilePage } from "./views/Teacher/TeacherProfile";
 import { CourseList } from "./views/CourseList/CourseList";
 import RouteWithLayout from "./components/RouteWithLayout";
 import TeacherLayout from "./components/Layout/TeacherLayout";
@@ -77,6 +78,7 @@ export default function Layout() {
           {user?._id ? <CourseList /> : <Redirect to={{ pathname: "/not-found", state: { from: '/' } }} />}
         </Route>
         <Route path="/courses/:courseId/learn" component={LearningPage} />
+        <Route path="/my-profile" component={TeacherProfilePage} />
         <RouteWithLayout layout={TeacherLayout} exact path='/teacher/courses'
           component={CourseManagementTeacher} />
         <RouteWithLayout layout={TeacherLayout} exact path='/teacher/courses/:id'
