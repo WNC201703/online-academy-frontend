@@ -212,7 +212,7 @@ export default function PrimarySearchAppBar() {
   const open = Boolean(anchorEl2);
   const id = open ? 'simple-popover' : undefined;
 
-  const handleProfileMenuOpen = (event) => {
+  const handleAccountMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -231,8 +231,8 @@ export default function PrimarySearchAppBar() {
     setAnchorEl(null);
     handleMobileMenuClose();
   }
-  const handleGotoProfile = () => {
-    history.push('/profile');
+  const handleGotoAccount = () => {
+    history.push('/account');
     setAnchorEl(null);
     handleMobileMenuClose();
   }
@@ -284,7 +284,7 @@ export default function PrimarySearchAppBar() {
       {
         isTeacherOrAdmin ? <></> : <MenuItem onClick={handleGotoFavourites}>Favourites</MenuItem>
       }
-      <MenuItem onClick={handleGotoProfile}>Profile</MenuItem>
+      <MenuItem onClick={handleGotoAccount}>Account Settings</MenuItem>
       <MenuItem onClick={handleLogOut}>Log out</MenuItem>
     </Menu>
   );
@@ -300,7 +300,7 @@ export default function PrimarySearchAppBar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <MenuItem onClick={handleAccountMenuOpen}>
         <IconButton
           aria-label="account of current user"
           aria-controls="primary-search-account-menu"
@@ -308,7 +308,7 @@ export default function PrimarySearchAppBar() {
           color="inherit">
           <AccountCircle/>
         </IconButton>
-        <p>Profile</p>
+        <p>Account</p>
       </MenuItem>
     </Menu>
   );
@@ -452,7 +452,7 @@ export default function PrimarySearchAppBar() {
                   aria-label="account of current user"
                   aria-controls={menuId}
                   aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
+                  onClick={handleAccountMenuOpen}
                   color="inherit">
                   <Typography>{user.fullname}</Typography>
                   <Box m={0.5}></Box>

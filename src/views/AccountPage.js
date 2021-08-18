@@ -19,7 +19,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import CustomPrimaryContainedButton from "../components/Button/CustomPrimaryContainedButton";
 import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { getInfo , updateMyProfile } from "../config/api/User";
+import { getInfo , updateMyAccount } from "../config/api/User";
 import {  SnackBarVariant } from "../utils/constant";
 import { useSnackbar } from "notistack";
 import AuthUserContext from "../contexts/user/AuthUserContext";
@@ -66,13 +66,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ProfilePage = () => {
+export const AccountPage = () => {
   const classes = useStyles();
   const { saveUser } = useContext(AuthUserContext);
   const { enqueueSnackbar } = useSnackbar();
   const [isPending, setIsPending] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [profile, setProfile] = useState(null);
+  const [account, setAccount] = useState(null);
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
@@ -87,26 +87,26 @@ export const ProfilePage = () => {
 
   useEffect(() => {
     const eff = async () => {
-      await fetchProfile();
+      await fetchAccount();
     }
     eff();
   }, []);
 
-  const handleUpdateProfile= (data) =>{
+  const handleUpdateAccount= (data) =>{
       setEmail(data.email);
       setFullName(data.fullname);
       setChangePasswordChecked(false);
       setPassword('');
-      setProfile(data);
+      setAccount(data);
   }
 
-  const fetchProfile = async () => {
+  const fetchAccount = async () => {
     setIsPending(true);
     try {
       const res = await getInfo();
       if (res.status === 200) {
         const data = res.data;
-        handleUpdateProfile(data);
+        handleUpdateAccount(data);
       }
     } catch (e) {
       enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
@@ -156,28 +156,28 @@ export const ProfilePage = () => {
       const body = {
         currentPassword: currentPassword
       };
-      if (profile.fullname !== fullName) body['fullname'] = fullName;
-      if (profile.email !== email) body['email'] = email;
+      if (account.fullname !== fullName) body['fullname'] = fullName;
+      if (account.email !== email) body['email'] = email;
       if (changePasswordChecked) body['password'] = password;
-      const res = await updateMyProfile(body);
+      const res = await updateMyAccount(body);
       console.log(res);
 
       switch (res.status) {
         case 200:
           enqueueSnackbar("Update successfully", { variant: SnackBarVariant.Success });
-          handleUpdateProfile(res.data?.user);
+          handleUpdateAccount(res.data?.user);
           saveUser(res.data?.user);
 
           break;
 
         case 401:
           enqueueSnackbar("You current password is missing or incorrect", { variant: SnackBarVariant.Error });
-          handleUpdateProfile(profile);
+          handleUpdateAccount(account);
           break;
         case 400:
         default:
           enqueueSnackbar("Update failed", { variant: SnackBarVariant.Error });
-          handleUpdateProfile(profile);
+          handleUpdateAccount(account);
       }
      
 
@@ -232,8 +232,8 @@ export const ProfilePage = () => {
       <Grid item xs={12}>
         <Paper style={{ justifyContent: 'center', padding: 48 }} className={classes.paper}>
           <div>
-            <Box className={classes.formTitle}>Your profile</Box>
-            <Box className={classes.formDesc}>Update your profile here.</Box>
+            <Box className={classes.formTitle}>Your account</Box>
+            <Box className={classes.formDesc}>Update your account here.</Box>
           </div>
           <FormControl variant='outlined'
             fullWidth

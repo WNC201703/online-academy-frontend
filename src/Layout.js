@@ -17,7 +17,7 @@ import PageNotFound from "./components/PageNotFound";
 import AuthUserContext from "./contexts/user/AuthUserContext";
 import { UserRoles } from "./utils/constant";
 import { CourseDetail } from "./views/CourseDetail/CourseDetailPage";
-import { ProfilePage } from "./views/ProfilePage";
+import { AccountPage } from "./views/AccountPage";
 import { CourseList } from "./views/CourseList/CourseList";
 import RouteWithLayout from "./components/RouteWithLayout";
 import TeacherLayout from "./components/Layout/TeacherLayout";
@@ -50,8 +50,8 @@ export default function Layout() {
         <Route exact path="/category-management" component={CategoryManagementPage} />
         <Route exact path="/student-management" component={StudentManagementPage} />
         <Route exact path="/teacher-management" component={TeacherManagementPage} />
-        <Route path="/profile">
-          {user?._id ? <ProfilePage /> : <Redirect to={{ pathname: "/not-found", state: { from: '/' } }} />}
+        <Route path="/account">
+          {user?._id ? <AccountPage /> : <Redirect to={{ pathname: "/not-found", state: { from: '/' } }} />}
         </Route>
         <Route exact path="/not-found" component={PageNotFound} />
       </Switch>
@@ -70,8 +70,8 @@ export default function Layout() {
         <Route exact path="/courses/all/" component={CourseList} />
         <Route exact path="/courses/all/:categoryId" component={CourseList} />
         <Route exact path="/courses/:id" component={CourseDetail} />
-        <Route path="/profile">
-          {user?._id ? <ProfilePage /> : <Redirect to={{ pathname: "/not-found", state: { from: '/' } }} />}
+        <Route path="/account">
+          {user?._id ? <AccountPage /> : <Redirect to={{ pathname: "/not-found", state: { from: '/' } }} />}
         </Route>
         <Route exact path="/me/:type">
           {user?._id ? <CourseList /> : <Redirect to={{ pathname: "/not-found", state: { from: '/' } }} />}

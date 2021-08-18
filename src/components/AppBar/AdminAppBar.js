@@ -71,7 +71,7 @@ export default function AdminAppBar() {
     const open = Boolean(anchorEl2);
     const location = useLocation();
     const currentPath=location.pathname;
-    const handleProfileMenuOpen = (event) => {
+    const handleAccountMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -90,8 +90,8 @@ export default function AdminAppBar() {
         setAnchorEl(null);
         handleMobileMenuClose();
     }
-    const handleGotoProfile = () => {
-        history.push('/profile');
+    const handleGotoAccount = () => {
+        history.push('/account');
         setAnchorEl(null);
         handleMobileMenuClose();
     }
@@ -144,7 +144,7 @@ export default function AdminAppBar() {
             <MenuItem onClick={handleGotoStudentManagementPage}>Student management</MenuItem>
             <MenuItem onClick={handleGotoTeacherManagementPage}>Teacher management</MenuItem>
             <Divider/>
-            <MenuItem onClick={handleGotoProfile}>Admin Profile</MenuItem>
+            <MenuItem onClick={handleGotoAccount}>Account Settings</MenuItem>
             <MenuItem onClick={handleLogOut}>Log out</MenuItem>
         </Menu>
     );
@@ -160,7 +160,7 @@ export default function AdminAppBar() {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem onClick={handleProfileMenuOpen}>
+            <MenuItem onClick={handleAccountMenuOpen}>
                 <IconButton
                     aria-label="account of current user"
                     aria-controls="primary-search-account-menu"
@@ -168,7 +168,7 @@ export default function AdminAppBar() {
                     color="inherit">
                     <AccountCircle />
                 </IconButton>
-                <p>Profile</p>
+                <p>Account</p>
             </MenuItem>
         </Menu>
     );
@@ -194,7 +194,7 @@ export default function AdminAppBar() {
                             currentPath==='/category-management' ? 'Category management':
                             currentPath==='/student-management'  ? 'Teacher management':
                             currentPath==='/teacher-management'  ? 'Student management':
-                            currentPath==='/profile' ? 'Profile':''
+                            currentPath==='/account' ? 'Account':''
                         }
                     </Typography>
 
@@ -207,7 +207,7 @@ export default function AdminAppBar() {
                                 aria-label="account of current user"
                                 aria-controls={menuId}
                                 aria-haspopup="true"
-                                onClick={handleProfileMenuOpen}
+                                onClick={handleAccountMenuOpen}
                                 color="inherit">
                                 <Typography>{user.fullname}</Typography>
                                 <Box m={0.5}></Box>

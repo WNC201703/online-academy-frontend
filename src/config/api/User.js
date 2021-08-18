@@ -25,7 +25,7 @@ export async function updateUser(id, data) {
   return await AXIOS_INSTANCE.put(`/api/users/${id}`, data);
 }
 
-export async function updateMyProfile( data) {
+export async function updateMyAccount( data) {
   return await AXIOS_INSTANCE.put(`/api/users/me`, data);
 }
 
