@@ -140,6 +140,7 @@ export default function PrimarySearchAppBar() {
   const [anchorElement, setAnchorElement] = useState();
 
   const isTeacherOrAdmin = !(user?.role === UserRoles.Student)
+  const isTeacher = (user?.role === UserRoles.Teacher)
 
   useEffect(() => {
     const eff = async () => {
@@ -267,6 +268,10 @@ export default function PrimarySearchAppBar() {
     history.push('/me/enrollments');
   }
 
+  const handleGotoTeacherProfile = () => {
+    history.push('/my-profile');
+  }
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -283,6 +288,9 @@ export default function PrimarySearchAppBar() {
       }
       {
         isTeacherOrAdmin ? <></> : <MenuItem onClick={handleGotoFavourites}>Favourites</MenuItem>
+      }
+       {
+        isTeacher ?  <MenuItem onClick={handleGotoTeacherProfile}>Profile</MenuItem>:<></> 
       }
       <MenuItem onClick={handleGotoAccount}>Account Settings</MenuItem>
       <MenuItem onClick={handleLogOut}>Log out</MenuItem>
