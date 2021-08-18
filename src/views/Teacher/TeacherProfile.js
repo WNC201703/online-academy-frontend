@@ -59,6 +59,7 @@ export const TeacherProfilePage = () => {
   const [isPending, setIsPending] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [introduction, setIntroduction] = useState('');
+  const [teacherProfile, setTeacherProfile] = useState();
   const [name, setName] = useState('');
   const [nameFieldError, setNameFieldError] = useState(false);
   const [introductionFieldError, setIntroductionFieldError] = useState(false);
@@ -100,7 +101,7 @@ export const TeacherProfilePage = () => {
     setIntroduction(event.target.value);
   }
 
-  const  handleUpdateButtonClick = async () => {
+  const handleUpdateButtonClick = async () => {
     setNameFieldError(false);
     setIntroductionFieldError(false);
     if (!introduction || introduction.length === 0) {
@@ -142,23 +143,29 @@ export const TeacherProfilePage = () => {
     <Grid
       container
       spacing={0}
-      direction="column"
-      alignItems="center"
+      direction="row"
+      alignItems="top"
       justify="center"
-      style={{ minHeight: '100vh' }}>
-      <Grid item xs={12}>
+      style={{ minHeight: '100vh',margin:20}}>
+      <Grid item xs={3}>
+        <Box style={{ marginLeft: 12, }}> {`* Rating: ${teacherProfile?.rating ? teacherProfile?.rating : '0'} `}</Box>
+        <Box style={{ marginLeft: 12 }}>{`* Reviews: ${teacherProfile?.reviews ? teacherProfile?.reviews : '0'} `}</Box>
+        <Box style={{ marginLeft: 12 }}>{`* Students: ${teacherProfile?.students ? teacherProfile?.students : '0'} `} </Box>
+        <Box style={{ marginLeft: 12 }}> {`* Courses: ${teacherProfile?.courses ? teacherProfile?.courses : '0'} `}</Box>
+        </Grid>
+      <Grid item xs={9}>
+
         <Paper style={{ justifyContent: 'center', padding: 48 }} className={classes.paper}>
+
           <div>
             <Box className={classes.formTitle}>Your profile</Box>
           </div>
-
-
           <FormControl variant='outlined'
             fullWidth
             className={classes.margin}
           >
             <TextField
-            fullWidth
+              fullWidth
               variant='outlined'
               id="introduction"
               type='text'
@@ -197,21 +204,21 @@ export const TeacherProfilePage = () => {
 
 
 
-       
+
         </Paper>
         <Grid style={{ marginTop: 10 }} container justify="flex-end">
-        <div>
+          <div>
             <Box>
-                  <CustomPrimaryContainedButton
-                    onClick={handleUpdateButtonClick}
-                    variant="contained"
-                    disabled={isUpdating}
-                    color="primary">
-                    Save changes
-                  </CustomPrimaryContainedButton>
+              <CustomPrimaryContainedButton
+                onClick={handleUpdateButtonClick}
+                variant="contained"
+                disabled={isUpdating}
+                color="primary">
+                Save changes
+              </CustomPrimaryContainedButton>
             </Box>
           </div>
-          </Grid>
+        </Grid>
       </Grid>
     </Grid>
 
