@@ -3,19 +3,8 @@ import { makeStyles } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import ReactQuill from "react-quill";
 import CustomPrimaryContainedButton from "../../components/Button/CustomPrimaryContainedButton";
 import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -23,8 +12,6 @@ import { getMyProfile, updateMyProfile } from "../../config/api/User";
 import { SnackBarVariant } from "../../utils/constant";
 import { useSnackbar } from "notistack";
 import AuthUserContext from "../../contexts/user/AuthUserContext";
-import { useHistory } from "react-router-dom";
-import { isValidEmail, isValidName } from "../../utils/ValidationHelper";
 import InfoIcon from '@material-ui/icons/Pages';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 
@@ -95,6 +82,7 @@ export const TeacherProfilePage = () => {
       const res = await getMyProfile();
       if (res.status === 200) {
         const data = res.data;
+        console.log(res.data);
         handleUpdateProfile(data);
       }
     } catch (e) {
@@ -112,17 +100,36 @@ export const TeacherProfilePage = () => {
     setIntroduction(event.target.value);
   }
 
-  const handleUpdateButtonClick = () => {
-    if (name.length === 0) {
-      setNameFieldError(true);
-      return;
-    }
-
-    if (introduction.length === 0) {
+  const  handleUpdateButtonClick = async () => {
+    setNameFieldError(false);
+    setIntroductionFieldError(false);
+    if (!introduction || introduction.length === 0) {
       setIntroductionFieldError(true);
       return;
     }
+    if (!name || name.length === 0) {
+      setNameFieldError(true);
+      return;
+    }
+    try {
+      setIsUpdating(true);
+      const body = {};
+      body['name'] = name;
+      body['introduction'] = introduction;
+      const res = await updateMyProfile(body);
+      switch (res.status) {
+        case 200:
+          enqueueSnackbar("Update successfully", { variant: SnackBarVariant.Success });
+          handleUpdateProfile(res.data);
+          break;
+        default:
+          enqueueSnackbar("Update failed", { variant: SnackBarVariant.Error });
+      }
+    } catch (e) {
 
+    } finally {
+      setIsUpdating(false);
+    }
   }
 
   if (isPending)
@@ -151,9 +158,10 @@ export const TeacherProfilePage = () => {
             className={classes.margin}
           >
             <TextField
+            fullWidth
               variant='outlined'
               id="introduction"
-              type='introduction'
+              type='text'
               label='Introduction'
               onChange={handleIntroductionChange}
               value={introduction}
@@ -189,20 +197,21 @@ export const TeacherProfilePage = () => {
 
 
 
-          <div>
+       
+        </Paper>
+        <Grid style={{ marginTop: 10 }} container justify="flex-end">
+        <div>
             <Box>
-              {
-                isUpdating ? <CircularProgress /> :
                   <CustomPrimaryContainedButton
                     onClick={handleUpdateButtonClick}
                     variant="contained"
+                    disabled={isUpdating}
                     color="primary">
                     Save changes
                   </CustomPrimaryContainedButton>
-              }
             </Box>
           </div>
-        </Paper>
+          </Grid>
       </Grid>
     </Grid>
 
