@@ -22,7 +22,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   title: {
-    fontWeight: "bold"
+    fontWeight: "bold",
+    
   },
   blockTitle: {
     fontWeight: "bold",

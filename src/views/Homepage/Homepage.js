@@ -116,7 +116,7 @@ export const Homepage = () => {
             <HorizontalCarousel data={popularCourses} deviceType={"desktop"} title={"Popular courses"}/>
             <HorizontalCarousel data={newestCourses} deviceType={"desktop"} title={"Latest courses"}/>
             <HorizontalCarousel data={topViewedCourses} deviceType={"desktop"} title={"Top viewed"}/>
-            <HorizontalCarousel data={topViewedCourses} deviceType={"desktop"} title={"Top of the week"}/>
+            <HorizontalCarousel data={topWeek} deviceType={"desktop"} title={"Top of the week"}/>
 
           </Box>
       }
