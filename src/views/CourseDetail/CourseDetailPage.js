@@ -8,6 +8,7 @@ import Box from "@material-ui/core/Box";
 import Rating from "@material-ui/lab/Rating";
 import { useHistory, useParams } from "react-router-dom";
 import { getCourseById, reviewCourse } from "../../config/api/Courses";
+import { getTeacherProfile } from "../../config/api/User";
 import { SnackBarVariant } from "../../utils/constant";
 import { dateFormat, discountFormat, moneyFormat, ratingNumberFormat } from "../../utils/FormatHelper";
 import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
@@ -113,6 +114,7 @@ export const CourseDetail = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [courseInfo, setCourseInfo] = useState({});
   const [courseLessons, setCourseLessons] = useState([])
+  const [teacherProfile, setTeacherProfile] = useState()
   const [relatedCourses, setRelatedCourses] = useState([])
   const [isPending, setIsPending] = useState(false);
   const [isFavourite, setIsFavourite] = useState(false);
@@ -201,7 +203,6 @@ export const CourseDetail = () => {
           getCourseById(id), getPreviewLessons(id), getRelatedCourse(id),
           getCourseReviews(id, 10, reviewPage)
         ]);
-
       let favourite;
       let mine;
       if (user._id) {
@@ -218,11 +219,13 @@ export const CourseDetail = () => {
       if (info.status !== 200) {
         return;
       }
+      const teacherProfile = await getTeacherProfile(info?.data.teacherId);
 
       setReviewList(reviews?.data?.results)
       setCourseInfo(info.data);
       setCourseLessons(lessons.data);
       setRelatedCourses(related.data);
+      setTeacherProfile(teacherProfile.data);
 
     } catch (e) {
       enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
@@ -386,22 +389,16 @@ export const CourseDetail = () => {
           }
         </Paper>
 
-        <Paper className={classes.paper}>
+        {teacherProfile ? <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Teacher</Box>
-          <Typography style={{fontSize:30}} color='primary' component="h3">Dr. Angela Yu</Typography>
-          <Box style={{ marginLeft: 12, }}> * Rating: 4.6 </Box>
-          <Box style={{ marginLeft: 12 }}> * Reviews: 225 </Box>
-          <Box style={{ marginLeft: 12 }}> * Students: 512 </Box>
-          <Box style={{ marginLeft: 12 }}> * Courses: 10 </Box>
-          <Divider style={{marginBottom:10}}/>
-          <Typography component="h2">I'm Angela, I'm a developer with a passion for teaching. I'm the lead instructor at the London App Brewery, London's leading Programming Bootcamp. I've helped hundreds of thousands of students learn to code and change their lives by becoming a developer. I've been invited by companies such as Twitter, Facebook and Google to teach their employees.
-
-            My first foray into programming was when I was just 12 years old, wanting to build my own Space Invader game. Since then, I've made hundred of websites, apps and games. But most importantly, I realised that my greatest passion is teaching.
-
-            I spend most of my time researching how to make learning to code fun and make hard concepts easy to understand. I apply everything I discover into my bootcamp courses. In my courses, you'll find lots of geeky humour but also lots of explanations and animations to make sure everything is easy to understand.
-
-            I'll be there for you every step of the way.</Typography>
-        </Paper>
+          <Typography style={{ fontSize: 30 }} color='primary' component="h3">{teacherProfile.name}</Typography>
+          <Box style={{ marginLeft: 12, }}> {`* Rating: ${teacherProfile?.rating? teacherProfile?.rating:'0'} `}</Box>
+          <Box style={{ marginLeft: 12 }}>{`* Reviews: ${teacherProfile?.reviews? teacherProfile?.reviews:'0'} `}</Box>
+          <Box style={{ marginLeft: 12 }}>{`* Students: ${teacherProfile?.students? teacherProfile?.students:'0'} `} </Box>
+          <Box style={{ marginLeft: 12 }}> {`* Courses: ${teacherProfile?.courses? teacherProfile?.courses:'0'} `}</Box>
+          <Divider style={{ marginBottom: 10 }} />
+          <Typography component="h2">{teacherProfile.introduction}</Typography>
+        </Paper> :<div/>}
 
         <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Ratings</Box>

@@ -82,3 +82,7 @@ export async function getMyProfile() {
 export async function updateMyProfile( data) {
   return await AXIOS_INSTANCE.put(`/api/teachers/me`, data);
 }
+
+export async function getTeacherProfile(teacherId) {
+  return await AXIOS_INSTANCE.get(`/api/teachers/${teacherId}`);
+}
