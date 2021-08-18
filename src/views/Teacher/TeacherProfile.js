@@ -15,19 +15,18 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import ReactQuill from "react-quill";
 import CustomPrimaryContainedButton from "../../components/Button/CustomPrimaryContainedButton";
 import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { getInfo , updateMyAccount } from "../../config/api/User";
-import {  SnackBarVariant } from "../../utils/constant";
+import { getMyProfile, updateMyProfile } from "../../config/api/User";
+import { SnackBarVariant } from "../../utils/constant";
 import { useSnackbar } from "notistack";
 import AuthUserContext from "../../contexts/user/AuthUserContext";
 import { useHistory } from "react-router-dom";
 import { isValidEmail, isValidName } from "../../utils/ValidationHelper";
-import LockIcon from '@material-ui/icons/Lock';
+import InfoIcon from '@material-ui/icons/Pages';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import Email from '@material-ui/icons/Email';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,146 +71,57 @@ export const TeacherProfilePage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [isPending, setIsPending] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [account, setAccount] = useState(null);
-  const [email, setEmail] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [password, setPassword] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
+  const [introduction, setIntroduction] = useState('');
+  const [name, setName] = useState('');
+  const [nameFieldError, setNameFieldError] = useState(false);
+  const [introductionFieldError, setIntroductionFieldError] = useState(false);
 
-  const [emailFieldError, setEmailFieldError] = useState(false);
-  const [fullNameFieldError, setFullNameFieldError] = useState(false);
-  const [passwordFieldError, setPasswordFieldError] = useState(false);
-
-  const [changePasswordChecked, setChangePasswordChecked] = useState(false);
-  const [openCurrentPasswordDialog, setOpenCurrentPasswordDialog] = useState(false);
 
   useEffect(() => {
     const eff = async () => {
-      await fetchAccount();
+      await fetchProfile();
     }
     eff();
   }, []);
 
-  const handleUpdateAccount= (data) =>{
-      setEmail(data.email);
-      setFullName(data.fullname);
-      setChangePasswordChecked(false);
-      setPassword('');
-      setAccount(data);
+  const handleUpdateProfile = (data) => {
+    setIntroduction(data.introduction);
+    setName(data.name);
   }
 
-  const fetchAccount = async () => {
+  const fetchProfile = async () => {
     setIsPending(true);
     try {
-      const res = await getInfo();
+      const res = await getMyProfile();
       if (res.status === 200) {
         const data = res.data;
-        handleUpdateAccount(data);
+        handleUpdateProfile(data);
       }
     } catch (e) {
-      enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
+      enqueueSnackbar("Error, can not get your profile", { variant: SnackBarVariant.Error });
       console.log(e);
     } finally {
       setIsPending(false);
     }
   }
-
-  const handleCheckBoxChange = (event) => {
-    setChangePasswordChecked(event.target.checked);
-    setPassword('');
-  };
-
   const handleNameChange = (event) => {
-    setFullName(event.target.value);
+    setName(event.target.value);
   }
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-  }
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  }
-
-  const handleOpenCurrentPasswordDialog = () => {
-    setOpenCurrentPasswordDialog(true);
-  };
-
-  const handleCloseCurrentPasswordDialog = () => {
-    setOpenCurrentPasswordDialog(false);
-  };
-
-  const handleCurrentPasswordChange = (event) => {
-    setCurrentPassword(event.target.value);
-  }
-
-  const handleConfirmCurrentPassword = async () => {
-    if (currentPassword.length === 0) {
-      return;
-    }
-    setOpenCurrentPasswordDialog(false);
-    setIsUpdating(true);
-
-    try {
-      const body = {
-        currentPassword: currentPassword
-      };
-      if (account.fullname !== fullName) body['fullname'] = fullName;
-      if (account.email !== email) body['email'] = email;
-      if (changePasswordChecked) body['password'] = password;
-      const res = await updateMyAccount(body);
-      console.log(res);
-
-      switch (res.status) {
-        case 200:
-          enqueueSnackbar("Update successfully", { variant: SnackBarVariant.Success });
-          handleUpdateAccount(res.data?.user);
-          saveUser(res.data?.user);
-
-          break;
-
-        case 401:
-          enqueueSnackbar("You current password is missing or incorrect", { variant: SnackBarVariant.Error });
-          handleUpdateAccount(account);
-          break;
-        case 400:
-        default:
-          enqueueSnackbar("Update failed", { variant: SnackBarVariant.Error });
-          handleUpdateAccount(account);
-      }
-     
-
-
-    } catch (e) {
-
-    } finally {
-      setCurrentPassword('');
-      setIsUpdating(false);
-    }
+  const handleIntroductionChange = (event) => {
+    setIntroduction(event.target.value);
   }
 
   const handleUpdateButtonClick = () => {
-    setFullNameFieldError(false);
-    setEmailFieldError(false);
-    setPasswordFieldError(false);
-
-    if (fullName.length === 0) {
-      setFullNameFieldError(true);
+    if (name.length === 0) {
+      setNameFieldError(true);
       return;
     }
 
-    if (changePasswordChecked && password.length < 6) {
-      setPasswordFieldError(true);
+    if (introduction.length === 0) {
+      setIntroductionFieldError(true);
       return;
     }
-
-    if (!isValidEmail(email)) {
-      setEmailFieldError(true);
-      return;
-    }
-
-    handleOpenCurrentPasswordDialog();
-
 
   }
 
@@ -232,78 +142,48 @@ export const TeacherProfilePage = () => {
       <Grid item xs={12}>
         <Paper style={{ justifyContent: 'center', padding: 48 }} className={classes.paper}>
           <div>
-            <Box className={classes.formTitle}>Your account</Box>
-            <Box className={classes.formDesc}>Update your account here.</Box>
+            <Box className={classes.formTitle}>Your profile</Box>
           </div>
+
+
           <FormControl variant='outlined'
             fullWidth
             className={classes.margin}
           >
-            <InputLabel >Full name</InputLabel>
-            <Input
+            <TextField
+              variant='outlined'
+              id="introduction"
+              type='introduction'
+              label='Introduction'
+              onChange={handleIntroductionChange}
+              value={introduction}
+              startAdornment={
+                <InputAdornment position="start">
+                  <InfoIcon />
+                </InputAdornment>
+              }
+              error={introductionFieldError}
+              multiline
+              rows={10}
+              rowsMax={10}
+            />
+          </FormControl>
+          <FormControl variant='outlined'
+            fullWidth
+            className={classes.margin}
+          >
+            <TextField
               id="fullname"
+              variant='outlined'
+              label='Your name'
               onChange={handleNameChange}
-
-              value={fullName}
-
+              value={name}
               startAdornment={
                 <InputAdornment position="start">
                   <AccountCircle />
                 </InputAdornment>
               }
-              error={fullNameFieldError}
-            />
-          </FormControl>
-
-          <FormControl variant='outlined'
-            fullWidth
-            className={classes.margin}
-          >
-            <InputLabel >Email</InputLabel>
-            <Input
-              id="email"
-              type='email'
-              onChange={handleEmailChange}
-              value={email}
-              startAdornment={
-                <InputAdornment position="start">
-                  <Email />
-                </InputAdornment>
-              }
-              error={emailFieldError}
-            />
-          </FormControl>
-          <FormControl variant='outlined'
-            fullWidth
-            className={classes.margin}
-          >
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={changePasswordChecked}
-                  onChange={handleCheckBoxChange}
-                  name="checkedB"
-                  color="primary"
-                />
-              }
-              label="Change my password"
-            />
-          </FormControl>
-          <FormControl fullWidth className={classes.margin}>
-            <InputLabel>New Password</InputLabel>
-            <Input
-              id="password"
-              onChange={handlePasswordChange}
-              type="password"
-              value={password}
-              disabled={changePasswordChecked ? false : true}
-              disableUnderline={changePasswordChecked ? false : true}
-              error={passwordFieldError}
-              startAdornment={
-                <InputAdornment position="start">
-                  <LockIcon />
-                </InputAdornment>
-              }
+              error={nameFieldError}
             />
           </FormControl>
 
@@ -317,7 +197,7 @@ export const TeacherProfilePage = () => {
                     onClick={handleUpdateButtonClick}
                     variant="contained"
                     color="primary">
-                    Update Info
+                    Save changes
                   </CustomPrimaryContainedButton>
               }
             </Box>
@@ -325,45 +205,6 @@ export const TeacherProfilePage = () => {
         </Paper>
       </Grid>
     </Grid>
-
-    <div>
-      <Dialog
-        open={openCurrentPasswordDialog}
-        onClose={handleCloseCurrentPasswordDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Enter current password</DialogTitle>
-        <DialogContent fullWidth>
-          <DialogContentText id="alert-dialog-description">
-            <TextField variant="outlined"
-              autoFocus
-              margin="dense"
-              value={currentPassword}
-              onChange={handleCurrentPasswordChange}
-              label="Current Password"
-              type="password"
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseCurrentPasswordDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmCurrentPassword} color="primary" autoFocus>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
 
   </div>
 }

@@ -74,3 +74,11 @@ export async function getMyCourses() {
 export async function getMyCourseByCourseId(courseId) {
   return await AXIOS_INSTANCE.get(`/api/users/me/enrollments/${courseId}`);
 }
+
+export async function getMyProfile() {
+  return await AXIOS_INSTANCE.get(`/api/teachers/me`);
+}
+
+export async function updateMyProfile( data) {
+  return await AXIOS_INSTANCE.put(`/api/teachers/me`, data);
+}
