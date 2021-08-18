@@ -76,7 +76,7 @@ export const SignInPage = () => {
       localStorage.setItem(LocalKey.UserInfo, JSON.stringify(user));
       saveUser(user);
       if (user.role === UserRoles.Admin) {
-        history.push('/admin');
+        history.push('/');
       } else if (user.role === UserRoles.Teacher) {
         history.push('/teacher/courses');
       } else history.push('/');

@@ -108,7 +108,7 @@ export default function ListTeacherComponent() {
 
     return (
         <>
-            <div>
+            <div  style={{ padding: 20 }}>
                 <Button style={{ marginBottom: 20 }} variant="contained" color="primary" onClick={() => { setOpenAddDialog(true) }}>
                     Add teacher
                 </Button>

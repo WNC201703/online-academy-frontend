@@ -11,7 +11,7 @@ import { getAllCategories } from "../../../config/api/Categories";
 import Rating from '@material-ui/lab/Rating';
 import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
 import TablePaginationActions from '../../../components/TablePaginationActions'
-import { FormControl, InputLabel, Select, MenuItem, TextField } from "@material-ui/core";
+import { FormControl, InputLabel, Select, MenuItem, TextField, Typography,Divider } from "@material-ui/core";
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.common.black,
@@ -153,7 +153,7 @@ export default function ListCourseComponent() {
 
     return (
         <>
-            <div>
+            <div style={{ padding: 20 }}>
                 <Grid style={{ marginBottom: 30 }} container justify="flex-end">
                     <TextField
                         style={{ marginRight: 10, width: 300 }}

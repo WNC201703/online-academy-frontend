@@ -104,7 +104,7 @@ export default function ListStudentComponent() {
 
     return (
         <>
-            <div>
+            <div  style={{ padding: 20 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
