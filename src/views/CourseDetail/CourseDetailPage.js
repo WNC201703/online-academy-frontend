@@ -1,25 +1,25 @@
-import React, {useContext, useEffect, useState} from "react";
-import {useSnackbar} from "notistack";
+import React, { useContext, useEffect, useState } from "react";
+import { useSnackbar } from "notistack";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import grey from "@material-ui/core/colors/grey";
 import Box from "@material-ui/core/Box";
 import Rating from "@material-ui/lab/Rating";
-import {useHistory, useParams} from "react-router-dom";
-import {getCourseById, reviewCourse} from "../../config/api/Courses";
-import {SnackBarVariant} from "../../utils/constant";
-import {dateFormat, discountFormat, moneyFormat, ratingNumberFormat} from "../../utils/FormatHelper";
+import { useHistory, useParams } from "react-router-dom";
+import { getCourseById, reviewCourse } from "../../config/api/Courses";
+import { SnackBarVariant } from "../../utils/constant";
+import { dateFormat, discountFormat, moneyFormat, ratingNumberFormat } from "../../utils/FormatHelper";
 import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
 import FavoriteOutlinedIcon from '@material-ui/icons/FavoriteOutlined';
-import {Image, Label} from "semantic-ui-react";
+import { Image, Label } from "semantic-ui-react";
 import {
   enrollCourse,
   getCourseReviews,
   getPreviewLessons,
   getRelatedCourse
 } from "../../config/api/Lessons";
-import {CourseInfoLoading, DescriptionLoading, LessonsLoading, RelatedCourseLoading} from "../../components/Loading";
+import { CourseInfoLoading, DescriptionLoading, LessonsLoading, RelatedCourseLoading } from "../../components/Loading";
 import HorizontalCarousel from "../Homepage/HorizontalCarousel";
 import CustomFavouriteOutlinedButton from "../../components/Button/CustomFavouriteOutlinedButton";
 import CustomFavouriteContainedButton from "../../components/Button/CustomFavouriteContainedButton";
@@ -44,8 +44,9 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ReactQuill from "react-quill";
 import DialogActions from "@material-ui/core/DialogActions";
 import Dialog from "@material-ui/core/Dialog";
-import {Player} from "video-react";
+import { Player } from "video-react";
 import CustomPrimaryContainedButton from "../../components/Button/CustomPrimaryContainedButton";
+import { Divider, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -107,9 +108,9 @@ const useStyles = makeStyles((theme) => ({
 export const CourseDetail = () => {
   const classes = useStyles();
   const history = useHistory();
-  const {user} = useContext(AuthUserContext);
-  const {id} = useParams();
-  const {enqueueSnackbar} = useSnackbar();
+  const { user } = useContext(AuthUserContext);
+  const { id } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
   const [courseInfo, setCourseInfo] = useState({});
   const [courseLessons, setCourseLessons] = useState([])
   const [relatedCourses, setRelatedCourses] = useState([])
@@ -138,9 +139,9 @@ export const CourseDetail = () => {
     const res = await addFavouriteCourse(courseInfo._id);
     if (res.status === 200) {
       setIsFavourite(true);
-      enqueueSnackbar("Add favourite course successfully", {variant: SnackBarVariant.Success});
+      enqueueSnackbar("Add favourite course successfully", { variant: SnackBarVariant.Success });
     } else {
-      enqueueSnackbar("Can not add this course to favourite", {variant: SnackBarVariant.Error});
+      enqueueSnackbar("Can not add this course to favourite", { variant: SnackBarVariant.Error });
     }
     setIsProcessing(false)
   }
@@ -150,9 +151,9 @@ export const CourseDetail = () => {
     const res = await removeFavouriteCourse(courseInfo._id);
     if (res.status === 204) {
       setIsFavourite(false);
-      enqueueSnackbar("Remove favourite course successfully", {variant: SnackBarVariant.Success});
+      enqueueSnackbar("Remove favourite course successfully", { variant: SnackBarVariant.Success });
     } else {
-      enqueueSnackbar("Can not remove this course from favourite", {variant: SnackBarVariant.Error});
+      enqueueSnackbar("Can not remove this course from favourite", { variant: SnackBarVariant.Error });
     }
     setIsProcessing(false)
   }
@@ -161,9 +162,9 @@ export const CourseDetail = () => {
     const res = await enrollCourse(courseInfo._id)
     if (res.status === 201) {
       setIsEnrolled(true);
-      enqueueSnackbar("Enroll this course successfully", {variant: SnackBarVariant.Success});
+      enqueueSnackbar("Enroll this course successfully", { variant: SnackBarVariant.Success });
     } else
-      enqueueSnackbar("Failed to enroll this course", {variant: SnackBarVariant.Error});
+      enqueueSnackbar("Failed to enroll this course", { variant: SnackBarVariant.Error });
   }
 
   const handleViewLessons = async () => {
@@ -197,9 +198,9 @@ export const CourseDetail = () => {
     try {
       const [info, lessons, related,
         reviews] = await Promise.all([
-        getCourseById(id), getPreviewLessons(id), getRelatedCourse(id),
-        getCourseReviews(id, 10, reviewPage)
-      ]);
+          getCourseById(id), getPreviewLessons(id), getRelatedCourse(id),
+          getCourseReviews(id, 10, reviewPage)
+        ]);
 
       let favourite;
       let mine;
@@ -224,7 +225,7 @@ export const CourseDetail = () => {
       setRelatedCourses(related.data);
 
     } catch (e) {
-      enqueueSnackbar("Error, can not get course list", {variant: SnackBarVariant.Error});
+      enqueueSnackbar("Error, can not get course list", { variant: SnackBarVariant.Error });
       console.log(e);
     } finally {
       setIsPending(false);
@@ -246,9 +247,9 @@ export const CourseDetail = () => {
     }
     const res = await reviewCourse(courseInfo._id, review)
     if (res !== 400) {
-      enqueueSnackbar("Review course successfully", {variant: SnackBarVariant.Success});
+      enqueueSnackbar("Review course successfully", { variant: SnackBarVariant.Success });
     } else {
-      enqueueSnackbar("Failed to review course", {variant: SnackBarVariant.Error});
+      enqueueSnackbar("Failed to review course", { variant: SnackBarVariant.Error });
     }
     setIsProcessing(false)
     setRatingContent('');
@@ -258,95 +259,95 @@ export const CourseDetail = () => {
   return <div className={classes.root}>
     <Grid container spacing={3}>
       <Grid className={classes.cover} container xs={12}>
-        <Grid item xs={12} sm={2}/>
+        <Grid item xs={12} sm={2} />
         <Grid item xs={12} sm={8}>
           {
-            isPending ? <CourseInfoLoading/> : (<Box direction={"row"}>
-                <Image
-                  draggable={false}
-                  style={{width: "100%", height: 350, borderRadius: 12}}
-                  src={courseInfo?.imageUrl}
-                />
-                <Box className={classes.courseTitle}>{courseInfo?.name}</Box>
-                <Box className={classes.courseDescription}>{courseInfo?.shortDescription}</Box>
-                <Box className={classes.courseDescription} display="flex" alignItems="center"
-                     justify="center">
-                  <span className={classes.rateText}>{ratingNumberFormat(courseInfo?.averageRating)}</span>
-                  <Rating name="read-only" value={ratingNumberFormat(courseInfo?.averageRating)} readOnly/>
-                  <span>({courseInfo?.numberOfReviews}) Ratings</span>
-                </Box>
-                <Box className={classes.originMoney}>{moneyFormat(courseInfo?.price)}
-                  {
-                    isDiscount ? <span
-                        className={classes.discountMoney}>{moneyFormat(discountFormat(courseInfo?.price, courseInfo?.percentDiscount))}</span>
-                      : <></>
-                  }
-                </Box>
-                <Box className={classes.courseDescription}>{courseInfo?.teacher}</Box>
-                <Box className={classes.courseDescription}>
-                  Last updated: {dateFormat(courseInfo?.updatedAt)}
-                </Box>
+            isPending ? <CourseInfoLoading /> : (<Box direction={"row"}>
+              <Image
+                draggable={false}
+                style={{ width: "100%", height: 350, borderRadius: 12 }}
+                src={courseInfo?.imageUrl}
+              />
+              <Box className={classes.courseTitle}>{courseInfo?.name}</Box>
+              <Box className={classes.courseDescription}>{courseInfo?.shortDescription}</Box>
+              <Box className={classes.courseDescription} display="flex" alignItems="center"
+                justify="center">
+                <span className={classes.rateText}>{ratingNumberFormat(courseInfo?.averageRating)}</span>
+                <Rating name="read-only" value={ratingNumberFormat(courseInfo?.averageRating)} readOnly />
+                <span>({courseInfo?.numberOfReviews}) Ratings</span>
+              </Box>
+              <Box className={classes.originMoney}>{moneyFormat(courseInfo?.price)}
                 {
-                  user._id ? <Box className={classes.courseDescription} direction='column'>
-                    {
-                      isFavourite ? <CustomFavouriteContainedButton
-                          size="large"
-                          style={{marginRight: 12}}
-                          onClick={handleRemoveFavouriteCourse}
-                          disabled={isProcessing}
-                          startIcon={<FavoriteOutlinedIcon/>}
-                        >
-                          Your favourite course
-                        </CustomFavouriteContainedButton> :
-                        <CustomFavouriteOutlinedButton
-                          onClick={handleFavouriteButtonClick}
-                          size="large"
-                          style={{marginRight: 12}}
-                          startIcon={<FavoriteBorderOutlinedIcon/>}
-                        >
-                          Add to favourite
-                        </CustomFavouriteOutlinedButton>
-                    }
-
-                    {
-                      isEnrolled ? <CustomViewContainedButton
-                          size="large"
-                          onClick={handleViewLessons}
-                          disabled={isProcessing}
-                          startIcon={<VisibilityIcon/>}
-                        >
-                          View lessons
-                        </CustomViewContainedButton> :
-                        <CustomEnrollOutlinedButton
-                          onClick={handleEnrollCourse}
-                          size="large"
-                          startIcon={<SubscriptionsOutlinedIcon/>}
-                        >
-                          Enroll this course
-                        </CustomEnrollOutlinedButton>
-                    }
-                  </Box> : <div>You should sign in to use this service</div>
+                  isDiscount ? <span
+                    className={classes.discountMoney}>{moneyFormat(discountFormat(courseInfo?.price, courseInfo?.percentDiscount))}</span>
+                    : <></>
                 }
               </Box>
+              <Box className={classes.courseDescription}>{courseInfo?.teacher}</Box>
+              <Box className={classes.courseDescription}>
+                Last updated: {dateFormat(courseInfo?.updatedAt)}
+              </Box>
+              {
+                user._id ? <Box className={classes.courseDescription} direction='column'>
+                  {
+                    isFavourite ? <CustomFavouriteContainedButton
+                      size="large"
+                      style={{ marginRight: 12 }}
+                      onClick={handleRemoveFavouriteCourse}
+                      disabled={isProcessing}
+                      startIcon={<FavoriteOutlinedIcon />}
+                    >
+                      Your favourite course
+                    </CustomFavouriteContainedButton> :
+                      <CustomFavouriteOutlinedButton
+                        onClick={handleFavouriteButtonClick}
+                        size="large"
+                        style={{ marginRight: 12 }}
+                        startIcon={<FavoriteBorderOutlinedIcon />}
+                      >
+                        Add to favourite
+                      </CustomFavouriteOutlinedButton>
+                  }
+
+                  {
+                    isEnrolled ? <CustomViewContainedButton
+                      size="large"
+                      onClick={handleViewLessons}
+                      disabled={isProcessing}
+                      startIcon={<VisibilityIcon />}
+                    >
+                      View lessons
+                    </CustomViewContainedButton> :
+                      <CustomEnrollOutlinedButton
+                        onClick={handleEnrollCourse}
+                        size="large"
+                        startIcon={<SubscriptionsOutlinedIcon />}
+                      >
+                        Enroll this course
+                      </CustomEnrollOutlinedButton>
+                  }
+                </Box> : <div>You should sign in to use this service</div>
+              }
+            </Box>
             )
           }
 
         </Grid>
-        <Grid item xs={12} sm={2}/>
+        <Grid item xs={12} sm={2} />
       </Grid>
-      <Grid item xs={12} sm={2}/>
+      <Grid item xs={12} sm={2} />
       <Grid item xs={12} sm={8}>
         <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Description</Box>
           {
-            isPending ? <DescriptionLoading/> : <div dangerouslySetInnerHTML={{__html: courseInfo?.detailDescription}}/>
+            isPending ? <DescriptionLoading /> : <div dangerouslySetInnerHTML={{ __html: courseInfo?.detailDescription }} />
           }
         </Paper>
         <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Course Content</Box>
           <Box> {courseLessons?.length} lessons</Box>
           {
-            isPending ? <LessonsLoading/> :
+            isPending ? <LessonsLoading /> :
               courseLessons?.map(item => {
                 const hasPreview = item?.videoUrl != null
                 return <Box>
@@ -354,8 +355,8 @@ export const CourseDetail = () => {
                     {item.lessonNumber} - {item.name}
                   </Box>
                   {
-                    hasPreview ? <CustomPrimaryContainedButton style={{marginTop: 12, marginBottom: 12}}
-                                                               onClick={(e) => handleDialogOpen(e, item?.videoUrl)}>
+                    hasPreview ? <CustomPrimaryContainedButton style={{ marginTop: 12, marginBottom: 12 }}
+                      onClick={(e) => handleDialogOpen(e, item?.videoUrl)}>
                       Preview
                     </CustomPrimaryContainedButton> : <></>
                   }
@@ -381,43 +382,61 @@ export const CourseDetail = () => {
         </Paper>
         <Paper className={classes.paper}>
           {
-            isPending ? <RelatedCourseLoading/> : <HorizontalCarousel title="Related Courses" data={relatedCourses}/>
+            isPending ? <RelatedCourseLoading /> : <HorizontalCarousel title="Related Courses" data={relatedCourses} />
           }
         </Paper>
+
+        <Paper className={classes.paper}>
+          <Box className={classes.blockTitle}>Teacher</Box>
+          <Typography style={{fontSize:30}} color='primary' component="h3">Dr. Angela Yu</Typography>
+          <Box style={{ marginLeft: 12, }}> * Rating: 4.6 </Box>
+          <Box style={{ marginLeft: 12 }}> * Reviews: 225 </Box>
+          <Box style={{ marginLeft: 12 }}> * Students: 512 </Box>
+          <Box style={{ marginLeft: 12 }}> * Courses: 10 </Box>
+          <Divider style={{marginBottom:10}}/>
+          <Typography component="h2">I'm Angela, I'm a developer with a passion for teaching. I'm the lead instructor at the London App Brewery, London's leading Programming Bootcamp. I've helped hundreds of thousands of students learn to code and change their lives by becoming a developer. I've been invited by companies such as Twitter, Facebook and Google to teach their employees.
+
+            My first foray into programming was when I was just 12 years old, wanting to build my own Space Invader game. Since then, I've made hundred of websites, apps and games. But most importantly, I realised that my greatest passion is teaching.
+
+            I spend most of my time researching how to make learning to code fun and make hard concepts easy to understand. I apply everything I discover into my bootcamp courses. In my courses, you'll find lots of geeky humour but also lots of explanations and animations to make sure everything is easy to understand.
+
+            I'll be there for you every step of the way.</Typography>
+        </Paper>
+
         <Paper className={classes.paper}>
           <Box className={classes.blockTitle}>Ratings</Box>
           {
             isSignedIn ? <Box direction="column">
               <Box>
                 <TextField value={ratingContent} onChange={handleRatingContentChange} fullWidth
-                           style={{marginTop: 12, marginBottom: 12}}
-                           label="Write your review"
-                           variant="outlined"/>
+                  style={{ marginTop: 12, marginBottom: 12 }}
+                  label="Write your review"
+                  variant="outlined" />
                 <Box className={classes.note}>Note: If you have not seen this course yet, you can not write review</Box>
                 <Rating precision={0.5} value={ratingPoint} onChange={handleRatingBarChange} size="large"
-                        name="read-only"/>
+                  name="read-only" />
               </Box>
               <Button size="medium"
-                      height={65}
-                      color="primary"
-                      disabled={isProcessing || ratingContent.length < 0 || !isEnrolled}
-                      onClick={handleRatingCourse}
-                      variant='contained'>
+                height={65}
+                color="primary"
+                disabled={isProcessing || ratingContent.length < 0 || !isEnrolled}
+                onClick={handleRatingCourse}
+                variant='contained'>
                 Send
               </Button>
               {
                 reviewList?.map(item => {
                   if (item.user === user._id) {
-                    return <Box style={{backgroundColor: grey[300]}}>
-                      <Box className={classes.note} style={{marginLeft: 12}}> {item?.username}</Box>
-                      <Box style={{marginLeft: 12}}> {item?.review}</Box>
-                      <Rating style={{marginLeft: 10}} readOnly value={item?.rating} size="medium"/>
+                    return <Box style={{ backgroundColor: grey[300] }}>
+                      <Box className={classes.note} style={{ marginLeft: 12 }}> {item?.username}</Box>
+                      <Box style={{ marginLeft: 12 }}> {item?.review}</Box>
+                      <Rating style={{ marginLeft: 10 }} readOnly value={item?.rating} size="medium" />
                     </Box>
                   } else
                     return <Box>
-                      <Box className={classes.note} style={{marginLeft: 12}}> {item?.username}</Box>
-                      <Box style={{marginLeft: 12}}> {item?.review}</Box>
-                      <Rating style={{marginLeft: 10}} readOnly value={item?.rating / 2} precision={0.5} size="medium"/>
+                      <Box className={classes.note} style={{ marginLeft: 12 }}> {item?.username}</Box>
+                      <Box style={{ marginLeft: 12 }}> {item?.review}</Box>
+                      <Rating style={{ marginLeft: 10 }} readOnly value={item?.rating / 2} precision={0.5} size="medium" />
                     </Box>
                 })
               }
@@ -426,8 +445,8 @@ export const CourseDetail = () => {
                   fullwidth
                   onClick={handleLoadMoreReview}
                   size="small"
-                  style={{marginRight: 12, marginLeft: 12, marginTop: 12}}
-                  startIcon={<AddCircleOutlineIcon/>}
+                  style={{ marginRight: 12, marginLeft: 12, marginTop: 12 }}
+                  startIcon={<AddCircleOutlineIcon />}
                 >
                   Show more reviews
                 </CustomEnrollOutlinedButton> </Box>
@@ -438,7 +457,7 @@ export const CourseDetail = () => {
         </Paper>
 
       </Grid>
-      <Grid item xs={12} sm={2}/>
+      <Grid item xs={12} sm={2} />
     </Grid>
   </div>
 }
