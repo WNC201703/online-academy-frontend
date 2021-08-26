@@ -20,10 +20,10 @@ import AuthUserContext from "../../contexts/user/AuthUserContext";
 
 const useStyles = makeStyles((theme) => ({
   itemContainer: {
-    '&:hover': {
-      backgroundColor: grey[300],
-      cursor: "pointer"
-    },
+    // '&:hover': {
+    //   backgroundColor: grey[300],
+    //   cursor: "pointer"
+    // },
     searchContainer: {
       height: 200,
       maxHeight: 200,
@@ -150,7 +150,7 @@ export const CourseList = () => {
               courseList?.map(item => {
                 return (
                   <Paper
-                    onClick={(event) => handleItemClick(event, item?._id)}
+                    // onClick={(event) => handleItemClick(event, item?._id)}
                     style={{ marginBottom: 10 }}
                     className={classes.itemContainer}>
                     <CourseLineItem type={type} item={item} />
