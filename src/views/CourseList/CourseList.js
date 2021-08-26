@@ -125,15 +125,16 @@ export const CourseList = () => {
       <Grid container xs={12}>
         <Grid item xs={12} sm={2} />
         <Grid item xs={12} sm={8}>
+          <Box className={classes.blockTitle}> {categoryName ?? ' All courses'} </Box>
           {type === CourseListType.ENROLLMENTS || type === CourseListType.FAVORITES ? <div /> :
-            <FormControl style={{ marginTop: 50, width: 200 }} variant="outlined" className={classes.formControl}>
+            <FormControl style={{ marginTop: 15,marginBottom: 15, width: 200 }} variant="outlined" className={classes.formControl}>
               <InputLabel id="demo-simple-select-outlined-label">Sort</InputLabel>
               <Select
                 labelId="demo-simple-select-outlined-label"
                 id="demo-simple-select-outlined"
                 value={sortType}
                 onChange={handleSort}
-                label="Age"
+                label="Sort"
               >
                 <MenuItem value="">
                   <em>All</em>
@@ -144,7 +145,6 @@ export const CourseList = () => {
               </Select>
             </FormControl>
           }
-          <Box className={classes.blockTitle}> {categoryName ?? ' All courses'} </Box>
           {
             isPending ? <LineListLoading /> :
               courseList?.map(item => {
