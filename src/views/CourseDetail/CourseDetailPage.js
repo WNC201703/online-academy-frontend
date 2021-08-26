@@ -368,13 +368,13 @@ export const CourseDetail = () => {
               }) || 0
           }
 
-          <Dialog fullWidth open={open} onClose={handleDialogClose} aria-labelledby="form-dialog-title">
+          <Dialog maxWidth open={open} onClose={handleDialogClose} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title">Preview Lesson</DialogTitle>
             <DialogContent>
               <Player
                 playsInline
                 fluid={false}
-                width={320} height={200}
+               height={400}
                 src={previewVideo}></Player>
             </DialogContent>
             <DialogActions>
