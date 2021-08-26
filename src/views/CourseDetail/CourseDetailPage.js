@@ -260,7 +260,7 @@ export const CourseDetail = () => {
   }
 
   return <div className={classes.root}>
-    <Grid container spacing={3}>
+    <Grid container >
       <Grid className={classes.cover} container xs={12}>
         <Grid item xs={12} sm={2} />
         <Grid item xs={12} sm={8}>
