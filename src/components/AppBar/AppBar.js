@@ -20,6 +20,7 @@ import CustomSecondaryOutlinedButton from "../Button/CustomSecondaryOutlinedButt
 import AuthUserContext from "../../contexts/user/AuthUserContext";
 import Box from "@material-ui/core/Box";
 import Popover from "@material-ui/core/Popover";
+import Divider from "@material-ui/core/Divider";
 
 import debounce from "@material-ui/core/utils/debounce";
 import {getAllCourses} from "../../config/api/Courses";
@@ -272,6 +273,10 @@ export default function PrimarySearchAppBar() {
     history.push('/my-profile');
   }
 
+  const handleGotoTeacherCourses = () => {
+    history.push('/teacher/courses');
+  }
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -290,6 +295,9 @@ export default function PrimarySearchAppBar() {
         isTeacherOrAdmin ? <></> : <MenuItem onClick={handleGotoFavourites}>Favourites</MenuItem>
       }
        {
+        isTeacher ?  <MenuItem onClick={handleGotoTeacherCourses}>My Courses</MenuItem>:<></> 
+      }
+      {
         isTeacher ?  <MenuItem onClick={handleGotoTeacherProfile}>Profile</MenuItem>:<></> 
       }
       <MenuItem onClick={handleGotoAccount}>Account Settings</MenuItem>
