@@ -75,6 +75,7 @@ export const TeacherProfilePage = () => {
   const handleUpdateProfile = (data) => {
     setIntroduction(data.introduction);
     setName(data.name);
+    setTeacherProfile(data);
   }
 
   const fetchProfile = async () => {

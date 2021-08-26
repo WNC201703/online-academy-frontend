@@ -11,8 +11,8 @@ const CustomPrimaryContainedButton = withStyles({
     padding: '6px 12px',
     border: '1px solid',
     lineHeight: 1.5,
-    backgroundColor: '#37ccfa',
-    borderColor: '#37ccfa',
+    backgroundColor: '#0063cc',
+    borderColor: '#0063cc',
     fontFamily: [
       '-apple-system',
       'BlinkMacSystemFont',
